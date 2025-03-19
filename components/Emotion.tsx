@@ -6,6 +6,7 @@ import {
   Button,
   GestureResponderEvent,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface Props {
   name: string;
@@ -16,17 +17,19 @@ interface Props {
 function Emotion({ name, color, onClick }: Props) {
   const styles = StyleSheet.create({
     emotion: {
-      flex: 1,
+      height: 80,
+      width: 134,
+      margin: 10,
+      marginHorizontal: 14,
       justifyContent: "center",
       borderColor: "black",
-      borderWidth: 2,
+      // borderWidth: 2,
       borderRadius: 20,
-      backgroundColor: color,
     },
   });
 
   return (
-    <View style={styles.emotion}>
+    <LinearGradient colors={[color, color]} style={styles.emotion}>
       <Button
         onPress={() => {
           onClick(name);
@@ -34,7 +37,7 @@ function Emotion({ name, color, onClick }: Props) {
         title={name}
         color={"black"}
       />
-    </View>
+    </LinearGradient>
   );
 }
 
