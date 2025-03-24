@@ -18,7 +18,7 @@ const Header = ({ level, handleGoBack, color, name }: Props) => {
           alignItems: "center",
           width: 330,
           height: 60,
-          marginBottom: 10,
+          // marginBottom: 10,
           backgroundColor: "#e3d7b7",
           borderRadius: 20,
         }}
