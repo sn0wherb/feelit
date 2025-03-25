@@ -17,19 +17,26 @@ interface Props {
 function Emotion({ name, color, onClick }: Props) {
   const styles = StyleSheet.create({
     emotion: {
-      height: 80,
+      height: 134,
       width: 134,
       margin: 10,
       marginHorizontal: 14,
+      backgroundColor: color,
       justifyContent: "center",
       borderColor: "black",
       // borderWidth: 2,
-      borderRadius: 20,
+      borderRadius: 50,
+    },
+    colorShadow: {
+      shadowColor: color,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.8,
+      shadowRadius: 8,
     },
   });
 
   return (
-    <LinearGradient colors={[color, color]} style={styles.emotion}>
+    <View style={[styles.emotion, styles.colorShadow]}>
       <Button
         onPress={() => {
           onClick(name);
@@ -37,7 +44,7 @@ function Emotion({ name, color, onClick }: Props) {
         title={name}
         color={"black"}
       />
-    </LinearGradient>
+    </View>
   );
 }
 

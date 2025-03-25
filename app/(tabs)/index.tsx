@@ -1,10 +1,12 @@
-import { SafeAreaView, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/Header";
 import EmotionDisplay from "@/components/EmotionDisplay";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useFocusEffect } from "expo-router";
 
 type EmotionType = {
   name: string;
@@ -33,6 +35,14 @@ export default function App() {
     }
     getData();
   }, [level]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (level === 5) {
+        setLevel(0);
+      }
+    }, [])
+  );
 
   // Fetch all emotions in the current level and with the chosen parent
   const getData = () => {
@@ -65,6 +75,10 @@ export default function App() {
           entries[2],
         ]
       );
+      setLevel(level + 1);
+      setTimeout(() => {
+        setLevel(1);
+      }, 2000);
     } catch (e) {
       console.error(e);
     }
@@ -73,22 +87,36 @@ export default function App() {
   return (
     <LinearGradient colors={["beige", "beige"]} style={styles.container}>
       <SafeAreaView style={styles.container}>
-        {/* Header */}
-        <Header
-          level={level}
-          handleGoBack={handleGoBack}
-          name={currentEmotion ? currentEmotion.name : ""}
-          color={currentEmotion ? currentEmotion.color : ""}
-        />
+        {level === 5 ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <Text style={{ fontSize: 24 }}>Saved successfully!</Text>
+            <Ionicons name="checkmark-circle" size={56} color="black" />
+          </View>
+        ) : (
+          <View>
+            <Header
+              level={level}
+              handleGoBack={handleGoBack}
+              name={currentEmotion ? currentEmotion.name : ""}
+              color={currentEmotion ? currentEmotion.color : ""}
+            />
 
-        {/* Emotions */}
-        <EmotionDisplay
-          level={level}
-          currentEmotion={currentEmotion}
-          data={data}
-          passHandleButtonClickToParent={handleButtonClick}
-          handleCreateLog={handleCreateLog}
-        />
+            <EmotionDisplay
+              level={level}
+              currentEmotion={currentEmotion}
+              data={data}
+              passHandleButtonClickToParent={handleButtonClick}
+              handleCreateLog={handleCreateLog}
+            />
+          </View>
+        )}
       </SafeAreaView>
     </LinearGradient>
   );

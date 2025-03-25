@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import Emotion from "./Emotion";
 import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Dimensions } from "react-native";
 
 interface Props {
   level: number;
@@ -39,39 +40,54 @@ const EmotionDisplay = ({
     [root, setRoot] = useState<string>(""),
     [need, setNeed] = useState<string>(""),
     [extra, setExtra] = useState<string>("");
+
   const getEntries = () => {
     return [root, need, extra];
   };
 
-  // NEW
+  const height = Dimensions.get("window").height;
+
+  // Emotion selection
   if (level < 4) {
     return (
       <View
         style={{
           flex: 1,
           flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
           borderColor: "red",
-          marginTop: 10,
+          marginTop: 20,
         }}
       >
-        <FlatList
-          scrollEnabled={true}
-          numColumns={2}
-          data={data}
-          renderItem={({ item }) => {
-            return (
-              <Emotion
-                name={item["name"]}
-                color={item["color"]}
-                onClick={() => {
-                  passHandleButtonClickToParent(item);
-                }}
-              />
-            );
-          }}
-        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <FlatList
+            contentContainerStyle={{
+              // alignItems: "center",
+              // justifyContent: "center",
+              flex: 1,
+              paddingBottom: 30,
+            }}
+            scrollEnabled={false}
+            numColumns={2}
+            data={data}
+            renderItem={({ item }) => {
+              return (
+                <Emotion
+                  name={item["name"]}
+                  color={item["color"]}
+                  onClick={() => {
+                    passHandleButtonClickToParent(item);
+                  }}
+                />
+              );
+            }}
+          />
+        </ScrollView>
       </View>
     );
+
+    // Journal part
   } else {
     return (
       <ScrollView showsVerticalScrollIndicator={false}>

@@ -28,8 +28,7 @@ type FormattedLogDataType = {
 
 const overview = () => {
   const [logData, setLogData] = useState<LogType[]>([]);
-  const [logDataByDate, setLogDataByDate] =
-    useState<[[string | null, LogType[]]]>();
+  const [logDataByDate, setLogDataByDate] = useState<FormattedLogDataType[]>();
 
   const db = useSQLiteContext();
 
@@ -50,7 +49,7 @@ const overview = () => {
     const currentDateString = currentDate.toISOString().slice(0, 10);
 
     let sortedIndex = 0;
-    let sorted: [[string | null, LogType[]]] = [["test", []]];
+    let sorted: FormattedLogDataType[] = [{ date: "", logs: [] }];
 
     data.map((value) => {
       let date = value.created_at.slice(0, 10);
@@ -59,14 +58,27 @@ const overview = () => {
         date = "Today";
       }
 
-      if (sorted[sortedIndex][0] === date) {
-        // If date entry exists and matches current log, add to log array on this date
-        sorted[sortedIndex][1].push(value);
-      } else {
-        // If date entry doesn't exist or doesn't match, create a new date entry and add to it this log
-        sorted.push([date, [value]]);
+      // We get a value
+      // question - should the value be inserted in this index, or new one?
+      // we check date compatibility by reading current index
+      // oh what's that? current index doesn't exist? - that means initialize new index and insert date
+      // so first we check if current index already exists.
+      // if it does, we check the compatability. otherwise initialize new index creation
+
+      // we want to initialize a new entry if 1) index doesn't contain one or 2) index does contain one, but date doesn't match
+      // we do pure value insertion only when index contains entry and date matches
+
+      // WORKING:
+      // If empty index - initialize entry with date and empty log array
+      if (!sorted[sortedIndex]) {
+        sorted[sortedIndex] = { date: date, logs: [] };
+        // Index contains entry. If date doesn't match we create and initialize a new entry
+      } else if (sorted[sortedIndex].date !== date) {
         sortedIndex++;
+        sorted[sortedIndex] = { date: date, logs: [] };
       }
+      // Entry exists and date matches - insert here
+      sorted[sortedIndex].logs.push(value);
     });
     setLogDataByDate(sorted);
   };
@@ -87,22 +99,29 @@ const overview = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: 1, width: "100%", paddingHorizontal: 10 }}>
+      <View style={{ width: "100%", paddingHorizontal: 10 }}>
         <ScrollView>
+          {/* Sorted by date */}
           <FlatList
+            contentContainerStyle={{ paddingBottom: 60 }}
             data={logDataByDate}
             scrollEnabled={false}
             renderItem={({ item }) => {
               return (
                 <View>
                   <Text
-                    style={{ fontWeight: "bold", fontSize: 24, padding: 6 }}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 30,
+                      paddingHorizontal: 10,
+                      paddingBottom: 10,
+                    }}
                   >
-                    {item[0]}
+                    {item.date}
                   </Text>
+                  {/* Individual logs */}
                   <FlatList
-                    style={{}}
-                    data={item[1]}
+                    data={item.logs}
                     scrollEnabled={false}
                     renderItem={({ item }) => {
                       return (
@@ -113,6 +132,11 @@ const overview = () => {
                             padding: 10,
                             backgroundColor: item.color,
                             borderRadius: 10,
+                            // Shadow
+                            shadowColor: item.color,
+                            shadowOffset: { width: 0, height: 0 },
+                            shadowOpacity: 0.8,
+                            shadowRadius: 6,
                           }}
                           key={item.id}
                         >
@@ -147,8 +171,5 @@ export default overview;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "beige",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
