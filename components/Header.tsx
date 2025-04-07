@@ -19,11 +19,11 @@ const Header = ({ level, handleGoBack, color, name }: Props) => {
           width: 330,
           height: 60,
           marginTop: 10,
-          backgroundColor: "#e3d7b7",
+          // backgroundColor: "#e3d7b7",
           borderRadius: 20,
         }}
       >
-        <Text style={{ fontSize: 26 }}>How are you feeling?</Text>
+        <Text style={{ fontSize: 28 }}>How are you feeling?</Text>
       </View>
     );
   } else if (level > 3) {

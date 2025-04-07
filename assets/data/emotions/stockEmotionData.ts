@@ -129,6 +129,25 @@ const emotionData = {
       0: { name: "Disappointed", color: "#5b78ba" },
       1: { name: "Forgotten", color: "#5b78ba" },
     },
+
+    // Grandchildren of disgusted
+    Repelled: {
+      0: { name: "Hesitant", color: "#b27189" },
+      1: { name: "Horrified", color: "#b27189" },
+    },
+    Awful: {
+      0: { name: "Detestable", color: "#b27189" },
+      1: { name: "Nauseated", color: "#b27189" },
+    },
+    Disappointed: {
+      0: { name: "Revolted", color: "#b27189" },
+      1: { name: "Appalled", color: "#b27189" },
+    },
+    Disapproving: {
+      0: { name: "Embarrassed", color: "#b27189" },
+      1: { name: "Judgemental", color: "#b27189" },
+    },
+
     // Grandchildren of angry
     Critical: {
       0: { name: "Dismissive", color: "#d06363" },
@@ -161,6 +180,49 @@ const emotionData = {
     "Let down": {
       0: { name: "Betrayed", color: "#d06363" },
       1: { name: "Resentful", color: "#d06363" },
+    },
+    // Grandchildren of fearful
+    Threatened: {
+      0: { name: "Exposed", color: "#7c846f" },
+      1: { name: "Nervous", color: "#7c846f" },
+    },
+    Rejected: {
+      0: { name: "Persecuted", color: "#7c846f" },
+      1: { name: "Excluded", color: "#7c846f" },
+    },
+    Weak: {
+      0: { name: "Insignificant", color: "#7c846f" },
+      1: { name: "Worthless", color: "#7c846f" },
+    },
+    Insecure: {
+      0: { name: "Inferior", color: "#7c846f" },
+      1: { name: "Inadequate", color: "#7c846f" },
+    },
+    Anxious: {
+      0: { name: "Worried", color: "#7c846f" },
+      1: { name: "Overwhelmed", color: "#7c846f" },
+    },
+    Scared: {
+      0: { name: "Frightened", color: "#7c846f" },
+      1: { name: "Helpless", color: "#7c846f" },
+    },
+
+    // Grandchildren of surprised
+    Startled: {
+      0: { name: "Shocked", color: "#d09363" },
+      1: { name: "Dismayed", color: "#d09363" },
+    },
+    Confused: {
+      0: { name: "Disillusioned", color: "#d09363" },
+      1: { name: "Perplexed", color: "#d09363" },
+    },
+    Amazed: {
+      0: { name: "Astonished", color: "#d09363" },
+      1: { name: "Awe", color: "#d09363" },
+    },
+    Excited: {
+      0: { name: "Eager", color: "#d09363" },
+      1: { name: "Energetic", color: "#d09363" },
     },
   },
 };

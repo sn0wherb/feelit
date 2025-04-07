@@ -67,6 +67,9 @@ INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Inspired', 
   createLogTable: `
   CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion TEXT, color TEXT, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP);
   `,
+  createCustomEmotionsTable: `
+  CREATE TABLE IF NOT EXISTS custom_emotions (id INTEGET PRIMARY KEY AUTOINCREMENT, emotion TEXT, parent1 TEXT, parent2 TEXT, color TEXT);
+  `,
   createLog: `
   INSERT INTO emotion_logs (emotion, root, need, extra) VALUES (?,?,?,?);
   `,

@@ -1,4 +1,10 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
@@ -17,38 +23,32 @@ const settings = () => {
 
   return (
     <SafeAreaView>
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 200,
-          marginHorizontal: 30,
-          backgroundColor: "green",
-          borderRadius: 10,
-        }}
+      <TouchableHighlight
+        style={[styles.button, { backgroundColor: "green" }]}
+        onPress={Updates.reloadAsync}
       >
-        <Button
-          onPress={Updates.reloadAsync}
-          title="Reload app"
-          color="white"
-        />
-      </View>
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 200,
-          marginHorizontal: 30,
-          backgroundColor: "blue",
-          borderRadius: 10,
-        }}
+        <Text>Reload app</Text>
+      </TouchableHighlight>
+      <TouchableHighlight
+        style={[styles.button, { backgroundColor: "blue" }]}
+        onPress={dropLogs}
       >
-        <Button onPress={dropLogs} title="Clear log table" color="white" />
-      </View>
+        <Text>Drop log table</Text>
+      </TouchableHighlight>
     </SafeAreaView>
   );
 };
 
 export default settings;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 100,
+    marginTop: 200,
+    marginHorizontal: 30,
+    borderRadius: 10,
+    fontSize: 24,
+  },
+});

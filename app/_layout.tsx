@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
+import { StatusBar, Platform } from "react-native";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
-import { StatusBar } from "react-native";
 
 export default function Layout() {
   const { queries } = require("../assets/SQL/queries.ts");
@@ -8,6 +8,7 @@ export default function Layout() {
   const createTableIfNeeded = async (db: SQLiteDatabase) => {
     try {
       await db.execAsync(queries["createLogTable"]);
+      // await db.execAsync(queries["createCustomEmotionsTable"]);
     } catch (e) {
       console.error(e);
     }

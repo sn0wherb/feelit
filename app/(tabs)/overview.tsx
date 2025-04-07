@@ -46,16 +46,21 @@ const overview = () => {
 
   const sortLogDataByDate = (data: LogType[]) => {
     const currentDate = new Date();
-    const currentDateString = currentDate.toISOString().slice(0, 10);
+    const currentDateISOString = currentDate.toISOString().slice(0, 10);
 
     let sortedIndex = 0;
-    let sorted: FormattedLogDataType[] = [{ date: "", logs: [] }];
+    let sorted: FormattedLogDataType[] = [];
 
     data.map((value) => {
       let date = value.created_at.slice(0, 10);
-      if (date === currentDateString) {
-        // If date of log is equal to today, change to "Today", else display date as is
+      if (date === currentDateISOString) {
+        // If date of log is equal to today, change to "Today"
         date = "Today";
+      } else {
+        // Else convert date to string
+        let parts = date.split("-");
+        let newDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        date = newDate.toDateString();
       }
 
       // We get a value
@@ -99,11 +104,12 @@ const overview = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ width: "100%", paddingHorizontal: 10 }}>
+      {/* <Text>Overview</Text> */}
+      <View style={{ paddingHorizontal: 8 }}>
         <ScrollView>
           {/* Sorted by date */}
           <FlatList
-            contentContainerStyle={{ paddingBottom: 60 }}
+            contentContainerStyle={{ paddingBottom: 60, paddingTop: 10 }}
             data={logDataByDate}
             scrollEnabled={false}
             renderItem={({ item }) => {
@@ -113,8 +119,8 @@ const overview = () => {
                     style={{
                       fontWeight: "bold",
                       fontSize: 30,
-                      paddingHorizontal: 10,
-                      paddingBottom: 10,
+                      padding: 10,
+                      marginTop: 10,
                     }}
                   >
                     {item.date}
@@ -125,11 +131,12 @@ const overview = () => {
                     scrollEnabled={false}
                     renderItem={({ item }) => {
                       return (
+                        // Card
                         <View
                           style={{
                             marginHorizontal: 10,
                             marginVertical: 8,
-                            padding: 10,
+                            padding: 16,
                             backgroundColor: item.color,
                             borderRadius: 10,
                             // Shadow
@@ -140,18 +147,97 @@ const overview = () => {
                           }}
                           key={item.id}
                         >
-                          <Text
+                          {/* Title & time */}
+                          <View
                             style={{
-                              fontSize: 16,
-                              fontWeight: "bold",
-                              marginBottom: 4,
+                              flex: 1,
+                              flexDirection: "row",
+                              justifyContent: "space-between",
                             }}
                           >
-                            {item.emotion}
-                          </Text>
-                          <Text>Root: {item.root}</Text>
-                          <Text>Need: {item.need}</Text>
-                          <Text>{formatDate(item["created_at"])}</Text>
+                            <Text
+                              style={{
+                                fontSize: 20,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {item.emotion}
+                            </Text>
+                            <Text style={{ fontSize: 16 }}>
+                              {formatDate(item["created_at"])}
+                            </Text>
+                          </View>
+
+                          {/* Details */}
+                          {item.root.length > 0 && (
+                            <View style={{ marginTop: 20 }}>
+                              <Text
+                                style={[
+                                  styles.emotionDetailTitle,
+                                  {
+                                    width: 50,
+                                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                                  },
+                                ]}
+                              >
+                                Cause
+                              </Text>
+                              <Text
+                                style={{
+                                  marginBottom: 6,
+                                  paddingHorizontal: 4,
+                                }}
+                              >
+                                {item.root}
+                              </Text>
+                            </View>
+                          )}
+                          {item.need.length > 0 && (
+                            <View style={{ marginTop: 8 }}>
+                              <Text
+                                style={[
+                                  styles.emotionDetailTitle,
+                                  {
+                                    width: 44,
+                                    backgroundColor: "rgba(0, 0, 0, 0.17)",
+                                  },
+                                ]}
+                              >
+                                Need
+                              </Text>
+                              <Text
+                                style={{
+                                  marginBottom: 6,
+                                  paddingHorizontal: 4,
+                                }}
+                              >
+                                {item.need}
+                              </Text>
+                            </View>
+                          )}
+                          {item.extra.length > 0 && (
+                            <View style={{ marginTop: 8 }}>
+                              <Text
+                                style={[
+                                  styles.emotionDetailTitle,
+                                  {
+                                    width: 42,
+                                    backgroundColor: "rgba(0, 0, 0, 0.23)",
+                                  },
+                                ]}
+                              >
+                                Diary
+                              </Text>
+                              <Text
+                                style={{
+                                  marginBottom: 6,
+                                  paddingHorizontal: 4,
+                                }}
+                              >
+                                {item.extra}
+                              </Text>
+                            </View>
+                          )}
                         </View>
                       );
                     }}
@@ -171,5 +257,11 @@ export default overview;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "beige",
+  },
+  emotionDetailTitle: {
+    borderRadius: 30,
+    marginBottom: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
   },
 });

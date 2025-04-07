@@ -1,15 +1,16 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Button,
   GestureResponderEvent,
+  TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface Props {
-  name: string;
+  name: string | ReactNode;
   color: string;
   onClick: (name: string) => void;
 }
@@ -23,6 +24,7 @@ function Emotion({ name, color, onClick }: Props) {
       marginHorizontal: 14,
       backgroundColor: color,
       justifyContent: "center",
+      alignItems: "center",
       borderColor: "black",
       // borderWidth: 2,
       borderRadius: 50,
@@ -36,14 +38,28 @@ function Emotion({ name, color, onClick }: Props) {
   });
 
   return (
-    <View style={[styles.emotion, styles.colorShadow]}>
-      <Button
+    <View>
+      <TouchableOpacity
+        style={[styles.emotion, styles.colorShadow]}
+        onPress={() => {
+          typeof name == typeof "string"
+            ? onClick(String(name))
+            : onClick("new");
+        }}
+      >
+        {typeof name == typeof "string" ? (
+          <Text style={{ fontSize: 18 }}>{name}</Text>
+        ) : (
+          name
+        )}
+      </TouchableOpacity>
+      {/* <Button
         onPress={() => {
           onClick(name);
         }}
         title={name}
         color={"black"}
-      />
+      /> */}
     </View>
   );
 }

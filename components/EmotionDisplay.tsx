@@ -14,6 +14,7 @@ import Emotion from "./Emotion";
 import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Dimensions } from "react-native";
+import Body from "./Body";
 
 interface Props {
   level: number;
@@ -47,6 +48,8 @@ const EmotionDisplay = ({
 
   const height = Dimensions.get("window").height;
 
+  // const scroll = level === 1 ? false : true;
+
   // Emotion selection
   if (level < 4) {
     return (
@@ -57,16 +60,20 @@ const EmotionDisplay = ({
           justifyContent: "space-between",
           alignItems: "center",
           borderColor: "red",
-          marginTop: 20,
+          marginTop: 10,
         }}
       >
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
           <FlatList
             contentContainerStyle={{
               // alignItems: "center",
               // justifyContent: "center",
               flex: 1,
-              paddingBottom: 30,
+              paddingTop: 10,
+              paddingBottom: 10,
             }}
             scrollEnabled={false}
             numColumns={2}
@@ -83,96 +90,134 @@ const EmotionDisplay = ({
               );
             }}
           />
+          <Emotion
+            name={<AntDesign name="plus" size={28} color={"black"} />}
+            color={"rgba(0,0,0,0.1)"}
+            onClick={() => {
+              console.log("new!");
+            }}
+          />
         </ScrollView>
       </View>
     );
-
-    // Journal part
-  } else {
+  } else if (level === 4) {
+    return <Body />;
+  }
+  // Journal part
+  else {
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View
-          style={{
-            marginTop: 20,
-            flex: 1,
-            minWidth: 320,
-            gap: 20,
-            justifyContent: "space-between",
-            paddingBottom: 40,
-          }}
-        >
-          <View>
-            <Text style={{ fontSize: 18 }}>
-              When did you start feeling{" "}
-              {String(currentEmotion.name).charAt(0).toLowerCase() +
-                String(currentEmotion.name).slice(1)}
-              ?
-            </Text>
-            <TextInput
-              multiline={true}
-              numberOfLines={10}
-              placeholder={"Type here..."}
-              placeholderTextColor="#555"
-              onChangeText={(root) => setRoot(root.trim())}
-              style={{
-                minHeight: 60,
-                height: "auto",
-                padding: 10,
-                marginTop: 6,
-                fontSize: 16,
-                borderRadius: 10,
-                backgroundColor: currentEmotion.color,
-              }}
-            />
+      <View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View
+            style={{
+              marginTop: 20,
+              flex: 1,
+              gap: 20,
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingBottom: 40,
+            }}
+          >
+            <View>
+              <Text style={{ fontSize: 20 }}>
+                Why do you feel{" "}
+                {String(currentEmotion.name).charAt(0).toLowerCase() +
+                  String(currentEmotion.name).slice(1)}
+                ?
+              </Text>
+              <TextInput
+                multiline={true}
+                numberOfLines={10}
+                placeholder={"Type here..."}
+                placeholderTextColor="#555"
+                onChangeText={(root) => setRoot(root.trim())}
+                style={{
+                  minWidth: 320,
+                  minHeight: 60,
+                  height: "auto",
+                  padding: 10,
+                  marginTop: 6,
+                  fontSize: 16,
+                  borderRadius: 10,
+                  backgroundColor: currentEmotion.color,
+                  // Shadow
+                  shadowColor: currentEmotion.color,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.8,
+                  shadowRadius: 8,
+                }}
+              />
+            </View>
+            <View>
+              <Text style={{ marginTop: 10, fontSize: 18 }}>
+                What do you need in this moment?
+              </Text>
+              <TextInput
+                multiline={true}
+                numberOfLines={10}
+                placeholder={"Type here..."}
+                placeholderTextColor="#555"
+                onChangeText={(need) => setNeed(need.trim())}
+                style={{
+                  minWidth: 320,
+                  minHeight: 80,
+                  height: "auto",
+                  padding: 10,
+                  marginTop: 6,
+                  fontSize: 16,
+                  borderRadius: 10,
+                  backgroundColor: currentEmotion.color,
+                  // Shadow
+                  shadowColor: currentEmotion.color,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.8,
+                  shadowRadius: 8,
+                }}
+              />
+            </View>
+            <View>
+              <Text style={{ marginTop: 10, fontSize: 16 }}>
+                Anything else?
+              </Text>
+              <TextInput
+                multiline={true}
+                numberOfLines={10}
+                placeholder={"Type here..."}
+                placeholderTextColor="#555"
+                onChangeText={(extra) => setExtra(extra.trim())}
+                style={{
+                  minWidth: 320,
+                  minHeight: 90,
+                  height: "auto",
+                  padding: 10,
+                  marginTop: 6,
+                  fontSize: 16,
+                  borderRadius: 10,
+                  backgroundColor: currentEmotion.color,
+                  // Shadow
+                  shadowColor: currentEmotion.color,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.8,
+                  shadowRadius: 8,
+                }}
+              />
+            </View>
           </View>
-          <View>
-            <Text style={{ marginTop: 10, fontSize: 18 }}>
-              What do you need in this moment?
-            </Text>
-            <TextInput
-              multiline={true}
-              numberOfLines={10}
-              placeholder={"Type here..."}
-              placeholderTextColor="#555"
-              onChangeText={(need) => setNeed(need.trim())}
-              style={{
-                minHeight: 80,
-                height: "auto",
-                padding: 10,
-                marginTop: 6,
-                fontSize: 16,
-                borderRadius: 10,
-                backgroundColor: currentEmotion.color,
-              }}
-            />
-          </View>
-          <View>
-            <Text style={{ marginTop: 10, fontSize: 16 }}>Anything else?</Text>
-            <TextInput
-              multiline={true}
-              numberOfLines={10}
-              placeholder={"Type here..."}
-              placeholderTextColor="#555"
-              onChangeText={(extra) => setExtra(extra.trim())}
-              style={{
-                minHeight: 90,
-                height: "auto",
-                padding: 10,
-                marginTop: 6,
-                fontSize: 16,
-                borderRadius: 10,
-                backgroundColor: currentEmotion.color,
-              }}
-            />
-          </View>
-          <View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+            }}
+          >
             <TouchableOpacity
               onPress={() => {
                 const entries = getEntries();
                 handleCreateLog(entries);
               }}
               style={{
-                marginTop: 4,
+                flexDirection: "row",
+                gap: 16,
+                width: 320,
                 paddingHorizontal: 20,
                 justifyContent: "center",
                 alignItems: "center",
@@ -181,11 +226,12 @@ const EmotionDisplay = ({
                 borderRadius: 20,
               }}
             >
+              <Text style={{ fontSize: 24 }}>Add entry</Text>
               <AntDesign name="arrowright" size={30} color="black" />
             </TouchableOpacity>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     );
   }
 

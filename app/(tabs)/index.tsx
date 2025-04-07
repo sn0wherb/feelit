@@ -16,12 +16,13 @@ type EmotionType = {
 
 export default function App() {
   const [level, setLevel] = useState(1),
-    // [emotion, setEmotion] = useState<EmotionType>(),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
     [data, setData] = useState<EmotionType[]>([]);
+
   const {
     emotionData,
   } = require("../../assets/data/emotions/stockEmotionData.ts");
+
   const { queries } = require("../../assets/SQL/queries.ts");
   const currentEmotion = emotionStack[emotionStack.length - 1];
 
@@ -38,7 +39,7 @@ export default function App() {
 
   useFocusEffect(
     useCallback(() => {
-      if (level === 5) {
+      if (level === 6) {
         setLevel(0);
       }
     }, [])
@@ -85,7 +86,7 @@ export default function App() {
   };
 
   return (
-    <LinearGradient colors={["beige", "beige"]} style={styles.container}>
+    <View style={[styles.container, { backgroundColor: "beige" }]}>
       <SafeAreaView style={styles.container}>
         {level === 5 ? (
           <View
@@ -118,7 +119,7 @@ export default function App() {
           </View>
         )}
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
