@@ -12,9 +12,12 @@ import {
 import React, { useState } from "react";
 import { Svg, Path } from "react-native-svg";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Slider from "@react-native-community/slider";
+import Slider from "@react-native-assets/slider";
+import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 
 type StrokeType = [string[], string, number];
+
+const { height, width } = Dimensions.get("window");
 
 const Body = () => {
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
@@ -26,7 +29,6 @@ const Body = () => {
 
   const onTouchMove = (event: GestureResponderEvent) => {
     const newPath: string[] = [...currentPath];
-    console.log(newPath);
     const locationX: number = event.nativeEvent.locationX,
       locationY: number = event.nativeEvent.locationY;
 
@@ -37,7 +39,6 @@ const Body = () => {
 
     newPath.push(newPoint);
     setCurrentPath(newPath);
-    console.log(newPath);
   };
 
   const onTouchEnd = () => {
@@ -63,73 +64,91 @@ const Body = () => {
       <Text style={{ fontSize: 20, marginTop: 16, textAlign: "center" }}>
         Where do you feel it?
       </Text>
-      <View
-        style={styles.drawingBoard}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <ImageBackground
-          source={silhouetteImage}
-          imageStyle={{ tintColor: "black" }}
+      <View>
+        <View
+          style={styles.drawingBoard}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
-          <Svg>
-            {/* previous strokes */}
-            {paths.map((item, index) => {
-              return (
-                <Path
-                  key={`paths-${index}`}
-                  d={item[0].join("")}
-                  stroke={item[1]}
-                  fill="transparent"
-                  strokeWidth={item[2]}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              );
-            })}
-            {/* current stroke */}
-            {paths.map((item, index) => {
-              return (
-                <Path
-                  key={`path-${index}`}
-                  d={currentPath.join("")}
-                  stroke={currentColor}
-                  fill="transparent"
-                  strokeWidth={currentSize}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              );
-            })}
-          </Svg>
-        </ImageBackground>
+          <ImageBackground
+            source={silhouetteImage}
+            imageStyle={{ tintColor: "black", resizeMode: "contain" }}
+          >
+            <Svg>
+              {/* previous strokes */}
+              {paths.map((item, index) => {
+                return (
+                  <Path
+                    key={`paths-${index}`}
+                    d={item[0].join("")}
+                    stroke={item[1]}
+                    fill="transparent"
+                    strokeWidth={item[2]}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                );
+              })}
+              {/* current stroke */}
+              {paths.map((item, index) => {
+                return (
+                  <Path
+                    key={`path-${index}`}
+                    d={currentPath.join("")}
+                    stroke={currentColor}
+                    fill="transparent"
+                    strokeWidth={currentSize}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                );
+              })}
+            </Svg>
+          </ImageBackground>
+        </View>
       </View>
+
       {/* Drawing controls */}
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-      >
-        <Slider
-          style={{ width: 200, height: 40, marginTop: 10 }}
-          thumbTintColor="black"
-          minimumTrackTintColor="#333"
-          minimumValue={1}
-          maximumValue={10}
-          step={1}
-          tapToSeek={true}
-          onSlidingComplete={(value) => {
-            setCurrentSize(value);
+      <View style={{ flex: 1, flexDirection: "column", gap: 70 }}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
-        />
-        <TouchableOpacity
-          style={styles.drawingOptionsButton}
-          onPress={undoLastStroke}
         >
-          <MaterialIcons name="undo" size={28} color="black" />
-        </TouchableOpacity>
+          <Slider
+            style={{ width: 200, height: 40, marginTop: 10 }}
+            thumbTintColor="black"
+            minimumTrackTintColor="#333"
+            minimumValue={1}
+            maximumValue={10}
+            step={1}
+            onSlidingComplete={(value) => {
+              setCurrentSize(value);
+            }}
+          />
+          <TouchableOpacity
+            style={styles.drawingOptionsButton}
+            onPress={undoLastStroke}
+          >
+            <MaterialIcons name="undo" size={28} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View>
+          <ColorPicker
+            value={currentColor}
+            onCompleteJS={(value) => {
+              setCurrentColor(value.hex);
+              console.log(value);
+            }}
+            boundedThumb
+          >
+            <View>
+              <HueSlider />
+            </View>
+          </ColorPicker>
+        </View>
       </View>
 
       {/* Colors */}
@@ -177,7 +196,7 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     // margin: 10,
     marginTop: 10,
-    height: 560,
+    height: height * 0.5,
   },
   drawingOptionsButton: {
     marginTop: 10,
