@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Redirect, useRouter } from "expo-router";
 
 interface Props {
   level: number;
@@ -10,20 +11,28 @@ interface Props {
 }
 
 const Header = ({ level, handleGoBack, color, name }: Props) => {
+  const router = useRouter();
+
   if (level === 1) {
     return (
       <View
         style={{
-          justifyContent: "center",
+          flexDirection: "row",
+          // justifyContent: "space-around",
           alignItems: "center",
-          width: 330,
-          height: 60,
+          width: 380,
+          height: 40,
           marginTop: 10,
           // backgroundColor: "#e3d7b7",
           borderRadius: 20,
         }}
       >
-        <Text style={{ fontSize: 28 }}>How are you feeling?</Text>
+        <TouchableOpacity onPress={handleGoBack} style={{ marginLeft: 20 }}>
+          <AntDesign name="close" size={30} color="black" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 28, marginLeft: 20 }}>
+          How are you feeling?
+        </Text>
       </View>
     );
   } else if (level > 3) {

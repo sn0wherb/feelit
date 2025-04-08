@@ -3,7 +3,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { TouchableHighlight, View } from "react-native";
-import Feather from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function TabLayout() {
   return (
@@ -14,6 +14,7 @@ export default function TabLayout() {
         tabBarStyle: {
           height: 54,
           borderTopWidth: 0,
+          borderBottomWidth: 0,
           borderColor: "#555",
           paddingBottom: 0,
         },
@@ -28,6 +29,25 @@ export default function TabLayout() {
         options={{
           title: "All logs",
           tabBarIcon: ({ color }) => (
+            <MaterialIcons
+              name="access-time"
+              size={32}
+              color={color}
+              style={{
+                height: 28,
+                marginTop: 10,
+                marginBottom: 0,
+                paddingBottom: 0,
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="recently"
+        options={{
+          title: "Recently",
+          tabBarIcon: ({ color }) => (
             <FontAwesome
               name="calendar-o"
               size={28}
@@ -38,21 +58,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="recently"
-        options={{
-          title: "Recently",
-          tabBarIcon: ({ color }) => (
-            <Feather
-              name="rewind"
-              size={28}
-              color={color}
-              style={{ height: 28, marginTop: 10 }}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="index"
+        name="newCustomEmotionInit"
         options={{
           title: "New Entry",
           tabBarIcon: ({ color }) => (
@@ -67,19 +73,7 @@ export default function TabLayout() {
                 marginBottom: 10,
               }}
             >
-              {/* <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: 60,
-                  width: 60,
-                  borderRadius: 50,
-                  backgroundColor: "#eee4ca",
-                  marginBottom: 10,
-                }}
-              > */}
               <AntDesign name="plus" size={40} color={color} />
-              {/* </View> */}
             </View>
           ),
         }}

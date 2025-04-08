@@ -16,8 +16,13 @@ export default function Layout() {
 
   return (
     <SQLiteProvider databaseName="feelit.db" onInit={createTableIfNeeded}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" options={{ animation: "none" }} />
+        {/* <Stack.Screen name="(tabs)/overview" options={{ animation: "none" }} /> */}
+        <Stack.Screen
+          name="logNewEmotion"
+          options={{ animation: "fade_from_bottom" }}
+        />
       </Stack>
       <StatusBar barStyle="dark-content" />
     </SQLiteProvider>

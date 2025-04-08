@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/Header";
 import EmotionDisplay from "@/components/EmotionDisplay";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useFocusEffect } from "expo-router";
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
 
 type EmotionType = {
   name: string;
@@ -14,19 +14,21 @@ type EmotionType = {
   color: string;
 };
 
-export default function App() {
+export default function logNewEmotion() {
   const [level, setLevel] = useState(1),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
     [data, setData] = useState<EmotionType[]>([]);
 
   const {
     emotionData,
-  } = require("../../assets/data/emotions/stockEmotionData.ts");
+  } = require("./../assets/data/emotions/stockEmotionData.ts");
 
-  const { queries } = require("../../assets/SQL/queries.ts");
+  const { queries } = require("./../assets/SQL/queries.ts");
   const currentEmotion = emotionStack[emotionStack.length - 1];
 
   const db = useSQLiteContext();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (level === 1) {
@@ -55,8 +57,12 @@ export default function App() {
   };
 
   const handleGoBack = () => {
-    setLevel(level - 1);
-    setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion
+    if (level !== 1) {
+      setLevel(level - 1);
+      setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion
+    } else {
+      router.replace("/(tabs)/overview");
+    }
   };
 
   const handleButtonClick = (item: EmotionType) => {
