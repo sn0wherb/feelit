@@ -15,7 +15,7 @@ import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Dimensions } from "react-native";
 import BodyDrawing from "./BodyDrawing";
-import { useRouter } from "expo-router";
+import { useGlobalSearchParams, useRouter } from "expo-router";
 
 interface Props {
   level: number;
@@ -44,9 +44,17 @@ const EmotionDisplay = ({
     [extra, setExtra] = useState<string>("");
 
   const router = useRouter();
+  const params = useGlobalSearchParams<{ level: string }>();
 
+  // Custom emotion button
   const newCustomEmotion = () => {
-    router.navigate("/newCustomEmotion");
+    const params = currentEmotion
+      ? { level: level, name: currentEmotion.name, color: currentEmotion.color }
+      : { level: level };
+    router.push({
+      pathname: "/newCustomEmotion",
+      params: params,
+    });
   };
 
   const getEntries = () => {
@@ -100,6 +108,7 @@ const EmotionDisplay = ({
                 );
               }}
             />
+            {/* Create new custom emotion */}
             <Emotion
               name={<AntDesign name="plus" size={28} color={"black"} />}
               color={"rgba(0,0,0,0.1)"}
@@ -130,6 +139,10 @@ const EmotionDisplay = ({
                 height: 60,
                 backgroundColor: "#e3d7b7",
                 borderRadius: 20,
+              }}
+              onPress={() => {
+                console.log(data);
+                passHandleButtonClickToParent(currentEmotion);
               }}
             >
               <Text style={{ fontSize: 24 }}>Diary</Text>
@@ -167,7 +180,7 @@ const EmotionDisplay = ({
                   placeholderTextColor="#555"
                   onChangeText={(root) => setRoot(root.trim())}
                   style={{
-                    minWidth: 320,
+                    width: 320,
                     minHeight: 60,
                     height: "auto",
                     padding: 10,
@@ -194,7 +207,7 @@ const EmotionDisplay = ({
                   placeholderTextColor="#555"
                   onChangeText={(need) => setNeed(need.trim())}
                   style={{
-                    minWidth: 320,
+                    width: 320,
                     minHeight: 80,
                     height: "auto",
                     padding: 10,
@@ -221,7 +234,7 @@ const EmotionDisplay = ({
                   placeholderTextColor="#555"
                   onChangeText={(extra) => setExtra(extra.trim())}
                   style={{
-                    minWidth: 320,
+                    width: 320,
                     minHeight: 90,
                     height: "auto",
                     padding: 10,
@@ -241,7 +254,7 @@ const EmotionDisplay = ({
             <View
               style={{
                 flexDirection: "row",
-                justifyContent: "flex-end",
+                justifyContent: "center",
               }}
             >
               <TouchableOpacity

@@ -8,34 +8,85 @@ interface Props {
   handleGoBack: () => void;
   color: string;
   name: string;
+  custom?: boolean;
 }
 
-const Header = ({ level, handleGoBack, color, name }: Props) => {
+const Header = ({
+  level,
+  handleGoBack,
+  color,
+  name,
+  custom = false,
+}: Props) => {
   const router = useRouter();
+
+  if (custom) {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          width: 380,
+          height: 40,
+          marginTop: 20,
+        }}
+      >
+        <View
+          style={{
+            paddingHorizontal: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 50,
+            width: 50,
+            backgroundColor: "#e3d7b7",
+            borderRadius: 20,
+            marginLeft: 20,
+          }}
+        >
+          <TouchableOpacity onPress={handleGoBack}>
+            <AntDesign name="close" size={30} color="black" />
+          </TouchableOpacity>
+        </View>
+        <Text style={{ fontSize: 28, marginLeft: 16 }}>
+          {level > 1 ? "Create a new type of" : "Create a new emotion"}
+        </Text>
+      </View>
+    );
+  }
 
   if (level === 1) {
     return (
       <View
         style={{
           flexDirection: "row",
-          // justifyContent: "space-around",
           alignItems: "center",
           width: 380,
-          height: 40,
+          height: 60,
           marginTop: 10,
-          // backgroundColor: "#e3d7b7",
-          borderRadius: 20,
         }}
       >
-        <TouchableOpacity onPress={handleGoBack} style={{ marginLeft: 20 }}>
-          <AntDesign name="close" size={30} color="black" />
-        </TouchableOpacity>
-        <Text style={{ fontSize: 28, marginLeft: 20 }}>
+        <View
+          style={{
+            paddingHorizontal: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 50,
+            width: 50,
+            backgroundColor: "#e3d7b7",
+            borderRadius: 20,
+            marginLeft: 20,
+          }}
+        >
+          <TouchableOpacity onPress={handleGoBack}>
+            <AntDesign name="close" size={30} color="black" />
+          </TouchableOpacity>
+        </View>
+        <Text style={{ fontSize: 28, marginLeft: 16 }}>
           How are you feeling?
         </Text>
       </View>
     );
-  } else if (level > 3) {
+  } else if (level > 4) {
     return (
       <View
         style={{
@@ -84,7 +135,6 @@ const Header = ({ level, handleGoBack, color, name }: Props) => {
           flexDirection: "row",
           width: 330,
           height: 60,
-          // marginBottom: 10,
           marginTop: 10,
         }}
       >

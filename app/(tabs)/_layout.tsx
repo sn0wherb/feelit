@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -6,6 +6,7 @@ import { TouchableHighlight, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function TabLayout() {
+  const router = useRouter();
   return (
     <Tabs
       screenOptions={{
@@ -58,7 +59,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="newCustomEmotionInit"
+        name="logNewEmotionInit"
+        listeners={{
+          tabPress: (event) => {
+            router.push("/logNewEmotion");
+            event.preventDefault();
+          },
+        }}
         options={{
           title: "New Entry",
           tabBarIcon: ({ color }) => (

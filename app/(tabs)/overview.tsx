@@ -106,7 +106,7 @@ const overview = () => {
     <SafeAreaView style={styles.container}>
       {/* <Text>Overview</Text> */}
       <View style={{ paddingHorizontal: 8 }}>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {/* Sorted by date */}
           <FlatList
             contentContainerStyle={{ paddingBottom: 60, paddingTop: 10 }}

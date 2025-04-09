@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useSQLiteContext } from "expo-sqlite";
@@ -14,6 +14,8 @@ type EmotionType = {
   color: string;
 };
 
+const { width, height } = Dimensions.get("window");
+
 export default function logNewEmotion() {
   const [level, setLevel] = useState(1),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
@@ -27,7 +29,6 @@ export default function logNewEmotion() {
   const currentEmotion = emotionStack[emotionStack.length - 1];
 
   const db = useSQLiteContext();
-
   const router = useRouter();
 
   useEffect(() => {
@@ -61,7 +62,9 @@ export default function logNewEmotion() {
       setLevel(level - 1);
       setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion
     } else {
-      router.replace("/(tabs)/overview");
+      router.back();
+      // router.replace("/(tabs)/overview");
+      // return <Redirect href={"/(tabs)/overview"} />; // doesn't work for some reason?
     }
   };
 
@@ -85,7 +88,8 @@ export default function logNewEmotion() {
       setLevel(level + 1);
       setTimeout(() => {
         setLevel(1);
-      }, 2000);
+        router.replace("/(tabs)/overview");
+      }, 1600);
     } catch (e) {
       console.error(e);
     }
@@ -94,7 +98,8 @@ export default function logNewEmotion() {
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
       <SafeAreaView style={styles.container}>
-        {level === 5 ? (
+        {level === 6 ? (
+          // Log saved screen
           <View
             style={{
               flex: 1,
@@ -107,13 +112,20 @@ export default function logNewEmotion() {
             <Ionicons name="checkmark-circle" size={56} color="black" />
           </View>
         ) : (
-          <View>
-            <Header
-              level={level}
-              handleGoBack={handleGoBack}
-              name={currentEmotion ? currentEmotion.name : ""}
-              color={currentEmotion ? currentEmotion.color : ""}
-            />
+          <View
+            style={{
+              width: width,
+              height: height,
+            }}
+          >
+            <View style={{ alignItems: "center" }}>
+              <Header
+                level={level}
+                handleGoBack={handleGoBack}
+                name={currentEmotion ? currentEmotion.name : ""}
+                color={currentEmotion ? currentEmotion.color : ""}
+              />
+            </View>
 
             <EmotionDisplay
               level={level}
@@ -133,6 +145,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    width: width,
   },
   block: {
     height: 70,

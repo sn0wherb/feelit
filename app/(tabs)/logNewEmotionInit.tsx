@@ -11,7 +11,16 @@ const newCustomEmotionInit = () => {
     }, [])
   );
 
-  return <View style={{ backgroundColor: "beige" }} />;
+  // const redirect = () => {
+  //   return <Redirect href={'/logNewEmotion'}/>
+  //   // router.push("/logNewEmotion");
+  // }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "beige" }}>
+      {/* <Redirect href={"/(tabs)/overview"} /> */}
+    </View>
+  );
 };
 
 export default newCustomEmotionInit;
