@@ -5,17 +5,17 @@ import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
 export default function Layout() {
   const { queries } = require("../assets/SQL/queries.ts");
 
-  const createTableIfNeeded = async (db: SQLiteDatabase) => {
+  const createTablesIfNeeded = async (db: SQLiteDatabase) => {
     try {
       await db.execAsync(queries["createLogTable"]);
-      // await db.execAsync(queries["createCustomEmotionsTable"]);
+      await db.execAsync(queries["createCustomEmotionsTable"]);
     } catch (e) {
       console.error(e);
     }
   };
 
   return (
-    <SQLiteProvider databaseName="feelit.db" onInit={createTableIfNeeded}>
+    <SQLiteProvider databaseName="feelit.db" onInit={createTablesIfNeeded}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ animation: "none" }} />
         <Stack.Screen

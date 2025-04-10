@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import EmotionDisplay from "@/components/EmotionDisplay";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import SuccessScreen from "@/components/SuccessScreen";
 
 type EmotionType = {
   name: string;
@@ -22,7 +23,7 @@ export default function logNewEmotion() {
     [data, setData] = useState<EmotionType[]>([]);
 
   const {
-    emotionData,
+    stockEmotionData,
   } = require("./../assets/data/emotions/stockEmotionData.ts");
 
   const { queries } = require("./../assets/SQL/queries.ts");
@@ -48,12 +49,17 @@ export default function logNewEmotion() {
     }, [])
   );
 
-  // Fetch all emotions in the current level and with the chosen parent
-  const getData = () => {
+  // Fetch all emotions in the current level under current parent if level isn't 1
+  const getData = async () => {
     if (level > 1 && currentEmotion) {
-      setData(Object.values(emotionData[level][currentEmotion.name] || {})); // Convert object to array and set it as data
+      setData(
+        Object.values(stockEmotionData[level][currentEmotion.name] || {})
+      ); // Convert object to array and set it as data
     } else {
-      setData(Object.values(emotionData[level] || {}));
+      // const customEmotionData = await db.getAllAsync("SELECT * FROM user_created_emotions WHERE parent = NULL");
+      // const stockEmotionData = Object.values(stockEmotionData[level] || {});
+      // const combinedData = stockEmotionData.push(customEmotionData);
+      setData(Object.values(stockEmotionData[level] || {}));
     }
   };
 
@@ -99,18 +105,7 @@ export default function logNewEmotion() {
     <View style={[styles.container, { backgroundColor: "beige" }]}>
       <SafeAreaView style={styles.container}>
         {level === 6 ? (
-          // Log saved screen
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <Text style={{ fontSize: 24 }}>Saved successfully!</Text>
-            <Ionicons name="checkmark-circle" size={56} color="black" />
-          </View>
+          <SuccessScreen />
         ) : (
           <View
             style={{
