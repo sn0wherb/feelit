@@ -1,4 +1,4 @@
-const emotionData = {
+const stockEmotionData = {
   1: {
     0: { name: "Happy", color: "#eec068" },
     1: { name: "Sad", color: "#5b78ba" },
@@ -272,4 +272,4 @@ const sumn = {
   `,
 };
 
-export { emotionData };
+export { stockEmotionData };
