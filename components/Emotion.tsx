@@ -25,8 +25,6 @@ function Emotion({ name, color, onClick }: Props) {
       backgroundColor: color,
       justifyContent: "center",
       alignItems: "center",
-      borderColor: "black",
-      // borderWidth: 2,
       borderRadius: 50,
     },
     colorShadow: {
@@ -42,24 +40,12 @@ function Emotion({ name, color, onClick }: Props) {
       <TouchableOpacity
         style={[styles.emotion, styles.colorShadow]}
         onPress={() => {
-          typeof name == typeof "string"
-            ? onClick(String(name))
-            : onClick("new");
+          onClick(String(name));
         }}
+        activeOpacity={0.6}
       >
-        {typeof name == typeof "string" ? (
-          <Text style={{ fontSize: 18 }}>{name}</Text>
-        ) : (
-          name
-        )}
+        <Text style={{ fontSize: 18 }}>{name}</Text>
       </TouchableOpacity>
-      {/* <Button
-        onPress={() => {
-          onClick(name);
-        }}
-        title={name}
-        color={"black"}
-      /> */}
     </View>
   );
 }

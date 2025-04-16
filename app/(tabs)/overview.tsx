@@ -1,15 +1,20 @@
 import {
+  Dimensions,
   FlatList,
+  Modal,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import logModal from "../logModal";
 
 type LogType = {
   id: number;
@@ -26,9 +31,13 @@ type FormattedLogDataType = {
   logs: LogType[];
 };
 
+const { height, width } = Dimensions.get("window");
+
 const overview = () => {
   const [logData, setLogData] = useState<LogType[]>([]);
   const [logDataByDate, setLogDataByDate] = useState<FormattedLogDataType[]>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<LogType>();
 
   const db = useSQLiteContext();
 
@@ -45,52 +54,81 @@ const overview = () => {
   };
 
   const sortLogDataByDate = (data: LogType[]) => {
-    const currentDate = new Date();
-    const currentDateISOString = currentDate.toISOString().slice(0, 10);
+    const today = new Date();
 
     let sortedIndex = 0;
-    let sorted: FormattedLogDataType[] = [];
+    let sortedData: FormattedLogDataType[] = [];
 
+    const isInWeek = (date: Date) => {
+      for (let i = 0; i < 5; i++) {
+        const comparisonDate = date;
+        comparisonDate.setDate(date.getDate() + i);
+
+        if (String(comparisonDate).slice(0, 10) == String(today).slice(0, 10)) {
+          if (i == 0) {
+            return "Today";
+          } else if (i == 1) {
+            return "Yesterday";
+          }
+          return date.toLocaleDateString("default", { weekday: "long" });
+        }
+      }
+      return false;
+    };
+
+    // Iterate through each log
     data.map((value) => {
       let date = value.created_at.slice(0, 10);
-      if (date === currentDateISOString) {
-        // If date of log is equal to today, change to "Today"
-        date = "Today";
+      let dateFormat = new Date(value.created_at);
+
+      const inWeek = isInWeek(dateFormat);
+
+      // FORMAT DATE
+      if (inWeek) {
+        date = inWeek;
       } else {
-        // Else convert date to string
         let parts = date.split("-");
-        let newDate = new Date(parts[0], parts[1] - 1, parts[2]);
-        date = newDate.toDateString();
+        let newDate = new Date(
+          Number(parts[0]),
+          Number(parts[1]) - 1,
+          Number(parts[2])
+        );
+
+        const dayString = String(
+            newDate.toLocaleDateString("default", { weekday: "long" })
+          ),
+          dateString = String(newDate.getDate()),
+          monthString = String(
+            newDate.toLocaleDateString("default", { month: "long" })
+          ),
+          yearString = String(newDate.getFullYear());
+
+        // If year == current year, display weekday name, but not year. Otherwise, don't display weekday name, but display year.
+        date =
+          yearString == String(today.getFullYear())
+            ? `${dayString}, ${dateString} ${monthString}`
+            : `${dateString} ${monthString} ${yearString}`;
       }
 
-      // We get a value
-      // question - should the value be inserted in this index, or new one?
-      // we check date compatibility by reading current index
-      // oh what's that? current index doesn't exist? - that means initialize new index and insert date
-      // so first we check if current index already exists.
-      // if it does, we check the compatability. otherwise initialize new index creation
-
-      // we want to initialize a new entry if 1) index doesn't contain one or 2) index does contain one, but date doesn't match
-      // we do pure value insertion only when index contains entry and date matches
-
-      // WORKING:
-      // If empty index - initialize entry with date and empty log array
-      if (!sorted[sortedIndex]) {
-        sorted[sortedIndex] = { date: date, logs: [] };
-        // Index contains entry. If date doesn't match we create and initialize a new entry
-      } else if (sorted[sortedIndex].date !== date) {
+      // Empty index - initialize entry on current index
+      if (!sortedData[sortedIndex]) {
+        sortedData[sortedIndex] = { date: date, logs: [] };
+        // Index contains entry, but date doesn't match - move to next index and initialize a new entry
+      } else if (sortedData[sortedIndex].date !== date) {
         sortedIndex++;
-        sorted[sortedIndex] = { date: date, logs: [] };
+        sortedData[sortedIndex] = { date: date, logs: [] };
       }
       // Entry exists and date matches - insert here
-      sorted[sortedIndex].logs.push(value);
+      sortedData[sortedIndex].logs.push(value);
     });
-    setLogDataByDate(sorted);
+    setLogDataByDate(sortedData);
   };
 
-  const formatDate = (dateTime: string) => {
-    // console.log(dateTime);
-    const time = dateTime.slice(11, 16);
+  const getLocalTime = (dateTime: string) => {
+    const gmtTime = new Date(dateTime);
+    const localTimeZoneOffset = new Date().getTimezoneOffset();
+    gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
+    const time = gmtTime.toLocaleTimeString().slice(0, 5);
 
     return <Text>{time}</Text>;
   };
@@ -102,14 +140,81 @@ const overview = () => {
     }, [])
   );
 
+  const router = useRouter();
+
+  // const openLogModal = () => {
+  //   const params = {};
+  //   router.push({
+  //     pathname: "/logModal",
+  //     params: params,
+  //   });
+  // };
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* If there are no logs yet */}
+      {logData.length == 0 && (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text
+            style={{ marginHorizontal: 32, fontSize: 30, textAlign: "center" }}
+          >
+            Your logged emotions will appear here!
+          </Text>
+        </View>
+      )}
       {/* <Text>Overview</Text> */}
-      <View style={{ paddingHorizontal: 8 }}>
+      <View style={{ paddingHorizontal: 8, height: height, width: width }}>
+        <Modal visible={isModalOpen} transparent={true}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.2)",
+              paddingVertical: 50,
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: modalData?.color,
+                width: width * 0.8,
+                flex: 1,
+                borderWidth: 2,
+              }}
+            >
+              {/* Title & time */}
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {modalData?.emotion}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsModalOpen(false);
+                  }}
+                >
+                  <AntDesign name="close" size={32} color="black" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Sorted by date */}
           <FlatList
-            contentContainerStyle={{ paddingBottom: 60, paddingTop: 10 }}
+            contentContainerStyle={{ paddingBottom: 140, paddingTop: 10 }}
             data={logDataByDate}
             scrollEnabled={false}
             renderItem={({ item }) => {
@@ -132,7 +237,7 @@ const overview = () => {
                     renderItem={({ item }) => {
                       return (
                         // Card
-                        <View
+                        <TouchableOpacity
                           style={{
                             marginHorizontal: 10,
                             marginVertical: 8,
@@ -146,6 +251,11 @@ const overview = () => {
                             shadowRadius: 6,
                           }}
                           key={item.id}
+                          activeOpacity={0.6}
+                          onPress={() => {
+                            setIsModalOpen(true);
+                            setModalData(item);
+                          }}
                         >
                           {/* Title & time */}
                           <View
@@ -164,7 +274,7 @@ const overview = () => {
                               {item.emotion}
                             </Text>
                             <Text style={{ fontSize: 16 }}>
-                              {formatDate(item["created_at"])}
+                              {getLocalTime(item["created_at"])}
                             </Text>
                           </View>
 
@@ -238,7 +348,7 @@ const overview = () => {
                               </Text>
                             </View>
                           )}
-                        </View>
+                        </TouchableOpacity>
                       );
                     }}
                   />
@@ -257,6 +367,8 @@ export default overview;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "beige",
+    height: height,
+    width: width,
   },
   emotionDetailTitle: {
     borderRadius: 30,

@@ -17,12 +17,11 @@ export default function TabLayout() {
           borderTopWidth: 0,
           borderBottomWidth: 0,
           borderColor: "#555",
-          paddingBottom: 0,
         },
         tabBarActiveTintColor: "#67804f",
         tabBarInactiveTintColor: "#344722",
-        tabBarInactiveBackgroundColor: "#e3d7b7",
-        tabBarActiveBackgroundColor: "#e3d7b7",
+        tabBarInactiveBackgroundColor: "beige",
+        tabBarActiveBackgroundColor: "beige",
       }}
     >
       <Tabs.Screen
@@ -35,7 +34,7 @@ export default function TabLayout() {
               size={32}
               color={color}
               style={{
-                height: 28,
+                height: 30,
                 marginTop: 10,
                 marginBottom: 0,
                 paddingBottom: 0,

@@ -17,6 +17,7 @@ import Slider from "@react-native-assets/slider";
 import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Octicons from "@expo/vector-icons/Octicons";
 
 type StrokeType = [string[], string, number];
 
@@ -115,27 +116,30 @@ const BodyDrawing = () => {
         </ImageBackground>
       </View>
       {/* Drawing controls */}
-      <View>
+      <View style={{ display: "flex" }}>
         {/* Brush modal */}
         {isBrushSizeModalVisible && (
-          <View style={styles.drawingOptionModal}>
+          <View style={[styles.drawingOptionModal, { height: height * 0.1 }]}>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <Slider
+                value={currentSize}
                 style={{ width: 200 }}
                 thumbTintColor="black"
                 minimumTrackTintColor="#333"
                 minimumValue={1}
                 maximumValue={10}
                 step={1}
-                onSlidingComplete={(value) => {
+                onValueChange={(value) => {
                   setCurrentSize(value);
                 }}
               />
+              <Octicons name="dot-fill" size={currentSize * 4} color="black" />
               <TouchableOpacity
                 onPress={() => {
                   setIsBrushSizeModalVisible(false);
@@ -148,29 +152,38 @@ const BodyDrawing = () => {
         )}
         {/* Color modal */}
         {isColorModalVisible && (
-          <View style={styles.drawingOptionModal}>
+          <View style={[styles.drawingOptionModal, { height: height * 0.4 }]}>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
               }}
             >
-              <View style={{}}>
+              <View>
                 <ColorPicker
                   style={{
                     width: width * 0.66,
+                    flexDirection: "row",
+                    alignItems: "flex-end",
                   }}
                   value={currentColor}
                   onCompleteJS={(value) => {
                     setCurrentColor(value.hex);
-                    // console.log(value);
                   }}
                   boundedThumb
                 >
+                  <Panel1
+                    style={{
+                      height: height * 0.34,
+                      width: height * 0.34,
+                      marginRight: 16,
+                    }}
+                  />
                   <HueSlider
-                    sliderThickness={30}
-                    thumbStyle={{ alignSelf: "center" }}
+                    vertical
+                    sliderThickness={48}
                     thumbColor="interactive"
+                    style={{ height: height * 0.28 }}
                   />
                 </ColorPicker>
               </View>
@@ -178,8 +191,15 @@ const BodyDrawing = () => {
                 onPress={() => {
                   setIsColorModalVisible(false);
                 }}
+                style={{ height: height * 0.05 }}
               >
-                <AntDesign name="close" size={30} color="black" />
+                {/* <AntDesign name="close" size={30} color="black" /> */}
+                <AntDesign
+                  name="close"
+                  size={30}
+                  color="black"
+                  style={{ marginRight: width * 0.01 }}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -233,7 +253,6 @@ const styles = StyleSheet.create({
   drawingOptionModal: {
     flex: 1,
     justifyContent: "center",
-    height: 60,
     borderRadius: 16,
     paddingHorizontal: 18,
     width: width * 0.86,

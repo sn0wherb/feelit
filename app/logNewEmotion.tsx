@@ -13,12 +13,13 @@ type EmotionType = {
   name: string;
   parent: string | null;
   color: string;
+  level: number;
 };
 
 const { width, height } = Dimensions.get("window");
 
 export default function logNewEmotion() {
-  const [level, setLevel] = useState(1),
+  const [level, setLevel] = useState<number>(1),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
     [data, setData] = useState<EmotionType[]>([]);
 
@@ -49,29 +50,62 @@ export default function logNewEmotion() {
     }, [])
   );
 
-  // Fetch all emotions in the current level under current parent if level isn't 1
+  // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
   const getData = async () => {
     if (level > 1 && currentEmotion) {
-      setData(
-        Object.values(stockEmotionData[level][currentEmotion.name] || {})
-      ); // Convert object to array and set it as data
+      const stockData: EmotionType[] = Object.values(
+        stockEmotionData[level][currentEmotion.name] || {}
+      );
+
+      // TO-DO: fix dis
+      const customData = await db.getAllAsync<EmotionType>(
+        `SELECT * FROM user_created_emotions WHERE parent = ?`,
+        [currentEmotion.name]
+      );
+
+      customData.forEach((value) => {
+        stockData.push(value);
+      });
+
+      setData(stockData);
     } else {
-      // const customEmotionData = await db.getAllAsync("SELECT * FROM user_created_emotions WHERE parent = NULL");
-      // const stockEmotionData = Object.values(stockEmotionData[level] || {});
-      // const combinedData = stockEmotionData.push(customEmotionData);
-      setData(Object.values(stockEmotionData[level] || {}));
+      const stockData: EmotionType[] = Object.values(
+        stockEmotionData[level] || {}
+      );
+      const customData = await db.getAllAsync<EmotionType>(
+        `SELECT * FROM user_created_emotions WHERE parent IS NULL`
+      );
+
+      customData.forEach((value) => {
+        stockData.push(value);
+      });
+
+      setData(stockData);
     }
   };
 
   const handleGoBack = () => {
     if (level !== 1) {
-      setLevel(level - 1);
+      const emotionLevel = emotionStack[emotionStack.length - 1].level;
+      if (level === 4) {
+        setLevel(emotionLevel == 3 ? emotionLevel : emotionLevel + 1);
+      } else if (level == 5) {
+        setLevel(4);
+      } else {
+        setLevel(emotionLevel);
+      }
       setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion
     } else {
+      // Going back on first level exits log creation
       router.back();
-      // router.replace("/(tabs)/overview");
-      // return <Redirect href={"/(tabs)/overview"} />; // doesn't work for some reason?
     }
+  };
+
+  const handleSave = () => {
+    // TO-DO: fix going back after this
+    // could put level inside of every emotion and then set it upon reading it
+    setLevel(4);
+    setEmotionStack([...emotionStack, currentEmotion]);
   };
 
   const handleButtonClick = (item: EmotionType) => {
@@ -101,6 +135,8 @@ export default function logNewEmotion() {
     }
   };
 
+  console.log(emotionStack, level);
+
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
       <SafeAreaView style={styles.container}>
@@ -117,6 +153,7 @@ export default function logNewEmotion() {
               <Header
                 level={level}
                 handleGoBack={handleGoBack}
+                handleSave={handleSave}
                 name={currentEmotion ? currentEmotion.name : ""}
                 color={currentEmotion ? currentEmotion.color : ""}
               />

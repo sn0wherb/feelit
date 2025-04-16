@@ -1,19 +1,30 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Redirect, useRouter } from "expo-router";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 interface Props {
   level: number;
   handleGoBack: () => void;
+  handleSave?: () => void;
   color: string;
   name: string;
   custom?: boolean;
 }
 
+const { width, height } = Dimensions.get("window");
+
 const Header = ({
   level,
   handleGoBack,
+  handleSave,
   color,
   name,
   custom = false,
@@ -26,7 +37,7 @@ const Header = ({
         style={{
           flexDirection: "row",
           alignItems: "center",
-          width: 380,
+          width: width,
           height: 40,
           marginTop: 20,
         }}
@@ -60,7 +71,7 @@ const Header = ({
         style={{
           flexDirection: "row",
           alignItems: "center",
-          width: 380,
+          width: width,
           height: 60,
           marginTop: 10,
         }}
@@ -70,10 +81,10 @@ const Header = ({
             paddingHorizontal: 10,
             justifyContent: "center",
             alignItems: "center",
-            height: 50,
-            width: 50,
+            height: 52,
+            width: 52,
             backgroundColor: "#e3d7b7",
-            borderRadius: 20,
+            borderRadius: 30,
             marginLeft: 20,
           }}
         >
@@ -86,26 +97,28 @@ const Header = ({
         </Text>
       </View>
     );
-  } else if (level > 4) {
+  } else if (level > 3) {
     return (
       <View
         style={{
           justifyContent: "space-between",
           alignItems: "center",
           flexDirection: "row",
-          width: 330,
+          width: width,
           height: 60,
           marginTop: 10,
+          paddingHorizontal: 20,
         }}
       >
         <View
           style={{
-            paddingHorizontal: 20,
+            paddingHorizontal: 10,
             justifyContent: "center",
             alignItems: "center",
-            height: 60,
+            height: 52,
+            width: 52,
             backgroundColor: "#e3d7b7",
-            borderRadius: 20,
+            borderRadius: 30,
           }}
         >
           <TouchableOpacity onPress={handleGoBack}>
@@ -114,12 +127,13 @@ const Header = ({
         </View>
         <View
           style={{
-            width: 250,
+            marginHorizontal: 14,
+            flex: 1,
             height: 60,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: color,
-            borderRadius: 20,
+            borderRadius: 30,
           }}
         >
           <Text style={{ fontSize: 26 }}>{name}</Text>
@@ -130,39 +144,76 @@ const Header = ({
     return (
       <View
         style={{
-          justifyContent: "space-between",
+          justifyContent: "space-around",
           alignItems: "center",
           flexDirection: "row",
-          width: 330,
+          width: width,
           height: 60,
           marginTop: 10,
+          paddingHorizontal: 20,
         }}
       >
+        {/* Back */}
         <View
           style={{
-            paddingHorizontal: 20,
+            paddingHorizontal: 10,
             justifyContent: "center",
             alignItems: "center",
-            height: 60,
+            height: 52,
+            width: 52,
             backgroundColor: "#e3d7b7",
-            borderRadius: 20,
+            borderRadius: 30,
           }}
         >
           <TouchableOpacity onPress={handleGoBack}>
-            <AntDesign name="arrowleft" size={30} color="black" />
+            <AntDesign name="arrowleft" size={32} color="black" />
           </TouchableOpacity>
         </View>
+
+        {/* Current emotion */}
         <View
           style={{
-            width: 250,
+            marginHorizontal: 14,
+            paddingLeft: 10,
+            // paddingRight: 2,
             height: 60,
-            justifyContent: "center",
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
             alignItems: "center",
             backgroundColor: color,
-            borderRadius: 20,
+            borderRadius: 50,
+            // borderBottomLeftRadius: 20,
+            // borderTopLeftRadius: 20,
+            // borderBottomRightRadius: 30,
+            // borderTopRightRadius: 30,
           }}
         >
-          <Text style={{ fontSize: 26 }}>{name}</Text>
+          <Text style={{ fontSize: 26, paddingLeft: 8, paddingRight: 10 }}>
+            {name}
+          </Text>
+          {/* Save */}
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 60,
+              width: 60,
+              // backgroundColor: "rgba(0,0,0,0.12)",
+              backgroundColor: "#e3d7b7",
+              // borderWidth: 3,
+              borderRadius: 50,
+              // shadowColor: color,
+              // shadowOffset: { width: 0, height: 0 },
+              // shadowOpacity: 0.8,
+              // shadowRadius: 10,
+            }}
+          >
+            <TouchableOpacity onPress={handleSave}>
+              <FontAwesome6 name="check" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
