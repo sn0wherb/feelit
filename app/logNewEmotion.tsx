@@ -49,17 +49,37 @@ export default function logNewEmotion() {
     }, [])
   );
 
-  // Fetch all emotions in the current level under current parent if level isn't 1
+  // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
   const getData = async () => {
     if (level > 1 && currentEmotion) {
-      setData(
-        Object.values(stockEmotionData[level][currentEmotion.name] || {})
-      ); // Convert object to array and set it as data
+      const stockData: EmotionType[] = Object.values(
+        stockEmotionData[level][currentEmotion.name] || {}
+      );
+
+      // TO-DO: fix dis
+      const customData = await db.getAllAsync<EmotionType>(
+        `SELECT * FROM user_created_emotions WHERE parent = ?`,
+        [currentEmotion.name]
+      );
+
+      customData.forEach((value) => {
+        stockData.push(value);
+      });
+
+      setData(stockData);
     } else {
-      // const customEmotionData = await db.getAllAsync("SELECT * FROM user_created_emotions WHERE parent = NULL");
-      // const stockEmotionData = Object.values(stockEmotionData[level] || {});
-      // const combinedData = stockEmotionData.push(customEmotionData);
-      setData(Object.values(stockEmotionData[level] || {}));
+      const stockData: EmotionType[] = Object.values(
+        stockEmotionData[level] || {}
+      );
+      const customData = await db.getAllAsync<EmotionType>(
+        `SELECT * FROM user_created_emotions WHERE parent IS NULL`
+      );
+
+      customData.forEach((value) => {
+        stockData.push(value);
+      });
+
+      setData(stockData);
     }
   };
 
@@ -69,9 +89,12 @@ export default function logNewEmotion() {
       setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion
     } else {
       router.back();
-      // router.replace("/(tabs)/overview");
-      // return <Redirect href={"/(tabs)/overview"} />; // doesn't work for some reason?
     }
+  };
+
+  const handleSave = () => {
+    // TO-DO: fix going back after this
+    setLevel(4);
   };
 
   const handleButtonClick = (item: EmotionType) => {
@@ -117,6 +140,7 @@ export default function logNewEmotion() {
               <Header
                 level={level}
                 handleGoBack={handleGoBack}
+                handleSave={handleSave}
                 name={currentEmotion ? currentEmotion.name : ""}
                 color={currentEmotion ? currentEmotion.color : ""}
               />

@@ -6,16 +6,21 @@ import { useSQLiteContext } from "expo-sqlite";
 
 type customEmotionType = {
   emotion: string;
+  parent: string | null | undefined;
+  color: string;
 };
 
 const profiles = () => {
   const db = useSQLiteContext();
 
-  const [data, setData] = useState();
+  const [data, setData] = useState<customEmotionType[]>([]);
 
   const getData = async () => {
     try {
-      const data = await db.getAllAsync("SELECT * FROM user_created_emotions");
+      const data = await db.getAllAsync<customEmotionType>(
+        "SELECT * FROM user_created_emotions"
+      );
+      console.log(data);
       setData(data);
     } catch (e) {
       console.error(e);

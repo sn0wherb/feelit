@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   FlatList,
   ScrollView,
   StatusBar,
@@ -25,6 +26,8 @@ type FormattedLogDataType = {
   date: string;
   logs: LogType[];
 };
+
+const { height, width } = Dimensions.get("window");
 
 const overview = () => {
   const [logData, setLogData] = useState<LogType[]>([]);
@@ -59,7 +62,11 @@ const overview = () => {
       } else {
         // Else convert date to string
         let parts = date.split("-");
-        let newDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        let newDate = new Date(
+          Number(parts[0]),
+          Number(parts[1]) - 1,
+          Number(parts[2])
+        );
         date = newDate.toDateString();
       }
 
@@ -104,8 +111,20 @@ const overview = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* If there are no logs yet */}
+      {logData.length == 0 && (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text
+            style={{ marginHorizontal: 32, fontSize: 30, textAlign: "center" }}
+          >
+            Tap on '+' to log an emotion and see it here!
+          </Text>
+        </View>
+      )}
       {/* <Text>Overview</Text> */}
-      <View style={{ paddingHorizontal: 8 }}>
+      <View style={{ paddingHorizontal: 8, height: height, width: width }}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Sorted by date */}
           <FlatList
@@ -257,6 +276,8 @@ export default overview;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "beige",
+    height: height,
+    width: width,
   },
   emotionDetailTitle: {
     borderRadius: 30,

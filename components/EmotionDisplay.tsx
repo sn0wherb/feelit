@@ -141,11 +141,10 @@ const EmotionDisplay = ({
                 borderRadius: 20,
               }}
               onPress={() => {
-                console.log(data);
                 passHandleButtonClickToParent(currentEmotion);
               }}
             >
-              <Text style={{ fontSize: 24 }}>Diary</Text>
+              <Text style={{ fontSize: 24 }}>Next</Text>
               <AntDesign name="arrowright" size={30} color="black" />
             </TouchableOpacity>
           </View>
@@ -274,7 +273,7 @@ const EmotionDisplay = ({
                   borderRadius: 20,
                 }}
               >
-                <Text style={{ fontSize: 24 }}>Add entry</Text>
+                <Text style={{ fontSize: 24 }}>Save</Text>
                 <AntDesign name="arrowright" size={30} color="black" />
               </TouchableOpacity>
             </View>

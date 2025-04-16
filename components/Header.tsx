@@ -6,6 +6,7 @@ import { Redirect, useRouter } from "expo-router";
 interface Props {
   level: number;
   handleGoBack: () => void;
+  handleSave?: () => void;
   color: string;
   name: string;
   custom?: boolean;
@@ -14,6 +15,7 @@ interface Props {
 const Header = ({
   level,
   handleGoBack,
+  handleSave,
   color,
   name,
   custom = false,
@@ -154,7 +156,7 @@ const Header = ({
         </View>
         <View
           style={{
-            width: 250,
+            width: 190,
             height: 60,
             justifyContent: "center",
             alignItems: "center",
@@ -163,6 +165,22 @@ const Header = ({
           }}
         >
           <Text style={{ fontSize: 26 }}>{name}</Text>
+        </View>
+        <View
+          style={{
+            paddingHorizontal: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 50,
+            width: 50,
+            backgroundColor: "#e3d7b7",
+            borderRadius: 20,
+            marginLeft: 20,
+          }}
+        >
+          <TouchableOpacity onPress={handleSave}>
+            <AntDesign name="save" size={30} color="black" />
+          </TouchableOpacity>
         </View>
       </View>
     );

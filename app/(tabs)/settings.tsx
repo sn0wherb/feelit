@@ -21,6 +21,14 @@ const settings = () => {
     }
   };
 
+  const dropCustomEmotions = async () => {
+    try {
+      await db.execAsync("DROP TABLE user_created_emotions;");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <SafeAreaView>
       <TouchableHighlight
@@ -35,6 +43,12 @@ const settings = () => {
       >
         <Text>Drop log table</Text>
       </TouchableHighlight>
+      <TouchableHighlight
+        style={[styles.button, { backgroundColor: "dodgerblue" }]}
+        onPress={dropCustomEmotions}
+      >
+        <Text>Drop custom emotions table</Text>
+      </TouchableHighlight>
     </SafeAreaView>
   );
 };
@@ -45,8 +59,8 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    height: 100,
-    marginTop: 200,
+    height: 80,
+    marginTop: 20,
     marginHorizontal: 30,
     borderRadius: 10,
     fontSize: 24,

@@ -26,16 +26,16 @@ const newCustomEmotion = () => {
   const router = useRouter();
   const db = useSQLiteContext();
 
-  // New emotion states
-  const [newColor, setNewColor] = useState("#fff");
-  const [title, setTitle] = useState("");
-  const [saved, setSaved] = useState(false);
-
   // Deconstruct received data
   const data = useLocalSearchParams();
   const level = Number(data.level);
   const name = data.name ? String(data.name) : null;
   const color = data.color ? String(data.color) : undefined;
+
+  // New emotion states
+  const [newColor, setNewColor] = color ? useState(color) : useState("#fff");
+  const [title, setTitle] = useState("");
+  const [saved, setSaved] = useState(false);
 
   // Functions
   const handleGoBack = () => {
@@ -45,7 +45,7 @@ const newCustomEmotion = () => {
   const createEmotion = async () => {
     try {
       await db.runAsync(
-        `INSERT INTO user_created_emotions (emotion, parent, color) VALUES (?,?,?)`,
+        `INSERT INTO user_created_emotions (name, parent, color) VALUES (?,?,?)`,
         [title, name, newColor]
       );
       setSaved(true);
@@ -117,7 +117,7 @@ const newCustomEmotion = () => {
                 flexDirection: "row",
                 justifyContent: "space-between",
               }}
-              value={"#FFF"}
+              value={color ? color : "#FFF"}
             >
               <Panel1
                 boundedThumb
