@@ -7,7 +7,12 @@ import {
 } from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import BodyDrawing from "@/components/BodyDrawing";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native";
+import BodyDisplay from "@/components/BodyDisplay";
 
 type LogType = {
   id: number;
@@ -19,61 +24,154 @@ type LogType = {
   created_at: string;
 };
 
-interface Props {
-  logData: LogType;
-}
-
 const { width, height } = Dimensions.get("window");
 
-const logModal = ({ logData }: Props) => {
+export default function logModal() {
+  const logData = useLocalSearchParams();
+
   const router = useRouter();
   return (
-    <View>
-      {/* Modal */}
-      <View
-        style={{
-          position: "absolute",
-          zIndex: 1,
-          elevation: 1,
-          flex: 1,
-          alignSelf: "center",
-          margin: 30,
-          width: width * 0.9,
-          height: height * 0.8,
-          backgroundColor: logData.color,
-          borderRadius: 10,
-          padding: 20,
-        }}
-      >
-        {/* Title & time */}
+    <View style={{ backgroundColor: String(logData.color) }}>
+      <SafeAreaView>
+        {/* Title & Exit button */}
         <View
           style={{
-            flex: 1,
-            flexDirection: "row",
-            justifyContent: "space-between",
+            paddingTop: 10,
+            paddingHorizontal: 20,
+            borderBottomWidth: 1,
+            borderColor: "rgba(0,0,0,0.2)",
           }}
         >
-          <Text
+          <View
             style={{
-              fontSize: 20,
-              fontWeight: "bold",
+              position: "sticky",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 20,
             }}
           >
-            {logData.emotion}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              router.back();
-            }}
-          >
-            <AntDesign name="close" size={32} color="black" />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                router.back();
+              }}
+            >
+              <AntDesign name="close" size={30} color="black" />
+            </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 30,
+                fontWeight: "bold",
+              }}
+            >
+              {logData.emotion}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                console.log("editing");
+              }}
+              style={{ marginRight: 10 }}
+            >
+              <MaterialIcons name="mode-edit-outline" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+        {/* Details */}
+        <ScrollView>
+          <View
+            style={{
+              paddingBottom: 100,
+              paddingTop: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            <View style={{ justifyContent: "center" }}>
+              {logData.root.length > 0 && (
+                <View style={{ marginTop: 20 }}>
+                  <Text
+                    style={[
+                      styles.emotionDetailTitle,
+                      {
+                        width: 50,
+                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                      },
+                    ]}
+                  >
+                    Cause
+                  </Text>
+                  <Text
+                    style={{
+                      marginBottom: 6,
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    {logData.root}
+                  </Text>
+                </View>
+              )}
+              {logData.need.length > 0 && (
+                <View style={{ marginTop: 8 }}>
+                  <Text
+                    style={[
+                      styles.emotionDetailTitle,
+                      {
+                        width: 44,
+                        backgroundColor: "rgba(0, 0, 0, 0.17)",
+                      },
+                    ]}
+                  >
+                    Need
+                  </Text>
+                  <Text
+                    style={{
+                      marginBottom: 6,
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    {logData.need}
+                  </Text>
+                </View>
+              )}
+              {logData.extra.length > 0 && (
+                <View style={{ marginTop: 8 }}>
+                  <Text
+                    style={[
+                      styles.emotionDetailTitle,
+                      {
+                        width: 42,
+                        backgroundColor: "rgba(0, 0, 0, 0.23)",
+                      },
+                    ]}
+                  >
+                    Diary
+                  </Text>
+                  <Text
+                    style={{
+                      marginBottom: 6,
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    {logData.extra}
+                  </Text>
+                </View>
+              )}
+            </View>
+            {/* Body */}
+            <BodyDisplay />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
-};
+}
 
-export default logModal;
+// export default logModal;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  emotionDetailTitle: {
+    borderRadius: 30,
+    marginBottom: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+});

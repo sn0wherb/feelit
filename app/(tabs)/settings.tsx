@@ -34,26 +34,6 @@ const settings = () => {
 
   return (
     <SafeAreaView>
-<<<<<<< HEAD
-      <TouchableHighlight
-        style={[styles.button, { backgroundColor: "green" }]}
-        onPress={Updates.reloadAsync}
-      >
-        <Text>Reload app</Text>
-      </TouchableHighlight>
-      <TouchableHighlight
-        style={[styles.button, { backgroundColor: "blue" }]}
-        onPress={dropLogs}
-      >
-        <Text>Drop log table</Text>
-      </TouchableHighlight>
-      <TouchableHighlight
-        style={[styles.button, { backgroundColor: "dodgerblue" }]}
-        onPress={dropCustomEmotions}
-      >
-        <Text>Drop custom emotions table</Text>
-      </TouchableHighlight>
-=======
       <View style={styles.container}>
         <TouchableHighlight
           style={[styles.button, { backgroundColor: "green" }]}
@@ -74,7 +54,6 @@ const settings = () => {
           <Text>Drop custom emotions table</Text>
         </TouchableHighlight>
       </View>
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
     </SafeAreaView>
   );
 };

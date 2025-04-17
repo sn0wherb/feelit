@@ -173,13 +173,9 @@ const Header = ({
         {/* Current emotion */}
         <View
           style={{
-<<<<<<< HEAD
-            width: 190,
-=======
             marginHorizontal: 14,
             paddingLeft: 10,
             // paddingRight: 2,
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
             height: 60,
             flex: 1,
             flexDirection: "row",
@@ -218,22 +214,6 @@ const Header = ({
               <FontAwesome6 name="check" size={30} color="black" />
             </TouchableOpacity>
           </View>
-        </View>
-        <View
-          style={{
-            paddingHorizontal: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            height: 50,
-            width: 50,
-            backgroundColor: "#e3d7b7",
-            borderRadius: 20,
-            marginLeft: 20,
-          }}
-        >
-          <TouchableOpacity onPress={handleSave}>
-            <AntDesign name="save" size={30} color="black" />
-          </TouchableOpacity>
         </View>
       </View>
     );

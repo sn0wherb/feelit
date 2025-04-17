@@ -196,10 +196,7 @@ const BodyDrawing = () => {
                 }}
                 style={{ height: height * 0.05 }}
               >
-<<<<<<< HEAD
-=======
                 {/* <AntDesign name="close" size={30} color="black" /> */}
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
                 <AntDesign
                   name="close"
                   size={30}

@@ -26,6 +26,13 @@ export default function Layout() {
             // gestureDirection: "vertical",
           }}
         />
+        <Stack.Screen
+          name="logModal"
+          // options={{
+          //   presentation: "transparentModal",
+          //   // animationDuration: 1000000,
+          // }}
+        />
       </Stack>
       <StatusBar barStyle="dark-content" />
     </SQLiteProvider>

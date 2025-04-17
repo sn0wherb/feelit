@@ -21,7 +21,9 @@ const { width, height } = Dimensions.get("window");
 export default function logNewEmotion() {
   const [level, setLevel] = useState<number>(1),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
-    [data, setData] = useState<EmotionType[]>([]);
+    [data, setData] = useState<EmotionType[]>([]),
+    [returnFromCustomEmotionCreation, setReturnFromCustomEmotionCreation] =
+      useState(0);
 
   const {
     stockEmotionData,
@@ -40,29 +42,34 @@ export default function logNewEmotion() {
       return;
     }
     getData();
-  }, [level]);
+  }, [level, returnFromCustomEmotionCreation]);
 
   useFocusEffect(
     useCallback(() => {
       if (level === 6) {
         setLevel(0);
       }
+      // Trigger useEffect that gets data
+      setReturnFromCustomEmotionCreation(
+        (returnFromCustomEmotionCreation) => returnFromCustomEmotionCreation + 1
+      );
     }, [])
   );
 
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
   const getData = async () => {
     if (level > 1 && currentEmotion) {
+      // Get stock emotions
       const stockData: EmotionType[] = Object.values(
         stockEmotionData[level][currentEmotion.name] || {}
       );
-
-      // TO-DO: fix dis
+      // Get user created emotions
       const customData = await db.getAllAsync<EmotionType>(
         `SELECT * FROM user_created_emotions WHERE parent = ?`,
         [currentEmotion.name]
       );
 
+      // Add user created emotions to stock emotions
       customData.forEach((value) => {
         stockData.push(value);
       });
@@ -94,7 +101,7 @@ export default function logNewEmotion() {
       } else {
         setLevel(emotionLevel);
       }
-      setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion
+      setEmotionStack(emotionStack.slice(0, -1)); // Remove last inserted currentEmotion from emotion history
     } else {
       // Going back on first level exits log creation
       router.back();
@@ -103,13 +110,9 @@ export default function logNewEmotion() {
 
   const handleSave = () => {
     // TO-DO: fix going back after this
-<<<<<<< HEAD
-    setLevel(4);
-=======
     // could put level inside of every emotion and then set it upon reading it
     setLevel(4);
     setEmotionStack([...emotionStack, currentEmotion]);
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
   };
 
   const handleButtonClick = (item: EmotionType) => {
@@ -138,8 +141,6 @@ export default function logNewEmotion() {
       console.error(e);
     }
   };
-
-  console.log(emotionStack, level);
 
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>

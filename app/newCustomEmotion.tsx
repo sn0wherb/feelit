@@ -45,13 +45,8 @@ const newCustomEmotion = () => {
   const createEmotion = async () => {
     try {
       await db.runAsync(
-<<<<<<< HEAD
-        `INSERT INTO user_created_emotions (name, parent, color) VALUES (?,?,?)`,
-        [title, name, newColor]
-=======
         `INSERT INTO user_created_emotions (name, parent, color, level) VALUES (?,?,?,?)`,
         [title, name, newColor, level]
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
       );
       setSaved(true);
     } catch (e) {
@@ -101,7 +96,7 @@ const newCustomEmotion = () => {
               <TextInput
                 multiline={false}
                 placeholder={"My emotion"}
-                maxLength={20}
+                maxLength={16}
                 placeholderTextColor="#555"
                 onChangeText={(value) => setTitle(value.trim())}
                 style={{

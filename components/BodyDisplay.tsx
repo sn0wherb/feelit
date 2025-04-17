@@ -1,0 +1,76 @@
+import {
+  Button,
+  Dimensions,
+  GestureResponderEvent,
+  Image,
+  ImageBackground,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useState } from "react";
+import { Svg, Path } from "react-native-svg";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Slider from "@react-native-assets/slider";
+import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Octicons from "@expo/vector-icons/Octicons";
+
+type StrokeType = [string[], string, number];
+
+const { height, width } = Dimensions.get("window");
+
+const BodyDisplay = () => {
+  // Svg states
+  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
+
+  const silhouetteImage = require("../assets/images/silhouette_front.png");
+
+  return (
+    <View style={styles.container}>
+      {/* Drawing */}
+      <View style={styles.drawingBoard}>
+        <ImageBackground
+          source={silhouetteImage}
+          imageStyle={{ tintColor: "black", resizeMode: "contain" }}
+        >
+          <Svg>
+            {/* previous strokes */}
+            {paths.map((item, index) => {
+              return (
+                <Path
+                  key={`paths-${index}`}
+                  d={item[0].join("")}
+                  stroke={item[1]}
+                  fill="transparent"
+                  strokeWidth={item[2]}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              );
+            })}
+          </Svg>
+        </ImageBackground>
+      </View>
+    </View>
+  );
+};
+
+export default BodyDisplay;
+
+const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    // backgroundColor: "white",
+  },
+  drawingBoard: {
+    // borderWidth: 5,
+    // borderColor: "rgba(0,0,0,0.1)",
+    // borderRadius: 10,
+    // margin: 10,
+    height: height * 0.8,
+  },
+});

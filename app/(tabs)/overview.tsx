@@ -93,9 +93,6 @@ const overview = () => {
           Number(parts[1]) - 1,
           Number(parts[2])
         );
-<<<<<<< HEAD
-        date = newDate.toDateString();
-=======
 
         const dayString = String(
             newDate.toLocaleDateString("default", { weekday: "long" })
@@ -111,7 +108,6 @@ const overview = () => {
           yearString == String(today.getFullYear())
             ? `${dayString}, ${dateString} ${monthString}`
             : `${dateString} ${monthString} ${yearString}`;
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
       }
 
       // Empty index - initialize entry on current index
@@ -135,6 +131,14 @@ const overview = () => {
     const time = gmtTime.toLocaleTimeString().slice(0, 5);
 
     return <Text>{time}</Text>;
+  };
+
+  const openLogModal = (log: LogType) => {
+    const params = Object.assign(log);
+    router.push({
+      pathname: "/logModal",
+      params: params,
+    });
   };
 
   // Re-fetch log data whenever tab is focused
@@ -164,18 +168,12 @@ const overview = () => {
           <Text
             style={{ marginHorizontal: 32, fontSize: 30, textAlign: "center" }}
           >
-<<<<<<< HEAD
-            Tap on '+' to log an emotion and see it here!
-=======
             Your logged emotions will appear here!
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
           </Text>
         </View>
       )}
       {/* <Text>Overview</Text> */}
       <View style={{ paddingHorizontal: 8, height: height, width: width }}>
-<<<<<<< HEAD
-=======
         <Modal visible={isModalOpen} transparent={true}>
           <View
             style={{
@@ -221,7 +219,6 @@ const overview = () => {
             </View>
           </View>
         </Modal>
->>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Sorted by date */}
           <FlatList
@@ -264,8 +261,7 @@ const overview = () => {
                           key={item.id}
                           activeOpacity={0.6}
                           onPress={() => {
-                            setIsModalOpen(true);
-                            setModalData(item);
+                            openLogModal(item);
                           }}
                         >
                           {/* Title & time */}
