@@ -20,8 +20,8 @@ export default function TabLayout() {
         },
         tabBarActiveTintColor: "#67804f",
         tabBarInactiveTintColor: "#344722",
-        tabBarInactiveBackgroundColor: "#e3d7b7",
-        tabBarActiveBackgroundColor: "#e3d7b7",
+        tabBarInactiveBackgroundColor: "beige",
+        tabBarActiveBackgroundColor: "beige",
       }}
     >
       <Tabs.Screen

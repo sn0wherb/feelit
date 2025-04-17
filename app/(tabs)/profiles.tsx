@@ -4,17 +4,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 
+<<<<<<< HEAD
 type customEmotionType = {
   emotion: string;
   parent: string | null | undefined;
   color: string;
 };
+=======
+// type customEmotionType = {
+//   emotion: string;
+// };
+>>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
 
 const profiles = () => {
   const db = useSQLiteContext();
 
   const [data, setData] = useState<customEmotionType[]>([]);
 
+<<<<<<< HEAD
   const getData = async () => {
     try {
       const data = await db.getAllAsync<customEmotionType>(
@@ -26,16 +33,26 @@ const profiles = () => {
       console.error(e);
     }
   };
+=======
+  // const getData = async () => {
+  //   try {
+  //     const data = await db.getAllAsync("SELECT * FROM user_created_emotions");
+  //     setData(data);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
+>>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
 
-  useFocusEffect(
-    useCallback(() => {
-      getData();
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getData();
+  //   }, [])
+  // );
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text style={{ fontSize: 50, color: "#6b5a2c" }}>profiles</Text>
+        <Text style={{ fontSize: 50, color: "#6b5a2c" }}>Profiles</Text>
       </View>
     </SafeAreaView>
   );
@@ -46,9 +63,8 @@ export default profiles;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "beige",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 18,
-    borderColor: "#b4a271",
   },
 });

@@ -45,8 +45,13 @@ const newCustomEmotion = () => {
   const createEmotion = async () => {
     try {
       await db.runAsync(
+<<<<<<< HEAD
         `INSERT INTO user_created_emotions (name, parent, color) VALUES (?,?,?)`,
         [title, name, newColor]
+=======
+        `INSERT INTO user_created_emotions (name, parent, color, level) VALUES (?,?,?,?)`,
+        [title, name, newColor, level]
+>>>>>>> 9f9ee28de9f3d860fcb80ba6258e4f446318ae9a
       );
       setSaved(true);
     } catch (e) {
@@ -84,38 +89,48 @@ const newCustomEmotion = () => {
           )}
           {/* Form */}
           <View style={styles.form}>
-            <TextInput
-              multiline={false}
-              placeholder={"Title"}
-              maxLength={20}
-              placeholderTextColor="#555"
-              onChangeText={(value) => setTitle(value.trim())}
+            <View
               style={{
-                width: 320,
-                height: 80,
-                // height: "auto",
-                padding: 10,
-                marginTop: 6,
-                marginBottom: 16,
-                fontSize: 40,
-                borderRadius: 10,
-                backgroundColor: newColor,
-                // Shadow
-                shadowColor: newColor,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.8,
-                shadowRadius: 8,
+                height: height * 0.3,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 10,
+                marginBottom: 20,
               }}
-            />
-            <Text style={styles.fieldTitle}>Color</Text>
+            >
+              <TextInput
+                multiline={false}
+                placeholder={"My emotion"}
+                maxLength={20}
+                placeholderTextColor="#555"
+                onChangeText={(value) => setTitle(value.trim())}
+                style={{
+                  height: 160,
+                  width: 160,
+                  backgroundColor: newColor,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  textAlign: "center",
+                  wordWrap: "wrap",
+                  borderRadius: 50,
+                  fontSize: 22,
+                  // Shadow
+                  shadowColor: newColor,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.8,
+                  shadowRadius: 8,
+                }}
+              />
+            </View>
             <ColorPicker
               onChangeJS={({ hex }) => {
                 setNewColor(hex);
               }}
               style={{
-                marginBottom: 40,
+                marginBottom: 20,
                 flexDirection: "row",
                 justifyContent: "space-between",
+                paddingHorizontal: 10,
               }}
               value={color ? color : "#FFF"}
             >
@@ -123,12 +138,12 @@ const newCustomEmotion = () => {
                 boundedThumb
                 style={{
                   marginRight: 20,
-                  width: width * 0.68,
-                  height: width * 0.68,
+                  width: width * 0.6,
+                  height: width * 0.6,
                 }}
               />
               <HueSlider
-                style={{ height: width * 0.68 }}
+                style={{ height: width * 0.6 }}
                 vertical
                 boundedThumb
                 sliderThickness={width * 0.15}
@@ -149,7 +164,7 @@ const newCustomEmotion = () => {
                 borderRadius: 20,
               }}
             >
-              <Text style={{ fontSize: 24 }}>Create emotion</Text>
+              <Text style={{ fontSize: 24 }}>Save</Text>
               <AntDesign name="arrowright" size={30} color="black" />
             </TouchableOpacity>
           </View>
@@ -173,11 +188,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   form: {
-    padding: 30,
+    paddingHorizontal: 30,
   },
   parentName: {
-    fontSize: 40,
+    fontSize: 30,
     marginLeft: 86,
-    marginTop: 4,
   },
 });

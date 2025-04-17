@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  Touchable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Emotion from "./Emotion";
@@ -29,6 +30,7 @@ type EmotionType = {
   name: string;
   parent: string | null;
   color: string;
+  level: number;
 };
 
 const EmotionDisplay = ({
@@ -63,7 +65,8 @@ const EmotionDisplay = ({
 
   const height = Dimensions.get("window").height;
 
-  // const scroll = level === 1 ? false : true;
+  // Add a placeholder +1 item at the end, in the place of which a button to create a new emotion will be placed
+  data = [...data, data[0]];
 
   // Emotion selection
   switch (level) {
@@ -96,7 +99,38 @@ const EmotionDisplay = ({
               scrollEnabled={false}
               numColumns={2}
               data={data}
-              renderItem={({ item }) => {
+              renderItem={({ index, item }) => {
+                // If hit last, previously inserted placeholder item, return button to create new emotion
+                if (index == data.length - 1) {
+                  return (
+                    <View
+                      style={{
+                        width: 134,
+                        height: 134,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        margin: 10,
+                        marginHorizontal: 14,
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          borderRadius: 100,
+                          backgroundColor: "rgba(0,0,0,0.1)",
+                          height: 90,
+                          width: 90,
+                          margin: 10,
+
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onPress={newCustomEmotion}
+                      >
+                        <AntDesign name="plus" size={28} color={"black"} />
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
                 return (
                   <Emotion
                     name={item["name"]}
@@ -107,12 +141,6 @@ const EmotionDisplay = ({
                   />
                 );
               }}
-            />
-            {/* Create new custom emotion */}
-            <Emotion
-              name={<AntDesign name="plus" size={28} color={"black"} />}
-              color={"rgba(0,0,0,0.1)"}
-              onClick={newCustomEmotion}
             />
           </ScrollView>
         </View>
