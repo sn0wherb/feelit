@@ -130,11 +130,13 @@ const overview = () => {
     gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
     const time = gmtTime.toLocaleTimeString().slice(0, 5);
 
-    return <Text>{time}</Text>;
+    return time;
   };
 
-  const openLogModal = (log: LogType) => {
+  const openLogModal = (log: LogType, date: string, time: string) => {
     const params = Object.assign(log);
+    params["date"] = date;
+    params["time"] = time;
     router.push({
       pathname: "/logModal",
       params: params,
@@ -226,6 +228,7 @@ const overview = () => {
             data={logDataByDate}
             scrollEnabled={false}
             renderItem={({ item }) => {
+              const logCollection = item;
               return (
                 <View>
                   <Text
@@ -236,11 +239,11 @@ const overview = () => {
                       marginTop: 10,
                     }}
                   >
-                    {item.date}
+                    {logCollection.date}
                   </Text>
                   {/* Individual logs */}
                   <FlatList
-                    data={item.logs}
+                    data={logCollection.logs}
                     scrollEnabled={false}
                     renderItem={({ item }) => {
                       return (
@@ -261,7 +264,11 @@ const overview = () => {
                           key={item.id}
                           activeOpacity={0.6}
                           onPress={() => {
-                            openLogModal(item);
+                            openLogModal(
+                              item,
+                              logCollection.date,
+                              getLocalTime(item["created_at"])
+                            );
                           }}
                         >
                           {/* Title & time */}
