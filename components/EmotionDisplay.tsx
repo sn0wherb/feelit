@@ -18,12 +18,24 @@ import { Dimensions } from "react-native";
 import BodyDrawing from "./BodyDrawing";
 import { useGlobalSearchParams, useRouter } from "expo-router";
 
+type DiaryType = {
+  root: string | undefined;
+  need: string | undefined;
+  extra: string | undefined;
+};
+
 interface Props {
   level: number;
   data: EmotionType[];
   currentEmotion: EmotionType;
-  passHandleButtonClickToParent: (item: EmotionType) => void;
+  passHandleButtonClickToParent: (
+    item: EmotionType,
+    svgData?: StrokeType[]
+  ) => void;
   handleCreateLog: (data: string[]) => void;
+  bodyDrawingData: StrokeType[] | undefined;
+  diaryData: DiaryType | undefined;
+  passDiaryData: (field: string, data: string) => void;
 }
 
 type EmotionType = {
@@ -33,12 +45,17 @@ type EmotionType = {
   level: number;
 };
 
+type StrokeType = [string[], string, number];
+
 const EmotionDisplay = ({
   level,
   data,
   currentEmotion,
   passHandleButtonClickToParent,
   handleCreateLog,
+  bodyDrawingData,
+  diaryData,
+  passDiaryData,
 }: Props) => {
   const [isLoading, setLoading] = useState(true),
     [root, setRoot] = useState<string>(""),
@@ -72,7 +89,7 @@ const EmotionDisplay = ({
   switch (level) {
     case 1: // Fallthrough
     case 2: // Fallthrough
-    case 3:
+    case 3: // Levels 1 through 3
       return (
         <View
           style={{
@@ -146,43 +163,28 @@ const EmotionDisplay = ({
         </View>
       );
       break;
-    case 4:
+    case 4: // Body drawing level
       return (
         <View>
-          <BodyDrawing />
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                gap: 16,
-                width: 320,
-                paddingHorizontal: 20,
-                justifyContent: "center",
-                alignItems: "center",
-                height: 60,
-                backgroundColor: "#e3d7b7",
-                borderRadius: 20,
-              }}
-              onPress={() => {
-                passHandleButtonClickToParent(currentEmotion);
-              }}
-            >
-              <Text style={{ fontSize: 24 }}>Next</Text>
-              <AntDesign name="arrowright" size={30} color="black" />
-            </TouchableOpacity>
+          <View style={{ marginTop: 16, marginBottom: 6 }}>
+            <Text style={{ fontSize: 20, textAlign: "center" }}>
+              Where do you feel it?
+            </Text>
           </View>
+          <BodyDrawing
+            initialPaths={bodyDrawingData}
+            onNext={(svgData) => {
+              passHandleButtonClickToParent(currentEmotion, svgData);
+            }}
+          />
         </View>
       );
       break;
-    default:
+    default: // Final, diary level
       return (
         <View>
           <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Root */}
             <View
               style={{
                 marginTop: 20,
@@ -201,11 +203,15 @@ const EmotionDisplay = ({
                   ?
                 </Text>
                 <TextInput
+                  value={diaryData && diaryData.root}
                   multiline={true}
                   numberOfLines={10}
                   placeholder={"Type here..."}
                   placeholderTextColor="#555"
-                  onChangeText={(root) => setRoot(root.trim())}
+                  onChangeText={(value) => {
+                    setRoot(value.trim());
+                    passDiaryData("root", value);
+                  }}
                   style={{
                     width: 320,
                     minHeight: 60,
@@ -223,16 +229,21 @@ const EmotionDisplay = ({
                   }}
                 />
               </View>
+              {/* Need */}
               <View>
                 <Text style={{ marginTop: 10, fontSize: 18 }}>
                   What do you need in this moment?
                 </Text>
                 <TextInput
+                  value={diaryData && diaryData.need}
                   multiline={true}
                   numberOfLines={10}
                   placeholder={"Type here..."}
                   placeholderTextColor="#555"
-                  onChangeText={(need) => setNeed(need.trim())}
+                  onChangeText={(value) => {
+                    setNeed(value.trim());
+                    passDiaryData("need", value);
+                  }}
                   style={{
                     width: 320,
                     minHeight: 80,
@@ -250,16 +261,21 @@ const EmotionDisplay = ({
                   }}
                 />
               </View>
+              {/* Extra */}
               <View>
                 <Text style={{ marginTop: 10, fontSize: 16 }}>
                   Anything else?
                 </Text>
                 <TextInput
+                  value={diaryData && diaryData.extra}
                   multiline={true}
                   numberOfLines={10}
                   placeholder={"Type here..."}
                   placeholderTextColor="#555"
-                  onChangeText={(extra) => setExtra(extra.trim())}
+                  onChangeText={(value) => {
+                    setExtra(value.trim());
+                    passDiaryData("extra", value);
+                  }}
                   style={{
                     width: 320,
                     minHeight: 90,

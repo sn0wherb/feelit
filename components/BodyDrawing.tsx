@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Svg, Path } from "react-native-svg";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Slider from "@react-native-assets/slider";
@@ -21,9 +21,14 @@ import Octicons from "@expo/vector-icons/Octicons";
 
 type StrokeType = [string[], string, number];
 
+interface Props {
+  onNext: (svgData: StrokeType[]) => void;
+  initialPaths?: StrokeType[];
+}
+
 const { height, width } = Dimensions.get("window");
 
-const BodyDrawing = () => {
+const BodyDrawing = ({ onNext, initialPaths }: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
   const [currentPath, setCurrentPath] = useState<string[]>([]);
@@ -68,11 +73,15 @@ const BodyDrawing = () => {
     }
   };
 
+  useEffect(() => {
+    if (initialPaths) {
+      initialPaths.unshift(...paths);
+      setPaths(initialPaths);
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 20, marginTop: 16, textAlign: "center" }}>
-        Where do you feel it?
-      </Text>
       {/* Drawing */}
       <View
         style={styles.drawingBoard}
@@ -116,7 +125,7 @@ const BodyDrawing = () => {
         </ImageBackground>
       </View>
       {/* Drawing controls */}
-      <View style={{ display: "flex" }}>
+      <View style={{ marginHorizontal: 10 }}>
         {/* Brush modal */}
         {isBrushSizeModalVisible && (
           <View style={[styles.drawingOptionModal, { height: height * 0.1 }]}>
@@ -201,7 +210,7 @@ const BodyDrawing = () => {
                   name="close"
                   size={30}
                   color="black"
-                  style={{ marginRight: width * 0.01 }}
+                  style={{ marginRight: width * 0.05 }}
                 />
               </TouchableOpacity>
             </View>
@@ -211,7 +220,6 @@ const BodyDrawing = () => {
           style={{
             flexDirection: "row",
             justifyContent: "space-around",
-            marginBottom: 12,
           }}
         >
           {/* Brush size */}
@@ -223,7 +231,6 @@ const BodyDrawing = () => {
           >
             <MaterialCommunityIcons name="pencil" size={28} color="black" />
           </TouchableOpacity>
-
           {/* Color */}
           <TouchableOpacity
             style={styles.drawingOptionsButton}
@@ -233,13 +240,49 @@ const BodyDrawing = () => {
           >
             <MaterialIcons name="color-lens" size={28} color="black" />
           </TouchableOpacity>
-
+          {/* Undo */}
           <TouchableOpacity
             style={styles.drawingOptionsButton}
             onPress={undoLastStroke}
           >
             <MaterialIcons name="undo" size={28} color="black" />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#e3d7b7",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: 20,
+              gap: 8,
+              borderRadius: 50,
+            }}
+            onPress={() => {
+              onNext(paths);
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>Next</Text>
+            <AntDesign name="arrowright" size={24} color="black" />
+          </TouchableOpacity>
+          {/* <TouchableOpacity
+                        style={{
+                          flexDirection: "row",
+                          gap: 16,
+                          width: 320,
+                          paddingHorizontal: 20,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: 60,
+                          backgroundColor: "#e3d7b7",
+                          borderRadius: 20,
+                        }}
+                        onPress={() => {
+                          passHandleButtonClickToParent(currentEmotion);
+                        }}
+                      >
+                        <Text style={{ fontSize: 24 }}>Next</Text>
+                        <AntDesign name="arrowright" size={30} color="black" />
+                      </TouchableOpacity> */}
         </View>
       </View>
     </View>
@@ -258,20 +301,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 16,
     paddingHorizontal: 18,
-    width: width * 0.86,
+    width: width * 0.9,
     position: "absolute",
-    bottom: 10,
+    bottom: 60,
     zIndex: 1,
     elevation: 1,
     alignSelf: "center",
-    backgroundColor: "#cbb19e",
+    backgroundColor: "#dcdcc5",
   },
   drawingBoard: {
     // borderWidth: 5,
     // borderColor: "rgba(0,0,0,0.1)",
     // borderRadius: 10,
     // margin: 10,
-    height: height * 0.6,
+    height: height * 0.68,
+    marginBottom: 10,
   },
   drawingOptionsButton: {
     backgroundColor: "rgba(0,0,0,0.1)",

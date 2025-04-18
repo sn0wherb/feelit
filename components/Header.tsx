@@ -65,158 +65,203 @@ const Header = ({
     );
   }
 
-  if (level === 1) {
-    return (
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          width: width,
-          height: 60,
-          marginTop: 10,
-        }}
-      >
+  switch (level) {
+    case 1:
+      return (
         <View
           style={{
-            paddingHorizontal: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            height: 52,
-            width: 52,
-            backgroundColor: "#e3d7b7",
-            borderRadius: 30,
-            marginLeft: 20,
-          }}
-        >
-          <TouchableOpacity onPress={handleGoBack}>
-            <AntDesign name="close" size={30} color="black" />
-          </TouchableOpacity>
-        </View>
-        <Text style={{ fontSize: 28, marginLeft: 16 }}>
-          How are you feeling?
-        </Text>
-      </View>
-    );
-  } else if (level > 3) {
-    return (
-      <View
-        style={{
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexDirection: "row",
-          width: width,
-          height: 60,
-          marginTop: 10,
-          paddingHorizontal: 20,
-        }}
-      >
-        <View
-          style={{
-            paddingHorizontal: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            height: 52,
-            width: 52,
-            backgroundColor: "#e3d7b7",
-            borderRadius: 30,
-          }}
-        >
-          <TouchableOpacity onPress={handleGoBack}>
-            <AntDesign name="arrowleft" size={30} color="black" />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            marginHorizontal: 14,
-            flex: 1,
-            height: 60,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 30,
-          }}
-        >
-          <Text style={{ fontSize: 26 }}>{name}</Text>
-        </View>
-      </View>
-    );
-  } else {
-    return (
-      <View
-        style={{
-          justifyContent: "space-around",
-          alignItems: "center",
-          flexDirection: "row",
-          width: width,
-          height: 60,
-          marginTop: 10,
-          paddingHorizontal: 20,
-        }}
-      >
-        {/* Back */}
-        <View
-          style={{
-            paddingHorizontal: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            height: 52,
-            width: 52,
-            backgroundColor: "#e3d7b7",
-            borderRadius: 30,
-          }}
-        >
-          <TouchableOpacity onPress={handleGoBack}>
-            <AntDesign name="arrowleft" size={32} color="black" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Current emotion */}
-        <View
-          style={{
-            marginHorizontal: 14,
-            paddingLeft: 10,
-            // paddingRight: 2,
-            height: 60,
-            flex: 1,
             flexDirection: "row",
-            justifyContent: "space-between",
             alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 50,
-            // borderBottomLeftRadius: 20,
-            // borderTopLeftRadius: 20,
-            // borderBottomRightRadius: 30,
-            // borderTopRightRadius: 30,
+            width: width,
+            height: 60,
+            marginTop: 10,
           }}
         >
-          <Text style={{ fontSize: 26, paddingLeft: 8, paddingRight: 10 }}>
-            {name}
-          </Text>
-          {/* Save */}
           <View
             style={{
               paddingHorizontal: 10,
               justifyContent: "center",
               alignItems: "center",
-              height: 60,
-              width: 60,
-              // backgroundColor: "rgba(0,0,0,0.12)",
+              height: 52,
+              width: 52,
               backgroundColor: "#e3d7b7",
-              // borderWidth: 3,
-              borderRadius: 50,
-              // shadowColor: color,
-              // shadowOffset: { width: 0, height: 0 },
-              // shadowOpacity: 0.8,
-              // shadowRadius: 10,
+              borderRadius: 30,
+              marginLeft: 20,
             }}
           >
-            <TouchableOpacity onPress={handleSave}>
-              <FontAwesome6 name="check" size={30} color="black" />
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="close" size={30} color="black" />
             </TouchableOpacity>
           </View>
+          <Text style={{ fontSize: 28, marginLeft: 16 }}>
+            How are you feeling?
+          </Text>
         </View>
-      </View>
-    );
+      );
+    case 2: // Fallthrough
+    case 3:
+      return (
+        <View
+          style={{
+            justifyContent: "space-around",
+            alignItems: "center",
+            flexDirection: "row",
+            width: width,
+            height: 60,
+            marginTop: 10,
+            paddingHorizontal: 20,
+          }}
+        >
+          {/* Back */}
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 52,
+              width: 52,
+              backgroundColor: "#e3d7b7",
+              borderRadius: 30,
+            }}
+          >
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="arrowleft" size={32} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Current emotion */}
+          <View
+            style={{
+              marginHorizontal: 14,
+              paddingLeft: 10,
+              // paddingRight: 2,
+              height: 60,
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 50,
+              // borderBottomLeftRadius: 20,
+              // borderTopLeftRadius: 20,
+              // borderBottomRightRadius: 30,
+              // borderTopRightRadius: 30,
+            }}
+          >
+            <Text style={{ fontSize: 26, paddingLeft: 8, paddingRight: 10 }}>
+              {name}
+            </Text>
+            {/* Save */}
+            <View
+              style={{
+                paddingHorizontal: 10,
+                justifyContent: "center",
+                alignItems: "center",
+                height: 60,
+                width: 60,
+                // backgroundColor: "rgba(0,0,0,0.12)",
+                backgroundColor: "#e3d7b7",
+                // borderWidth: 3,
+                borderRadius: 50,
+                // shadowColor: color,
+                // shadowOffset: { width: 0, height: 0 },
+                // shadowOpacity: 0.8,
+                // shadowRadius: 10,
+              }}
+            >
+              <TouchableOpacity onPress={handleSave}>
+                <FontAwesome6 name="check" size={30} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      );
+    case 4:
+      return (
+        <View
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: "row",
+            width: width,
+            height: 60,
+            marginTop: 10,
+            paddingHorizontal: 20,
+          }}
+        >
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 52,
+              width: 52,
+              backgroundColor: "#e3d7b7",
+              borderRadius: 30,
+            }}
+          >
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="close" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              marginHorizontal: 14,
+              flex: 1,
+              height: 60,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 30,
+            }}
+          >
+            <Text style={{ fontSize: 26 }}>{name}</Text>
+          </View>
+        </View>
+      );
+    default:
+      return (
+        <View
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: "row",
+            width: width,
+            height: 60,
+            marginTop: 10,
+            paddingHorizontal: 20,
+          }}
+        >
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 52,
+              width: 52,
+              backgroundColor: "#e3d7b7",
+              borderRadius: 30,
+            }}
+          >
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="arrowleft" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              marginHorizontal: 14,
+              flex: 1,
+              height: 60,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 30,
+            }}
+          >
+            <Text style={{ fontSize: 26 }}>{name}</Text>
+          </View>
+        </View>
+      );
   }
 };
 

@@ -1,4 +1,11 @@
-import { Dimensions, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useSQLiteContext } from "expo-sqlite";
@@ -16,12 +23,24 @@ type EmotionType = {
   level: number;
 };
 
+type DiaryType = {
+  root: string | undefined;
+  need: string | undefined;
+  extra: string | undefined;
+};
+
+type StrokeType = [string[], string, number];
+
 const { width, height } = Dimensions.get("window");
 
 export default function logNewEmotion() {
   const [level, setLevel] = useState<number>(1),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
     [data, setData] = useState<EmotionType[]>([]),
+    [bodyDrawingData, setBodyDrawingData] = useState<StrokeType[] | undefined>(
+      undefined
+    ),
+    [diaryData, setDiaryData] = useState<DiaryType | undefined>(undefined),
     [returnFromCustomEmotionCreation, setReturnFromCustomEmotionCreation] =
       useState(0);
 
@@ -95,7 +114,27 @@ export default function logNewEmotion() {
     if (level !== 1) {
       const emotionLevel = emotionStack[emotionStack.length - 1].level;
       if (level === 4) {
-        setLevel(emotionLevel == 3 ? emotionLevel : emotionLevel + 1);
+        if ((bodyDrawingData && bodyDrawingData.length > 1) || diaryData) {
+          Alert.alert("Discard?", "Any changes you've made will be lost.", [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Discard",
+              onPress: () => {
+                setLevel(emotionLevel == 3 ? emotionLevel : emotionLevel + 1);
+                setEmotionStack(emotionStack.slice(0, -1));
+                setBodyDrawingData(undefined);
+                setDiaryData(undefined);
+              },
+              style: "destructive",
+            },
+          ]);
+          return;
+        } else {
+          setLevel(emotionLevel == 3 ? emotionLevel : emotionLevel + 1);
+        }
       } else if (level == 5) {
         setLevel(4);
       } else {
@@ -115,7 +154,10 @@ export default function logNewEmotion() {
     setEmotionStack([...emotionStack, currentEmotion]);
   };
 
-  const handleButtonClick = (item: EmotionType) => {
+  const handleButtonClick = (item: EmotionType, svgData?: StrokeType[]) => {
+    if (level === 4 && svgData && svgData.length > 1) {
+      setBodyDrawingData(svgData);
+    }
     setLevel(level + 1);
     setEmotionStack([...emotionStack, item]);
   };
@@ -139,6 +181,34 @@ export default function logNewEmotion() {
       }, 1600);
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const updateDiaryData = (field: string, data: string) => {
+    switch (field) {
+      case "root":
+        setDiaryData({
+          root: data,
+          need: diaryData?.need,
+          extra: diaryData?.extra,
+        });
+        break;
+      case "need":
+        setDiaryData({
+          root: diaryData?.root,
+          need: data,
+          extra: diaryData?.extra,
+        });
+        break;
+      case "extra":
+        setDiaryData({
+          root: diaryData?.root,
+          need: diaryData?.need,
+          extra: data,
+        });
+        break;
+      default:
+        break;
     }
   };
 
@@ -168,6 +238,9 @@ export default function logNewEmotion() {
               level={level}
               currentEmotion={currentEmotion}
               data={data}
+              bodyDrawingData={bodyDrawingData}
+              diaryData={diaryData}
+              passDiaryData={updateDiaryData}
               passHandleButtonClickToParent={handleButtonClick}
               handleCreateLog={handleCreateLog}
             />
