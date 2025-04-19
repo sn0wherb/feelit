@@ -148,8 +148,6 @@ export default function logNewEmotion() {
   };
 
   const handleSave = () => {
-    // TO-DO: fix going back after this
-    // could put level inside of every emotion and then set it upon reading it
     setLevel(4);
     setEmotionStack([...emotionStack, currentEmotion]);
   };
@@ -162,18 +160,24 @@ export default function logNewEmotion() {
     setEmotionStack([...emotionStack, item]);
   };
 
-  const handleCreateLog = async (entries: string[]) => {
+  const handleCreateLog = async () => {
     try {
       await db.runAsync(
         "INSERT INTO emotion_logs (emotion, color, root, need, extra) VALUES (?,?,?,?,?);",
         [
           currentEmotion.name,
           currentEmotion.color,
-          entries[0],
-          entries[1],
-          entries[2],
+          diaryData?.root ? diaryData?.root : "",
+          diaryData?.need ? diaryData?.need : "",
+          diaryData?.extra ? diaryData?.extra : "",
         ]
       );
+      const thisLogId = await db.getFirstAsync<{ id: number }>(
+        "SELECT id FROM emotion_logs WHERE id = (SELECT MAX(id) FROM emotion_logs);"
+      );
+      const query = generateSvgEntry(Number(thisLogId?.id));
+      console.log(query);
+      query && (await db.runAsync(query));
       setLevel(level + 1);
       setTimeout(() => {
         setLevel(1);
@@ -181,6 +185,25 @@ export default function logNewEmotion() {
       }, 1600);
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const generateSvgEntry = (id: number) => {
+    let query = `INSERT INTO bodydrawing_svg_paths (id, path, color, size) VALUES `;
+    if (bodyDrawingData) {
+      bodyDrawingData.shift();
+      bodyDrawingData.forEach((value, index) => {
+        const paths = value[0].join("/");
+
+        if (index == bodyDrawingData.length - 1) {
+          query += `(${id}, '${paths}', '${value[1]}', ${value[2]});`;
+        } else {
+          query += `(${id}, '${paths}', '${value[1]}', ${value[2]}), `;
+        }
+      });
+      return query;
+    } else {
+      return false;
     }
   };
 

@@ -32,7 +32,7 @@ interface Props {
     item: EmotionType,
     svgData?: StrokeType[]
   ) => void;
-  handleCreateLog: (data: string[]) => void;
+  handleCreateLog: () => void;
   bodyDrawingData: StrokeType[] | undefined;
   diaryData: DiaryType | undefined;
   passDiaryData: (field: string, data: string) => void;
@@ -57,11 +57,6 @@ const EmotionDisplay = ({
   diaryData,
   passDiaryData,
 }: Props) => {
-  const [isLoading, setLoading] = useState(true),
-    [root, setRoot] = useState<string>(""),
-    [need, setNeed] = useState<string>(""),
-    [extra, setExtra] = useState<string>("");
-
   const router = useRouter();
   const params = useGlobalSearchParams<{ level: string }>();
 
@@ -74,10 +69,6 @@ const EmotionDisplay = ({
       pathname: "/newCustomEmotion",
       params: params,
     });
-  };
-
-  const getEntries = () => {
-    return [root, need, extra];
   };
 
   const height = Dimensions.get("window").height;
@@ -209,7 +200,6 @@ const EmotionDisplay = ({
                   placeholder={"Type here..."}
                   placeholderTextColor="#555"
                   onChangeText={(value) => {
-                    setRoot(value.trim());
                     passDiaryData("root", value);
                   }}
                   style={{
@@ -241,7 +231,6 @@ const EmotionDisplay = ({
                   placeholder={"Type here..."}
                   placeholderTextColor="#555"
                   onChangeText={(value) => {
-                    setNeed(value.trim());
                     passDiaryData("need", value);
                   }}
                   style={{
@@ -273,7 +262,6 @@ const EmotionDisplay = ({
                   placeholder={"Type here..."}
                   placeholderTextColor="#555"
                   onChangeText={(value) => {
-                    setExtra(value.trim());
                     passDiaryData("extra", value);
                   }}
                   style={{
@@ -302,8 +290,7 @@ const EmotionDisplay = ({
             >
               <TouchableOpacity
                 onPress={() => {
-                  const entries = getEntries();
-                  handleCreateLog(entries);
+                  handleCreateLog();
                 }}
                 style={{
                   flexDirection: "row",

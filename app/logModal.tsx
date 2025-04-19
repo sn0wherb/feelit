@@ -65,6 +65,8 @@ export default function logModal() {
     }
   };
 
+  console.log(logData.id);
+
   const router = useRouter();
   return (
     <View style={{ backgroundColor: String(logData.color) }}>
@@ -206,7 +208,7 @@ export default function logModal() {
             </View>
             {/* Body */}
             <View style={{}}>
-              <BodyDisplay />
+              <BodyDisplay logId={Number(logData.id)} />
             </View>
             {/* Date of creation */}
             <View style={{ marginVertical: 20 }}>

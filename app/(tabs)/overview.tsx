@@ -165,12 +165,32 @@ const overview = () => {
       {/* If there are no logs yet */}
       {logData.length == 0 && (
         <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          style={{
+            height: height,
+            width: width,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Text
-            style={{ marginHorizontal: 32, fontSize: 30, textAlign: "center" }}
+            style={{
+              marginBottom: 60,
+              marginHorizontal: 32,
+              fontSize: 30,
+              textAlign: "center",
+            }}
           >
-            Your logged emotions will appear here!
+            Your emotions will appear here!
+          </Text>
+          <Text
+            style={{
+              marginBottom: 30,
+              marginHorizontal: 40,
+              fontSize: 26,
+              textAlign: "center",
+            }}
+          >
+            Click on '+' to add your first emotion
           </Text>
         </View>
       )}

@@ -73,6 +73,9 @@ INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Inspired', 
   createLog: `
   INSERT INTO emotion_logs (emotion, root, need, extra) VALUES (?,?,?,?);
   `,
+  createBodyDrawingSvgPathsTable: `
+  CREATE TABLE IF NOT EXISTS bodydrawing_svg_paths (id INTEGER, path TEXT, color TEXT, size INTEGER, FOREIGN KEY(id) REFERENCES emotion_logs(id));
+  `,
 };
 
 export { queries };
