@@ -51,8 +51,12 @@ const BodyDisplay = ({ logId }: Props) => {
         "SELECT * FROM bodydrawing_svg_paths WHERE id = ?",
         [logId]
       );
-      // setSvgData(data);
-      // console.log(data);
+      let strokeData: StrokeType[] = [];
+      data.forEach((value) => {
+        const svgArray = value.path.split("/");
+        strokeData.push([svgArray, value.color, value.size]);
+      });
+      setPaths(strokeData);
     } catch (e) {
       console.error(e);
     }
@@ -106,6 +110,6 @@ const styles = StyleSheet.create({
     // borderColor: "rgba(0,0,0,0.1)",
     // borderRadius: 10,
     // margin: 10,
-    height: height * 0.8,
+    height: height * 0.76,
   },
 });

@@ -31,6 +31,7 @@ const Header = ({
 }: Props) => {
   const router = useRouter();
 
+  // Create new emotion header
   if (custom) {
     return (
       <View
@@ -70,36 +71,52 @@ const Header = ({
       return (
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            width: width,
-            height: 60,
-            marginTop: 10,
+            top: height * 0.02,
+            position: "absolute",
+            zIndex: 1,
+            elevation: 1,
+            alignSelf: "center",
           }}
         >
           <View
             style={{
-              paddingHorizontal: 10,
-              justifyContent: "center",
+              flexDirection: "row",
               alignItems: "center",
-              height: 52,
-              width: 52,
-              backgroundColor: "#e3d7b7",
-              borderRadius: 30,
-              marginLeft: 20,
+              marginRight: 10,
             }}
           >
-            <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="close" size={30} color="black" />
-            </TouchableOpacity>
+            <View
+              style={{
+                paddingHorizontal: 10,
+                justifyContent: "center",
+                alignItems: "center",
+                height: 46,
+                width: 46,
+                backgroundColor: "#e3d7b7",
+                borderRadius: 30,
+                marginRight: 10,
+              }}
+            >
+              <TouchableOpacity onPress={handleGoBack}>
+                <AntDesign name="close" size={26} color="black" />
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                backgroundColor: "#dcdcc5",
+                borderRadius: 50,
+                paddingHorizontal: 20,
+                height: 50,
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: 24 }}>How are you feeling?</Text>
+            </View>
           </View>
-          <Text style={{ fontSize: 28, marginLeft: 16 }}>
-            How are you feeling?
-          </Text>
         </View>
       );
     case 2: // Fallthrough
-    case 3:
+    case 3: // Emotion selection
       return (
         <View
           style={{
@@ -107,8 +124,11 @@ const Header = ({
             alignItems: "center",
             flexDirection: "row",
             width: width,
-            height: 60,
-            marginTop: 10,
+            paddingVertical: 10,
+            // top: 10,
+            position: "absolute",
+            zIndex: 1,
+            elevation: 1,
             paddingHorizontal: 20,
           }}
         >
@@ -118,14 +138,14 @@ const Header = ({
               paddingHorizontal: 10,
               justifyContent: "center",
               alignItems: "center",
-              height: 52,
-              width: 52,
+              height: 46,
+              width: 46,
               backgroundColor: "#e3d7b7",
               borderRadius: 30,
             }}
           >
             <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="arrowleft" size={32} color="black" />
+              <AntDesign name="arrowleft" size={26} color="black" />
             </TouchableOpacity>
           </View>
 
@@ -133,12 +153,11 @@ const Header = ({
           <View
             style={{
               marginHorizontal: 14,
-              paddingLeft: 10,
               // paddingRight: 2,
               height: 60,
               flex: 1,
               flexDirection: "row",
-              justifyContent: "space-between",
+              justifyContent: "center",
               alignItems: "center",
               backgroundColor: color,
               borderRadius: 50,
@@ -148,35 +167,41 @@ const Header = ({
               // borderTopRightRadius: 30,
             }}
           >
-            <Text style={{ fontSize: 26, paddingLeft: 8, paddingRight: 10 }}>
-              {name}
-            </Text>
-            {/* Save */}
-            <View
+            <Text
               style={{
-                paddingHorizontal: 10,
-                justifyContent: "center",
-                alignItems: "center",
-                height: 60,
-                width: 60,
-                // backgroundColor: "rgba(0,0,0,0.12)",
-                backgroundColor: "#e3d7b7",
-                // borderWidth: 3,
-                borderRadius: 50,
-                // shadowColor: color,
-                // shadowOffset: { width: 0, height: 0 },
-                // shadowOpacity: 0.8,
-                // shadowRadius: 10,
+                fontSize: 26,
+                paddingLeft: 8,
+                paddingRight: 10,
               }}
             >
-              <TouchableOpacity onPress={handleSave}>
-                <FontAwesome6 name="check" size={30} color="black" />
-              </TouchableOpacity>
-            </View>
+              {name}
+            </Text>
+          </View>
+          {/* Save */}
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 48,
+              width: 48,
+              // backgroundColor: "rgba(0,0,0,0.12)",
+              backgroundColor: "#e3d7b7",
+              // borderWidth: 3,
+              borderRadius: 50,
+              // shadowColor: color,
+              // shadowOffset: { width: 0, height: 0 },
+              // shadowOpacity: 0.8,
+              // shadowRadius: 10,
+            }}
+          >
+            <TouchableOpacity onPress={handleSave}>
+              <FontAwesome6 name="check" size={26} color="black" />
+            </TouchableOpacity>
           </View>
         </View>
       );
-    case 4:
+    case 4: // Bodydrawing
       return (
         <View
           style={{
@@ -194,14 +219,14 @@ const Header = ({
               paddingHorizontal: 10,
               justifyContent: "center",
               alignItems: "center",
-              height: 52,
-              width: 52,
+              height: 46,
+              width: 46,
               backgroundColor: "#e3d7b7",
               borderRadius: 30,
             }}
           >
             <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="close" size={30} color="black" />
+              <AntDesign name="close" size={26} color="black" />
             </TouchableOpacity>
           </View>
           <View
@@ -215,11 +240,11 @@ const Header = ({
               borderRadius: 30,
             }}
           >
-            <Text style={{ fontSize: 26 }}>{name}</Text>
+            <Text style={{ fontSize: 24 }}>Where do you feel it?</Text>
           </View>
         </View>
       );
-    default:
+    default: // Journal
       return (
         <View
           style={{
@@ -237,14 +262,14 @@ const Header = ({
               paddingHorizontal: 10,
               justifyContent: "center",
               alignItems: "center",
-              height: 52,
-              width: 52,
+              height: 46,
+              width: 46,
               backgroundColor: "#e3d7b7",
               borderRadius: 30,
             }}
           >
             <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="arrowleft" size={30} color="black" />
+              <AntDesign name="arrowleft" size={26} color="black" />
             </TouchableOpacity>
           </View>
           <View
@@ -258,7 +283,7 @@ const Header = ({
               borderRadius: 30,
             }}
           >
-            <Text style={{ fontSize: 26 }}>{name}</Text>
+            <Text style={{ fontSize: 26 }}>Journal</Text>
           </View>
         </View>
       );

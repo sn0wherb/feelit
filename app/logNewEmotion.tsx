@@ -17,6 +17,7 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
 
 type EmotionType = {
+  id: number;
   name: string;
   parent: string | null;
   color: string;
@@ -34,6 +35,7 @@ type StrokeType = [string[], string, number];
 const { width, height } = Dimensions.get("window");
 
 export default function logNewEmotion() {
+  // STATES
   const [level, setLevel] = useState<number>(1),
     [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
     [data, setData] = useState<EmotionType[]>([]),
@@ -41,40 +43,36 @@ export default function logNewEmotion() {
       undefined
     ),
     [diaryData, setDiaryData] = useState<DiaryType | undefined>(undefined),
-    [returnFromCustomEmotionCreation, setReturnFromCustomEmotionCreation] =
-      useState(0);
+    [refresh, setRefresh] = useState(0);
 
+  // CONSTANTS
   const {
     stockEmotionData,
   } = require("./../assets/data/emotions/stockEmotionData.ts");
-
   const { queries } = require("./../assets/SQL/queries.ts");
-  const currentEmotion = emotionStack[emotionStack.length - 1];
-
   const db = useSQLiteContext();
   const router = useRouter();
+  const currentEmotion = emotionStack[emotionStack.length - 1];
 
+  // EFFECTS
   useEffect(() => {
     if (level === 1) {
       setEmotionStack([]);
     } else if (level > 3) {
       return;
     }
-    getData();
-  }, [level, returnFromCustomEmotionCreation]);
+  }, [level]);
 
   useFocusEffect(
     useCallback(() => {
       if (level === 6) {
         setLevel(0);
       }
-      // Trigger useEffect that gets data
-      setReturnFromCustomEmotionCreation(
-        (returnFromCustomEmotionCreation) => returnFromCustomEmotionCreation + 1
-      );
-    }, [])
+      getData();
+    }, [level, refresh])
   );
 
+  // FUNCTIONS
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
   const getData = async () => {
     if (level > 1 && currentEmotion) {
@@ -176,7 +174,6 @@ export default function logNewEmotion() {
         "SELECT id FROM emotion_logs WHERE id = (SELECT MAX(id) FROM emotion_logs);"
       );
       const query = generateSvgEntry(Number(thisLogId?.id));
-      console.log(query);
       query && (await db.runAsync(query));
       setLevel(level + 1);
       setTimeout(() => {
@@ -207,6 +204,10 @@ export default function logNewEmotion() {
     }
   };
 
+  const updateBodyDrawingData = (data: StrokeType[]) => {
+    setBodyDrawingData(data);
+  };
+
   const updateDiaryData = (field: string, data: string) => {
     switch (field) {
       case "root":
@@ -234,6 +235,9 @@ export default function logNewEmotion() {
         break;
     }
   };
+  console.log("new");
+
+  console.log(data);
 
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
@@ -247,25 +251,27 @@ export default function logNewEmotion() {
               height: height,
             }}
           >
-            <View style={{ alignItems: "center" }}>
-              <Header
-                level={level}
-                handleGoBack={handleGoBack}
-                handleSave={handleSave}
-                name={currentEmotion ? currentEmotion.name : ""}
-                color={currentEmotion ? currentEmotion.color : ""}
-              />
-            </View>
+            <Header
+              level={level}
+              handleGoBack={handleGoBack}
+              handleSave={handleSave}
+              name={currentEmotion ? currentEmotion.name : ""}
+              color={currentEmotion ? currentEmotion.color : ""}
+            />
 
             <EmotionDisplay
               level={level}
               currentEmotion={currentEmotion}
               data={data}
               bodyDrawingData={bodyDrawingData}
+              passBodyDrawingData={updateBodyDrawingData}
               diaryData={diaryData}
               passDiaryData={updateDiaryData}
               passHandleButtonClickToParent={handleButtonClick}
               handleCreateLog={handleCreateLog}
+              refresh={() => {
+                setRefresh((refresh) => refresh + 1);
+              }}
             />
           </View>
         )}
@@ -279,8 +285,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     width: width,
-  },
-  block: {
-    height: 70,
   },
 });

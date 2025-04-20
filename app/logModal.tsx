@@ -65,20 +65,19 @@ export default function logModal() {
     }
   };
 
-  console.log(logData.id);
-
   const router = useRouter();
   return (
-    <View style={{ backgroundColor: String(logData.color) }}>
-      <SafeAreaView>
+    <View style={{ backgroundColor: "beige", height: height, width: width }}>
+      <View style={{ flex: 1 }}>
         {/* Title & Exit button */}
         <View
           style={{
-            paddingTop: 10,
+            paddingTop: 30,
             paddingHorizontal: 14,
             borderBottomWidth: 1,
             borderColor: "rgba(0,0,0,0.2)",
-            height: height * 0.09,
+            backgroundColor: String(logData.color),
+            height: height * 0.12,
           }}
         >
           <View
@@ -126,7 +125,6 @@ export default function logModal() {
             )}
           </View>
         </View>
-        {/* Details */}
         {/* Options dropdown */}
         {isOptionsDropdownVisible && (
           <View
@@ -149,15 +147,26 @@ export default function logModal() {
             </TouchableOpacity>
           </View>
         )}
-        <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        {/* Log Data */}
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+        >
           <View
             style={{
-              paddingTop: 10,
-              paddingHorizontal: 20,
+              justifyContent: "space-between",
+              flexGrow: 1,
             }}
           >
-            {/* Cause */}
-            <View style={{ justifyContent: "center" }}>
+            {/* Diary */}
+            <View
+              style={{
+                justifyContent: "center",
+                paddingHorizontal: 20,
+              }}
+            >
+              {/* Cause */}
               {logData.root.length > 0 && (
                 <View style={{ marginTop: 20 }}>
                   <Text
@@ -206,23 +215,30 @@ export default function logModal() {
                 </View>
               )}
             </View>
-            {/* Body */}
-            <View style={{}}>
+            {/* BodyDrawing */}
+            <View>
               <BodyDisplay logId={Number(logData.id)} />
             </View>
             {/* Date of creation */}
-            <View style={{ marginVertical: 20 }}>
+            <View
+              style={{
+                marginTop: 10,
+                paddingTop: 16,
+                paddingBottom: 16,
+                backgroundColor: "rgba(0,0,0,0.1)",
+              }}
+            >
               <Text style={styles.date}>
                 {String(logData.date) == "Today" ||
                 String(logData.date) == "Yesterday"
                   ? logData.date
                   : "On " + logData.date}{" "}
-                at {logData.time}
+                • {logData.time}
               </Text>
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
@@ -246,7 +262,7 @@ const styles = StyleSheet.create({
   },
   date: {
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
   },
   optionsDropdown: {
     position: "absolute",

@@ -9,6 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Touchable,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Emotion from "./Emotion";
@@ -17,6 +18,8 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { Dimensions } from "react-native";
 import BodyDrawing from "./BodyDrawing";
 import { useGlobalSearchParams, useRouter } from "expo-router";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useSQLiteContext } from "expo-sqlite";
 
 type DiaryType = {
   root: string | undefined;
@@ -34,11 +37,14 @@ interface Props {
   ) => void;
   handleCreateLog: () => void;
   bodyDrawingData: StrokeType[] | undefined;
+  passBodyDrawingData: (data: StrokeType[]) => void;
   diaryData: DiaryType | undefined;
   passDiaryData: (field: string, data: string) => void;
+  refresh: () => void;
 }
 
 type EmotionType = {
+  id: number;
   name: string;
   parent: string | null;
   color: string;
@@ -46,6 +52,8 @@ type EmotionType = {
 };
 
 type StrokeType = [string[], string, number];
+
+const { width, height } = Dimensions.get("window");
 
 const EmotionDisplay = ({
   level,
@@ -56,11 +64,17 @@ const EmotionDisplay = ({
   bodyDrawingData,
   diaryData,
   passDiaryData,
+  passBodyDrawingData,
+  refresh,
 }: Props) => {
   const router = useRouter();
   const params = useGlobalSearchParams<{ level: string }>();
+  const db = useSQLiteContext();
 
-  // Custom emotion button
+  // States
+  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
+
+  // Functions
   const newCustomEmotion = () => {
     const params = currentEmotion
       ? { level: level, name: currentEmotion.name, color: currentEmotion.color }
@@ -71,10 +85,22 @@ const EmotionDisplay = ({
     });
   };
 
+  const deleteEmotion = async (id: number) => {
+    try {
+      await db.runAsync("DELETE FROM user_created_emotions WHERE id = ?", [id]);
+      refresh();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const height = Dimensions.get("window").height;
 
   // Add a placeholder +1 item at the end, in the place of which a button to create a new emotion will be placed
-  data = [...data, data[0]];
+  data = [
+    ...data,
+    { id: 0, color: "", level: 0, name: "placeholder", parent: null },
+  ];
 
   // Emotion selection
   switch (level) {
@@ -89,67 +115,98 @@ const EmotionDisplay = ({
             justifyContent: "space-between",
             alignItems: "center",
             borderColor: "red",
-            marginTop: 10,
           }}
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingTop: 70 }}
           >
-            <FlatList
-              contentContainerStyle={{
-                // alignItems: "center",
-                // justifyContent: "center",
-                flex: 1,
-                paddingTop: 10,
-                paddingBottom: 10,
+            <Pressable
+              onLongPress={() => {
+                setIsEditingEnabled(true);
               }}
-              scrollEnabled={false}
-              numColumns={2}
-              data={data}
-              renderItem={({ index, item }) => {
-                // If hit last, previously inserted placeholder item, return button to create new emotion
-                if (index == data.length - 1) {
-                  return (
-                    <View
-                      style={{
-                        width: 134,
-                        height: 134,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        margin: 10,
-                        marginHorizontal: 14,
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={{
-                          borderRadius: 100,
-                          backgroundColor: "rgba(0,0,0,0.1)",
-                          height: 90,
-                          width: 90,
-                          margin: 10,
+            >
+              <FlatList
+                contentContainerStyle={{
+                  // alignItems: "center",
+                  // justifyContent: "center",
+                  flex: 1,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                }}
+                scrollEnabled={false}
+                numColumns={2}
+                data={data}
+                renderItem={({ index, item }) => {
+                  // If hit last, previously inserted placeholder item, return button to create new emotion
+                  if (index == data.length - 1) {
+                    if (isEditingEnabled) {
+                      return (
+                        <View
+                          style={{
+                            width: 134,
+                            height: 134,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            margin: 10,
+                            marginHorizontal: 14,
+                          }}
+                        >
+                          <TouchableOpacity
+                            style={{
+                              borderRadius: 100,
+                              backgroundColor: "rgba(0,0,0,0.1)",
+                              height: 90,
+                              width: 90,
+                              margin: 10,
 
-                          justifyContent: "center",
-                          alignItems: "center",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={newCustomEmotion}
+                          >
+                            <AntDesign name="plus" size={28} color={"black"} />
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    } else {
+                      return <View />;
+                    }
+                  }
+                  // Else, return normal emotion
+                  return (
+                    <View>
+                      {isEditingEnabled && (
+                        <TouchableOpacity
+                          style={{
+                            position: "absolute",
+                            top: height * 0.02,
+                            left: width * 0.04,
+                            zIndex: 1,
+                            elevation: 1,
+                            backgroundColor: "#dcdcc5",
+                            borderRadius: 50,
+                            padding: 4,
+                          }}
+                          onPress={() => {
+                            deleteEmotion(item.id);
+                          }}
+                        >
+                          <AntDesign name="close" size={22} color="black" />
+                        </TouchableOpacity>
+                      )}
+                      <Emotion
+                        name={item["name"]}
+                        color={item["color"]}
+                        onClick={() => {
+                          passHandleButtonClickToParent(item);
                         }}
-                        onPress={newCustomEmotion}
-                      >
-                        <AntDesign name="plus" size={28} color={"black"} />
-                      </TouchableOpacity>
+                      />
                     </View>
                   );
-                }
-                return (
-                  <Emotion
-                    name={item["name"]}
-                    color={item["color"]}
-                    onClick={() => {
-                      passHandleButtonClickToParent(item);
-                    }}
-                  />
-                );
-              }}
-            />
+                }}
+              />
+            </Pressable>
           </ScrollView>
         </View>
       );
@@ -157,15 +214,14 @@ const EmotionDisplay = ({
     case 4: // Body drawing level
       return (
         <View>
-          <View style={{ marginTop: 16, marginBottom: 6 }}>
-            <Text style={{ fontSize: 20, textAlign: "center" }}>
-              Where do you feel it?
-            </Text>
-          </View>
           <BodyDrawing
+            initialColor={currentEmotion.color}
             initialPaths={bodyDrawingData}
-            onNext={(svgData) => {
-              passHandleButtonClickToParent(currentEmotion, svgData);
+            passPathsToParent={(paths) => {
+              passBodyDrawingData(paths);
+            }}
+            onNext={() => {
+              passHandleButtonClickToParent(currentEmotion);
             }}
           />
         </View>
@@ -173,19 +229,22 @@ const EmotionDisplay = ({
       break;
     default: // Final, diary level
       return (
-        <View>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {/* Root */}
+        <View style={{ height: height * 0.87, width: width }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
+          >
+            {/* Journalling */}
             <View
               style={{
                 marginTop: 20,
-                flex: 1,
                 gap: 20,
                 alignItems: "center",
                 justifyContent: "space-between",
                 paddingBottom: 40,
               }}
             >
+              {/* Root */}
               <View>
                 <Text style={{ fontSize: 20 }}>
                   Why do you feel{" "}
@@ -282,82 +341,54 @@ const EmotionDisplay = ({
                 />
               </View>
             </View>
-            <View
+          </ScrollView>
+          {/* Save button */}
+          <View
+            style={{
+              position: "absolute",
+              bottom: 20,
+              alignSelf: "center",
+              // flexDirection: "row",
+              // justifyContent: "center",
+              // paddingBottom: 20,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                handleCreateLog();
+              }}
               style={{
                 flexDirection: "row",
+                paddingHorizontal: 30,
                 justifyContent: "center",
+                gap: 10,
+                alignItems: "center",
+                height: 60,
+                backgroundColor: "#e3d7b7",
+                borderRadius: 50,
               }}
             >
-              <TouchableOpacity
-                onPress={() => {
-                  handleCreateLog();
-                }}
-                style={{
-                  flexDirection: "row",
-                  gap: 16,
-                  width: 320,
-                  paddingHorizontal: 20,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: 60,
-                  backgroundColor: "#e3d7b7",
-                  borderRadius: 20,
-                }}
-              >
-                <Text style={{ fontSize: 24 }}>Save</Text>
-                <AntDesign name="arrowright" size={30} color="black" />
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
+              <Text style={{ fontSize: 24 }}>
+                Save{" "}
+                {/* <Text
+                    style={{
+                      color: currentEmotion.color,
+                      // Shadow
+                      textShadowColor: "rgba(0, 0, 0, 0.2)",
+                      textShadowOffset: { width: -1, height: 1 },
+                      textShadowRadius: 10,
+                    }}
+                  >
+                    {currentEmotion.name}
+                  </Text> */}
+              </Text>
+              <FontAwesome6 name="check" size={26} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
       );
       break;
   }
-
-  // OLD
-  // switch (level) {
-  //   case 0:
-  //     return (
-  //       <View style={styles.start}>
-  //         <Text style={styles.startText}>Add a new emotion:</Text>
-  //         <View style={styles.button}>
-  //           <Button onPress={onStart} title="+" color="black" />
-  //         </View>
-  //       </View>
-  //     );
-  //   case 2:
-  //     if (url === emotionTable) {
-  //       console.log("url = emotionTable");
-  //       setUrl(emotionTable + "/" + currentEmotion);
-  //     }
-  //     break;
-  //   case 3:
-  //     if (url === emotionTable + "/" + url.search(/./)) {
-  //       setUrl(emotionTable + "/" + currentEmotion);
-  //     }
-  //     break;
-  //   default:
-  //     break;
-  // }
-
-  // return (
-  //   <View style={styles.emotionContainer}>
-  //     {isLoading ? (
-  //       <ActivityIndicator />
-  //     ) : (
-  //       data.map((emotion) => {
-  //         return (
-  //           <Emotion
-  //             key={emotion["id"]}
-  //             onClick={onClick2}
-  //             name={emotion["name"]}
-  //             color="green"
-  //           />
-  //         );
-  //       })
-  //     )}
-  //   </View>
-  // );
 };
 
 const styles = StyleSheet.create({

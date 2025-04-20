@@ -18,22 +18,30 @@ import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Octicons from "@expo/vector-icons/Octicons";
+import { isColor } from "react-native-reanimated";
 
 type StrokeType = [string[], string, number];
 
 interface Props {
-  onNext: (svgData: StrokeType[]) => void;
+  onNext: () => void;
+  passPathsToParent: (data: StrokeType[]) => void;
+  initialColor: string;
   initialPaths?: StrokeType[];
 }
 
 const { height, width } = Dimensions.get("window");
 
-const BodyDrawing = ({ onNext, initialPaths }: Props) => {
+const BodyDrawing = ({
+  passPathsToParent,
+  onNext,
+  initialColor,
+  initialPaths,
+}: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
   const [currentPath, setCurrentPath] = useState<string[]>([]);
-  const [currentColor, setCurrentColor] = useState<string>("black");
-  const [currentSize, setCurrentSize] = useState<number>(1);
+  const [currentColor, setCurrentColor] = useState<string>(initialColor);
+  const [currentSize, setCurrentSize] = useState<number>(5);
 
   // Modal states
   const [isBrushSizeModalVisible, setIsBrushSizeModalVisible] = useState(false);
@@ -41,6 +49,7 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
 
   const silhouetteImage = require("../assets/images/silhouette_front.png");
 
+  // Functions
   const onTouchMove = (event: GestureResponderEvent) => {
     const newPath: string[] = [...currentPath];
     const locationX: number = event.nativeEvent.locationX,
@@ -73,8 +82,35 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
     }
   };
 
+  const toggleModals = (title?: string) => {
+    // Close all
+    setIsBrushSizeModalVisible(false);
+    setIsColorModalVisible(false);
+
+    // Toggle selected one if provided
+    switch (title) {
+      case "size":
+        isBrushSizeModalVisible
+          ? setIsBrushSizeModalVisible(false)
+          : setIsBrushSizeModalVisible(true);
+        break;
+      case "color":
+        isColorModalVisible
+          ? setIsColorModalVisible(false)
+          : setIsColorModalVisible(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Effects
   useEffect(() => {
-    if (initialPaths) {
+    passPathsToParent(paths);
+  }, [paths]);
+
+  useEffect(() => {
+    if (initialPaths && initialPaths.length > 1) {
       initialPaths.unshift(...paths);
       setPaths(initialPaths);
     }
@@ -154,7 +190,7 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
               <Octicons name="dot-fill" size={currentSize * 4} color="black" />
               <TouchableOpacity
                 onPress={() => {
-                  setIsBrushSizeModalVisible(false);
+                  toggleModals();
                 }}
               >
                 <AntDesign name="close" size={30} color="black" />
@@ -201,7 +237,7 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  setIsColorModalVisible(false);
+                  toggleModals();
                 }}
                 style={{ height: height * 0.05 }}
               >
@@ -226,7 +262,7 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
           <TouchableOpacity
             style={styles.drawingOptionsButton}
             onPress={() => {
-              setIsBrushSizeModalVisible(true);
+              toggleModals("size");
             }}
           >
             <MaterialCommunityIcons name="pencil" size={28} color="black" />
@@ -235,7 +271,7 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
           <TouchableOpacity
             style={styles.drawingOptionsButton}
             onPress={() => {
-              setIsColorModalVisible(true);
+              toggleModals("color");
             }}
           >
             <MaterialIcons name="color-lens" size={28} color="black" />
@@ -257,9 +293,7 @@ const BodyDrawing = ({ onNext, initialPaths }: Props) => {
               gap: 8,
               borderRadius: 50,
             }}
-            onPress={() => {
-              onNext(paths);
-            }}
+            onPress={onNext}
           >
             <Text style={{ fontSize: 20 }}>Next</Text>
             <AntDesign name="arrowright" size={24} color="black" />
@@ -293,6 +327,7 @@ export default BodyDrawing;
 
 const styles = StyleSheet.create({
   container: {
+    // borderWidth: 2,
     // flex: 1,
     // backgroundColor: "white",
   },
@@ -314,8 +349,8 @@ const styles = StyleSheet.create({
     // borderColor: "rgba(0,0,0,0.1)",
     // borderRadius: 10,
     // margin: 10,
-    height: height * 0.68,
-    marginBottom: 10,
+    height: height * 0.76,
+    marginBottom: 6,
   },
   drawingOptionsButton: {
     backgroundColor: "rgba(0,0,0,0.1)",
