@@ -73,6 +73,7 @@ const EmotionDisplay = ({
 
   // States
   const [isEditingEnabled, setIsEditingEnabled] = useState(false);
+  const [bottomPadding, setBottomPadding] = useState(50);
 
   // Functions
   const newCustomEmotion = () => {
@@ -101,6 +102,8 @@ const EmotionDisplay = ({
     ...data,
     { id: 0, color: "", level: 0, name: "placeholder", parent: null },
   ];
+
+  console.log(bottomPadding);
 
   // Emotion selection
   switch (level) {
@@ -140,7 +143,7 @@ const EmotionDisplay = ({
                 renderItem={({ index, item }) => {
                   // If hit last, previously inserted placeholder item, return button to create new emotion
                   if (index == data.length - 1) {
-                    if (isEditingEnabled) {
+                    if (isEditingEnabled || data.length == 1) {
                       return (
                         <View
                           style={{
@@ -232,7 +235,10 @@ const EmotionDisplay = ({
         <View style={{ height: height * 0.87, width: width }}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: bottomPadding,
+            }}
           >
             {/* Journalling */}
             <View
@@ -315,6 +321,12 @@ const EmotionDisplay = ({
                   Anything else?
                 </Text>
                 <TextInput
+                  onPressIn={() => {
+                    bottomPadding != 260 && setBottomPadding(260);
+                  }}
+                  onEndEditing={() => {
+                    setBottomPadding(50);
+                  }}
                   value={diaryData && diaryData.extra}
                   multiline={true}
                   numberOfLines={10}

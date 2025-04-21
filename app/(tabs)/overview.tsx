@@ -152,14 +152,6 @@ const overview = () => {
 
   const router = useRouter();
 
-  // const openLogModal = () => {
-  //   const params = {};
-  //   router.push({
-  //     pathname: "/logModal",
-  //     params: params,
-  //   });
-  // };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* If there are no logs yet */}
@@ -196,65 +188,28 @@ const overview = () => {
       )}
       {/* <Text>Overview</Text> */}
       <View style={{ paddingHorizontal: 8, height: height, width: width }}>
-        <Modal visible={isModalOpen} transparent={true}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "rgba(0,0,0,0.2)",
-              paddingVertical: 50,
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: modalData?.color,
-                width: width * 0.8,
-                flex: 1,
-                borderWidth: 2,
-              }}
-            >
-              {/* Title & time */}
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontWeight: "bold",
-                  }}
-                >
-                  {modalData?.emotion}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsModalOpen(false);
-                  }}
-                >
-                  <AntDesign name="close" size={32} color="black" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Sorted by date */}
           <FlatList
             contentContainerStyle={{ paddingBottom: 140, paddingTop: 10 }}
             data={logDataByDate}
             scrollEnabled={false}
-            renderItem={({ item }) => {
+            renderItem={({ item, index }) => {
               const logCollection = item;
+              const getFontSize = () => {
+                if (index == 0) {
+                  return 40;
+                } else if (index == 1) {
+                  return 34;
+                }
+                return 30;
+              };
               return (
                 <View>
                   <Text
                     style={{
                       fontWeight: "bold",
-                      fontSize: 30,
+                      fontSize: getFontSize(),
                       padding: 10,
                       marginTop: 10,
                     }}

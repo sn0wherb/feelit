@@ -23,7 +23,7 @@ const stockEmotionData = {
     Sad: {
       0: { name: "Lonely", color: "#5b78ba", level: 2 },
       1: { name: "Vulnerable", color: "#5b78ba", level: 2 },
-      2: { name: "In despair", color: "#5b78ba, level: 2" },
+      2: { name: "In despair", color: "#5b78ba", level: 2 },
       3: { name: "Guilty", color: "#5b78ba", level: 2 },
       4: { name: "Depressed", color: "#5b78ba", level: 2 },
       5: { name: "Hurt", color: "#5b78ba", level: 2 },
@@ -42,7 +42,7 @@ const stockEmotionData = {
       4: { name: "Mad", color: "#d06363", level: 2 },
       5: { name: "Bitter", color: "#d06363", level: 2 },
       6: { name: "Humiliated", color: "#d06363", level: 2 },
-      7: { name: "Let down", color: "#d06363, level: 2" },
+      7: { name: "Let down", color: "#d06363", level: 2 },
     },
     Fearful: {
       0: { name: "Threatened", color: "#7c846f", level: 2 },

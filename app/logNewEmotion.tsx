@@ -235,9 +235,6 @@ export default function logNewEmotion() {
         break;
     }
   };
-  console.log("new");
-
-  console.log(data);
 
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
