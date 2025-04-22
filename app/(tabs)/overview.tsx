@@ -59,18 +59,20 @@ const overview = () => {
     let sortedIndex = 0;
     let sortedData: FormattedLogDataType[] = [];
 
+    // Check if date of current log is in the margins of this week
     const isInWeek = (date: Date) => {
-      for (let i = 0; i < 5; i++) {
-        const comparisonDate = date;
-        comparisonDate.setDate(date.getDate() + i);
+      // Reduce day difference between the given date and today's date
+      for (let i = 6; i >= 0; i--) {
+        const givenDate = new Date(date);
+        givenDate.setDate(date.getDate() + i);
 
-        if (String(comparisonDate).slice(0, 10) == String(today).slice(0, 10)) {
-          if (i == 0) {
-            return "Today";
+        if (String(givenDate).slice(0, 10) == String(today).slice(0, 10)) {
+          if (i > 1) {
+            return date.toLocaleDateString("default", { weekday: "long" });
           } else if (i == 1) {
             return "Yesterday";
           }
-          return date.toLocaleDateString("default", { weekday: "long" });
+          return "Today";
         }
       }
       return false;
@@ -78,38 +80,39 @@ const overview = () => {
 
     // Iterate through each log
     data.map((value) => {
-      let date = value.created_at.slice(0, 10);
+      let date = "";
       let dateFormat = new Date(value.created_at);
+      const yearString = String(dateFormat.getFullYear());
+      const currentYearString = String(today.getFullYear());
+      const isItCurrentYear = yearString == currentYearString ? true : false;
+      const monthString = String(
+        dateFormat.toLocaleDateString("default", { month: "long" })
+      );
+      const currentMonth = String(
+        today.toLocaleDateString("default", { month: "long" })
+      );
+      const isItCurrentMoth = monthString == currentMonth ? true : false;
 
-      const inWeek = isInWeek(dateFormat);
+      // If log is of this year and month, check if it's in this week, else don't bother lol
+      const inWeek =
+        isItCurrentYear && isItCurrentMoth ? isInWeek(dateFormat) : false;
 
       // FORMAT DATE
       if (inWeek) {
         date = inWeek;
       } else {
-        let parts = date.split("-");
-        let newDate = new Date(
-          Number(parts[0]),
-          Number(parts[1]) - 1,
-          Number(parts[2])
-        );
-
         const dayString = String(
-            newDate.toLocaleDateString("default", { weekday: "long" })
+            dateFormat.toLocaleDateString("default", { weekday: "long" })
           ),
-          dateString = String(newDate.getDate()),
-          monthString = String(
-            newDate.toLocaleDateString("default", { month: "long" })
-          ),
-          yearString = String(newDate.getFullYear());
+          dateString = String(dateFormat.getDate());
 
         // If year == current year, display weekday name, but not year. Otherwise, don't display weekday name, but display year.
-        date =
-          yearString == String(today.getFullYear())
-            ? `${dayString}, ${dateString} ${monthString}`
-            : `${dateString} ${monthString} ${yearString}`;
+        date = isItCurrentYear
+          ? `${dayString}, ${dateString} ${monthString}`
+          : `${dateString} ${monthString} ${yearString}`;
       }
 
+      // INSERT LOG
       // Empty index - initialize entry on current index
       if (!sortedData[sortedIndex]) {
         sortedData[sortedIndex] = { date: date, logs: [] };

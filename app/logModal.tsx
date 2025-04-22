@@ -229,11 +229,7 @@ export default function logModal() {
               }}
             >
               <Text style={styles.date}>
-                {String(logData.date) == "Today" ||
-                String(logData.date) == "Yesterday"
-                  ? logData.date
-                  : "On " + logData.date}{" "}
-                • {logData.time}
+                {logData.date} • {logData.time}
               </Text>
             </View>
           </View>

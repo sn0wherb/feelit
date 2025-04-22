@@ -42,12 +42,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="recently"
+        name="analytics"
         options={{
           title: "Recently",
           tabBarIcon: ({ color }) => (
-            <FontAwesome
-              name="calendar-o"
+            <FontAwesome6
+              name="chart-simple"
               size={28}
               color={color}
               style={{ height: 28, marginTop: 10 }}
