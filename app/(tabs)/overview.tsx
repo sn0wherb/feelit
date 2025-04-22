@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Modal,
@@ -38,8 +39,10 @@ const overview = () => {
   const [logDataByDate, setLogDataByDate] = useState<FormattedLogDataType[]>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<LogType>();
+  const [loading, setLoading] = useState(true);
 
   const db = useSQLiteContext();
+  const router = useRouter();
 
   const getLogs = async () => {
     try {
@@ -50,6 +53,8 @@ const overview = () => {
       sortLogDataByDate(data);
     } catch (e) {
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -153,205 +158,216 @@ const overview = () => {
     }, [])
   );
 
-  const router = useRouter();
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color="black" />
+      </View>
+    );
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        {/* If there are no logs yet */}
+        {logData.length == 0 && (
+          <View
+            style={{
+              height: height,
+              width: width,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                marginBottom: 60,
+                marginHorizontal: 32,
+                fontSize: 30,
+                textAlign: "center",
+              }}
+            >
+              Your emotions will appear here!
+            </Text>
+            <Text
+              style={{
+                marginBottom: 30,
+                marginHorizontal: 40,
+                fontSize: 26,
+                textAlign: "center",
+              }}
+            >
+              Click on '+' to add your first emotion
+            </Text>
+          </View>
+        )}
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* If there are no logs yet */}
-      {logData.length == 0 && (
-        <View
-          style={{
-            height: height,
-            width: width,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text
-            style={{
-              marginBottom: 60,
-              marginHorizontal: 32,
-              fontSize: 30,
-              textAlign: "center",
-            }}
-          >
-            Your emotions will appear here!
-          </Text>
-          <Text
-            style={{
-              marginBottom: 30,
-              marginHorizontal: 40,
-              fontSize: 26,
-              textAlign: "center",
-            }}
-          >
-            Click on '+' to add your first emotion
-          </Text>
-        </View>
-      )}
-      {/* <Text>Overview</Text> */}
-      <View style={{ paddingHorizontal: 8, height: height, width: width }}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Sorted by date */}
-          <FlatList
-            contentContainerStyle={{ paddingBottom: 140, paddingTop: 10 }}
-            data={logDataByDate}
-            scrollEnabled={false}
-            renderItem={({ item, index }) => {
-              const logCollection = item;
-              const getFontSize = () => {
-                if (index == 0) {
-                  return 40;
-                } else if (index == 1) {
-                  return 34;
-                }
-                return 30;
-              };
-              return (
-                <View>
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: getFontSize(),
-                      padding: 10,
-                      marginTop: 10,
-                    }}
-                  >
-                    {logCollection.date}
-                  </Text>
-                  {/* Individual logs */}
-                  <FlatList
-                    data={logCollection.logs}
-                    scrollEnabled={false}
-                    renderItem={({ item }) => {
-                      return (
-                        // Card
-                        <TouchableOpacity
-                          style={{
-                            marginHorizontal: 10,
-                            marginVertical: 8,
-                            padding: 16,
-                            backgroundColor: item.color,
-                            borderRadius: 10,
-                            // Shadow
-                            shadowColor: item.color,
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowOpacity: 0.8,
-                            shadowRadius: 6,
-                          }}
-                          key={item.id}
-                          activeOpacity={0.6}
-                          onPress={() => {
-                            openLogModal(
-                              item,
-                              logCollection.date,
-                              getLocalTime(item["created_at"])
-                            );
-                          }}
-                        >
-                          {/* Title & time */}
-                          <View
+        <View style={{ paddingHorizontal: 8, height: height, width: width }}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Sorted by date */}
+            <FlatList
+              contentContainerStyle={{ paddingBottom: 140, paddingTop: 10 }}
+              data={logDataByDate}
+              scrollEnabled={false}
+              renderItem={({ item, index }) => {
+                const logCollection = item;
+                const getFontSize = () => {
+                  if (index == 0) {
+                    return 40;
+                  } else if (index == 1) {
+                    return 34;
+                  }
+                  return 30;
+                };
+                return (
+                  <View>
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: getFontSize(),
+                        padding: 10,
+                        marginTop: 10,
+                      }}
+                    >
+                      {logCollection.date}
+                    </Text>
+                    {/* Individual logs */}
+                    <FlatList
+                      data={logCollection.logs}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => {
+                        return (
+                          // Card
+                          <TouchableOpacity
                             style={{
-                              flex: 1,
-                              flexDirection: "row",
-                              justifyContent: "space-between",
+                              marginHorizontal: 10,
+                              marginVertical: 8,
+                              padding: 16,
+                              backgroundColor: item.color,
+                              borderRadius: 10,
+                              // Shadow
+                              shadowColor: item.color,
+                              shadowOffset: { width: 0, height: 0 },
+                              shadowOpacity: 0.8,
+                              shadowRadius: 6,
+                            }}
+                            key={item.id}
+                            activeOpacity={0.6}
+                            onPress={() => {
+                              openLogModal(
+                                item,
+                                logCollection.date,
+                                getLocalTime(item["created_at"])
+                              );
                             }}
                           >
-                            <Text
+                            {/* Title & time */}
+                            <View
                               style={{
-                                fontSize: 20,
-                                fontWeight: "bold",
+                                flex: 1,
+                                flexDirection: "row",
+                                justifyContent: "space-between",
                               }}
                             >
-                              {item.emotion}
-                            </Text>
-                            <Text style={{ fontSize: 16 }}>
-                              {getLocalTime(item["created_at"])}
-                            </Text>
-                          </View>
+                              <Text
+                                style={{
+                                  fontSize: 20,
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {item.emotion}
+                              </Text>
+                              <Text style={{ fontSize: 16 }}>
+                                {getLocalTime(item["created_at"])}
+                              </Text>
+                            </View>
 
-                          {/* Details */}
-                          {item.root.length > 0 && (
-                            <View style={{ marginTop: 20 }}>
-                              <Text
-                                style={[
-                                  styles.emotionDetailTitle,
-                                  {
-                                    width: 50,
-                                    backgroundColor: "rgba(0, 0, 0, 0.1)",
-                                  },
-                                ]}
-                              >
-                                Cause
-                              </Text>
-                              <Text
-                                style={{
-                                  marginBottom: 6,
-                                  paddingHorizontal: 4,
-                                }}
-                              >
-                                {item.root}
-                              </Text>
-                            </View>
-                          )}
-                          {item.need.length > 0 && (
-                            <View style={{ marginTop: 8 }}>
-                              <Text
-                                style={[
-                                  styles.emotionDetailTitle,
-                                  {
-                                    width: 44,
-                                    backgroundColor: "rgba(0, 0, 0, 0.17)",
-                                  },
-                                ]}
-                              >
-                                Need
-                              </Text>
-                              <Text
-                                style={{
-                                  marginBottom: 6,
-                                  paddingHorizontal: 4,
-                                }}
-                              >
-                                {item.need}
-                              </Text>
-                            </View>
-                          )}
-                          {item.extra.length > 0 && (
-                            <View style={{ marginTop: 8 }}>
-                              <Text
-                                style={[
-                                  styles.emotionDetailTitle,
-                                  {
-                                    width: 42,
-                                    backgroundColor: "rgba(0, 0, 0, 0.23)",
-                                  },
-                                ]}
-                              >
-                                Diary
-                              </Text>
-                              <Text
-                                style={{
-                                  marginBottom: 6,
-                                  paddingHorizontal: 4,
-                                }}
-                              >
-                                {item.extra}
-                              </Text>
-                            </View>
-                          )}
-                        </TouchableOpacity>
-                      );
-                    }}
-                  />
-                </View>
-              );
-            }}
-          />
-        </ScrollView>
-      </View>
-    </SafeAreaView>
-  );
+                            {/* Details */}
+                            {item.root.length > 0 && (
+                              <View style={{ marginTop: 20 }}>
+                                <Text
+                                  style={[
+                                    styles.emotionDetailTitle,
+                                    {
+                                      width: 50,
+                                      backgroundColor: "rgba(0, 0, 0, 0.1)",
+                                    },
+                                  ]}
+                                >
+                                  Cause
+                                </Text>
+                                <Text
+                                  style={{
+                                    marginBottom: 6,
+                                    paddingHorizontal: 4,
+                                  }}
+                                >
+                                  {item.root}
+                                </Text>
+                              </View>
+                            )}
+                            {item.need.length > 0 && (
+                              <View style={{ marginTop: 8 }}>
+                                <Text
+                                  style={[
+                                    styles.emotionDetailTitle,
+                                    {
+                                      width: 44,
+                                      backgroundColor: "rgba(0, 0, 0, 0.17)",
+                                    },
+                                  ]}
+                                >
+                                  Need
+                                </Text>
+                                <Text
+                                  style={{
+                                    marginBottom: 6,
+                                    paddingHorizontal: 4,
+                                  }}
+                                >
+                                  {item.need}
+                                </Text>
+                              </View>
+                            )}
+                            {item.extra.length > 0 && (
+                              <View style={{ marginTop: 8 }}>
+                                <Text
+                                  style={[
+                                    styles.emotionDetailTitle,
+                                    {
+                                      width: 42,
+                                      backgroundColor: "rgba(0, 0, 0, 0.23)",
+                                    },
+                                  ]}
+                                >
+                                  Diary
+                                </Text>
+                                <Text
+                                  style={{
+                                    marginBottom: 6,
+                                    paddingHorizontal: 4,
+                                  }}
+                                >
+                                  {item.extra}
+                                </Text>
+                              </View>
+                            )}
+                          </TouchableOpacity>
+                        );
+                      }}
+                    />
+                  </View>
+                );
+              }}
+            />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
 };
 
 export default overview;

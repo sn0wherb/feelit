@@ -9,6 +9,7 @@ import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Redirect, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 interface Props {
   level: number;
@@ -21,7 +22,7 @@ interface Props {
 
 const { width, height } = Dimensions.get("window");
 
-const Header = ({
+const Controls = ({
   level,
   handleGoBack,
   handleSave,
@@ -71,31 +72,30 @@ const Header = ({
       return (
         <View
           style={{
-            top: height * 0.01,
+            bottom: height * 0.06,
+            left: height * 0.03,
             position: "absolute",
             zIndex: 1,
             elevation: 1,
-            alignSelf: "center",
           }}
         >
           <View
             style={{
-              flexDirection: "row",
+              paddingHorizontal: 10,
+              justifyContent: "center",
               alignItems: "center",
-              marginRight: 10,
+              height: 50,
+              width: 50,
+              backgroundColor: "rgba(227, 215, 183, 0.8)",
+              borderRadius: 30,
             }}
           >
-            <View
-              style={{
-                backgroundColor: "rgba(227, 215, 183, 0.8)",
-                borderRadius: 50,
-                paddingHorizontal: 20,
-                height: 60,
-                justifyContent: "center",
-              }}
+            <TouchableOpacity
+              onPress={handleGoBack}
+              style={{ transform: [{ rotateY: "180deg" }] }}
             >
-              <Text style={{ fontSize: 28 }}>How are you feeling?</Text>
-            </View>
+              <MaterialIcons name="logout" size={28} color="black" />
+            </TouchableOpacity>
           </View>
         </View>
       );
@@ -104,45 +104,48 @@ const Header = ({
       return (
         <View
           style={{
-            justifyContent: "space-around",
-            alignItems: "center",
-            flexDirection: "row",
-            width: width,
-            paddingVertical: 10,
-            // top: 10,
+            bottom: height * 0.06,
             position: "absolute",
             zIndex: 1,
             elevation: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            width: width,
             paddingHorizontal: 20,
           }}
         >
-          {/* Current emotion */}
+          {/* Back */}
           <View
             style={{
-              marginHorizontal: 14,
-              // paddingRight: 2,
-              height: 60,
-              flex: 1,
-              flexDirection: "row",
+              paddingHorizontal: 10,
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: color,
-              borderRadius: 50,
-              // borderBottomLeftRadius: 20,
-              // borderTopLeftRadius: 20,
-              // borderBottomRightRadius: 30,
-              // borderTopRightRadius: 30,
+              height: 50,
+              width: 50,
+              backgroundColor: "rgba(227, 215, 183, 0.8)",
+              borderRadius: 30,
             }}
           >
-            <Text
-              style={{
-                fontSize: 26,
-                paddingLeft: 8,
-                paddingRight: 10,
-              }}
-            >
-              {name}
-            </Text>
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="arrowleft" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
+          {/* Save */}
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 54,
+              width: 54,
+              backgroundColor: "rgba(227, 215, 183, 0.8)",
+              borderRadius: 50,
+            }}
+          >
+            <TouchableOpacity onPress={handleSave}>
+              <FontAwesome6 name="check" size={32} color="black" />
+            </TouchableOpacity>
           </View>
         </View>
       );
@@ -173,19 +176,6 @@ const Header = ({
             <TouchableOpacity onPress={handleGoBack}>
               <AntDesign name="close" size={26} color="black" />
             </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginHorizontal: 14,
-              flex: 1,
-              height: 60,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: color,
-              borderRadius: 30,
-            }}
-          >
-            <Text style={{ fontSize: 24 }}>Where do you feel it?</Text>
           </View>
         </View>
       );
@@ -235,6 +225,6 @@ const Header = ({
   }
 };
 
-export default Header;
+export default Controls;
 
 const styles = StyleSheet.create({});

@@ -103,8 +103,6 @@ const EmotionDisplay = ({
     { id: 0, color: "", level: 0, name: "placeholder", parent: null },
   ];
 
-  console.log(bottomPadding);
-
   // Emotion selection
   switch (level) {
     case 1: // Fallthrough
@@ -122,7 +120,7 @@ const EmotionDisplay = ({
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20, paddingTop: 70 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingTop: 80 }}
           >
             <Pressable
               onLongPress={() => {

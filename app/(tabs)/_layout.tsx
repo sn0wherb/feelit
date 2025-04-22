@@ -90,7 +90,7 @@ export default function TabLayout() {
             <FontAwesome6
               name="person"
               size={28}
-              style={{ height: 28, marginTop: 10 }}
+              style={{ height: 30, marginTop: 10 }}
               color={color}
             />
           ),

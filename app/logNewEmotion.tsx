@@ -15,6 +15,7 @@ import EmotionDisplay from "@/components/EmotionDisplay";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
+import Controls from "@/components/Controls";
 
 type EmotionType = {
   id: number;
@@ -160,6 +161,7 @@ export default function logNewEmotion() {
 
   const handleCreateLog = async () => {
     try {
+      // Save log to sql db
       await db.runAsync(
         "INSERT INTO emotion_logs (emotion, color, root, need, extra) VALUES (?,?,?,?,?);",
         [
@@ -170,6 +172,7 @@ export default function logNewEmotion() {
           diaryData?.extra ? diaryData?.extra : "",
         ]
       );
+      // Convert bodydrawing to sql-friendly data and store it in a separate table with a foreign key to this log
       const thisLogId = await db.getFirstAsync<{ id: number }>(
         "SELECT id FROM emotion_logs WHERE id = (SELECT MAX(id) FROM emotion_logs);"
       );
@@ -187,7 +190,7 @@ export default function logNewEmotion() {
 
   const generateSvgEntry = (id: number) => {
     let query = `INSERT INTO bodydrawing_svg_paths (id, path, color, size) VALUES `;
-    if (bodyDrawingData) {
+    if (bodyDrawingData && bodyDrawingData.length > 1) {
       bodyDrawingData.shift();
       bodyDrawingData.forEach((value, index) => {
         const paths = value[0].join("/");
@@ -269,6 +272,13 @@ export default function logNewEmotion() {
               refresh={() => {
                 setRefresh((refresh) => refresh + 1);
               }}
+            />
+            <Controls
+              level={level}
+              handleGoBack={handleGoBack}
+              handleSave={handleSave}
+              name={currentEmotion ? currentEmotion.name : ""}
+              color={currentEmotion ? currentEmotion.color : ""}
             />
           </View>
         )}
