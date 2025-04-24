@@ -26,7 +26,10 @@ const settings = () => {
 
   const dropCustomEmotions = async () => {
     try {
-      await db.execAsync("DROP TABLE user_created_emotions;");
+      await db.execAsync(`
+        ALTER TABLE user_created_emotions
+        ADD COLUMN isCustom INTEGER DEFAULT 1
+        `);
     } catch (e) {
       console.error(e);
     }

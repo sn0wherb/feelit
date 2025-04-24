@@ -47,7 +47,7 @@ const overview = () => {
   const getLogs = async () => {
     try {
       const data = await db.getAllAsync<LogType>(
-        "SELECT * FROM emotion_logs ORDER BY created_at DESC"
+        "SELECT * FROM emotion_logs WHERE created_at ORDER BY created_at DESC"
       );
       setLogData(data);
       sortLogDataByDate(data);

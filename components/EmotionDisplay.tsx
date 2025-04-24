@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Touchable,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Emotion from "./Emotion";
@@ -20,6 +21,7 @@ import BodyDrawing from "./BodyDrawing";
 import { useGlobalSearchParams, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useSQLiteContext } from "expo-sqlite";
+import * as Haptics from "expo-haptics";
 
 type DiaryType = {
   root: string | undefined;
@@ -49,6 +51,7 @@ type EmotionType = {
   parent: string | null;
   color: string;
   level: number;
+  isCustom: number;
 };
 
 type StrokeType = [string[], string, number];
@@ -86,13 +89,32 @@ const EmotionDisplay = ({
     });
   };
 
-  const deleteEmotion = async (id: number) => {
-    try {
-      await db.runAsync("DELETE FROM user_created_emotions WHERE id = ?", [id]);
-      refresh();
-    } catch (e) {
-      console.error(e);
-    }
+  const deleteEmotion = (id: number) => {
+    Alert.alert(
+      "Delete emotion?",
+      "This emotion will be permanently deleted.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await db.runAsync(
+                "DELETE FROM user_created_emotions WHERE id = ?",
+                [id]
+              );
+              refresh();
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   const height = Dimensions.get("window").height;
@@ -100,7 +122,14 @@ const EmotionDisplay = ({
   // Add a placeholder +1 item at the end, in the place of which a button to create a new emotion will be placed
   data = [
     ...data,
-    { id: 0, color: "", level: 0, name: "placeholder", parent: null },
+    {
+      id: 0,
+      color: "",
+      level: 0,
+      name: "placeholder",
+      parent: null,
+      isCustom: 0,
+    },
   ];
 
   // Emotion selection
@@ -124,6 +153,7 @@ const EmotionDisplay = ({
           >
             <Pressable
               onLongPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setIsEditingEnabled(true);
               }}
             >
@@ -177,7 +207,7 @@ const EmotionDisplay = ({
                   // Else, return normal emotion
                   return (
                     <View>
-                      {isEditingEnabled && (
+                      {isEditingEnabled && item.isCustom == 1 && (
                         <TouchableOpacity
                           style={{
                             position: "absolute",

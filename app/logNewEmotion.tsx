@@ -23,6 +23,7 @@ type EmotionType = {
   parent: string | null;
   color: string;
   level: number;
+  isCustom: number;
 };
 
 type DiaryType = {

@@ -29,7 +29,7 @@ const newCustomEmotion = () => {
   // Deconstruct received data
   const data = useLocalSearchParams();
   const level = Number(data.level);
-  const name = data.name ? String(data.name) : null;
+  const parent = data.name ? String(data.name) : null;
   const color = data.color ? String(data.color) : undefined;
 
   // New emotion states
@@ -46,7 +46,7 @@ const newCustomEmotion = () => {
     try {
       await db.runAsync(
         `INSERT INTO user_created_emotions (name, parent, color, level) VALUES (?,?,?,?)`,
-        [title, name, newColor, level]
+        [title, parent, newColor, level]
       );
       setSaved(true);
     } catch (e) {
@@ -75,10 +75,11 @@ const newCustomEmotion = () => {
             handleGoBack={handleGoBack}
             custom={true}
           />
-          {name && (
+          {parent && (
             <View>
               <Text style={[styles.parentName, { color: color }]}>
-                {String(name).charAt(0).toLowerCase() + String(name).slice(1)}
+                {String(parent).charAt(0).toLowerCase() +
+                  String(parent).slice(1)}
               </Text>
             </View>
           )}
@@ -95,8 +96,9 @@ const newCustomEmotion = () => {
             >
               <TextInput
                 multiline={false}
-                placeholder={"My emotion"}
-                maxLength={16}
+                placeholder={"Enter title"}
+                numberOfLines={2}
+                maxLength={30}
                 placeholderTextColor="#555"
                 onChangeText={(value) => setTitle(value.trim())}
                 style={{
