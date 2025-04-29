@@ -5,11 +5,14 @@ import {
   Text,
   TouchableHighlight,
   View,
+  FlatList,
 } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
 import { useSQLiteContext } from "expo-sqlite";
+import { useFocusEffect } from "expo-router";
+import PagerView from "react-native-pager-view";
 
 const { width, height } = Dimensions.get("window");
 
@@ -35,6 +38,18 @@ const settings = () => {
     }
   };
 
+  const testFunction = () => {
+    console.log("date: ", new Date(Date.UTC(2025, 0, 1)));
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      // testFunction();
+    }, [])
+  );
+
+  const testData = [0, 1, 2, 3, 4, 5, 6];
+
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -56,6 +71,18 @@ const settings = () => {
         >
           <Text>Drop custom emotions table</Text>
         </TouchableHighlight>
+        <FlatList
+          data={testData}
+          horizontal
+          pagingEnabled
+          renderItem={({ item }) => {
+            return (
+              <View style={{ width: width }}>
+                <Text>{item}</Text>
+              </View>
+            );
+          }}
+        />
       </View>
     </SafeAreaView>
   );
