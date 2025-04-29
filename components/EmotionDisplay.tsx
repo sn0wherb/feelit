@@ -22,6 +22,8 @@ import { useGlobalSearchParams, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useSQLiteContext } from "expo-sqlite";
 import * as Haptics from "expo-haptics";
+import { uncapitalise } from "@/assets/functions";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 type DiaryType = {
   root: string | undefined;
@@ -33,15 +35,14 @@ interface Props {
   level: number;
   data: EmotionType[];
   currentEmotion: EmotionType;
-  passHandleButtonClickToParent: (
-    item: EmotionType,
-    svgData?: StrokeType[]
-  ) => void;
+  passHandleClickEmotion: (item: EmotionType, svgData?: StrokeType[]) => void;
   handleCreateLog: () => void;
   bodyDrawingData: StrokeType[] | undefined;
   passBodyDrawingData: (data: StrokeType[]) => void;
   diaryData: DiaryType | undefined;
   passDiaryData: (field: string, data: string) => void;
+  isEditingEnabled: boolean;
+  toggleEditing: (state: boolean) => void;
   refresh: () => void;
 }
 
@@ -62,12 +63,14 @@ const EmotionDisplay = ({
   level,
   data,
   currentEmotion,
-  passHandleButtonClickToParent,
+  passHandleClickEmotion,
   handleCreateLog,
   bodyDrawingData,
   diaryData,
   passDiaryData,
   passBodyDrawingData,
+  toggleEditing,
+  isEditingEnabled,
   refresh,
 }: Props) => {
   const router = useRouter();
@@ -75,7 +78,6 @@ const EmotionDisplay = ({
   const db = useSQLiteContext();
 
   // States
-  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
   const [bottomPadding, setBottomPadding] = useState(50);
 
   // Functions
@@ -154,7 +156,7 @@ const EmotionDisplay = ({
             <Pressable
               onLongPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                setIsEditingEnabled(true);
+                toggleEditing(true);
               }}
             >
               <FlatList
@@ -223,14 +225,20 @@ const EmotionDisplay = ({
                             deleteEmotion(item.id);
                           }}
                         >
-                          <AntDesign name="close" size={22} color="black" />
+                          <MaterialCommunityIcons
+                            name="trash-can-outline"
+                            size={22}
+                            color="black"
+                          />
                         </TouchableOpacity>
                       )}
                       <Emotion
                         name={item["name"]}
                         color={item["color"]}
                         onClick={() => {
-                          passHandleButtonClickToParent(item);
+                          isEditingEnabled
+                            ? () => {} // Disable advancing if editing is enabled
+                            : passHandleClickEmotion(item);
                         }}
                       />
                     </View>
@@ -252,7 +260,7 @@ const EmotionDisplay = ({
               passBodyDrawingData(paths);
             }}
             onNext={() => {
-              passHandleButtonClickToParent(currentEmotion);
+              passHandleClickEmotion(currentEmotion);
             }}
           />
         </View>
@@ -281,10 +289,7 @@ const EmotionDisplay = ({
               {/* Root */}
               <View>
                 <Text style={{ fontSize: 20 }}>
-                  Why do you feel{" "}
-                  {String(currentEmotion.name).charAt(0).toLowerCase() +
-                    String(currentEmotion.name).slice(1)}
-                  ?
+                  Why do you feel{" " + uncapitalise(currentEmotion.name)}?
                 </Text>
                 <TextInput
                   value={diaryData && diaryData.root}

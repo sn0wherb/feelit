@@ -22,6 +22,7 @@ function Emotion({ name, color, onClick }: Props) {
       width: 134,
       margin: 10,
       marginHorizontal: 14,
+      paddingHorizontal: 8,
       backgroundColor: color,
       justifyContent: "center",
       alignItems: "center",
@@ -44,7 +45,7 @@ function Emotion({ name, color, onClick }: Props) {
         }}
         activeOpacity={0.6}
       >
-        <Text style={{ fontSize: 18 }}>{name}</Text>
+        <Text style={{ fontSize: 19 }}>{name}</Text>
       </TouchableOpacity>
     </View>
   );

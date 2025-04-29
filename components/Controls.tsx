@@ -17,6 +17,8 @@ interface Props {
   handleSave?: () => void;
   color: string;
   name: string;
+  isEditingEnabled: boolean;
+  toggleEditing: (state: boolean) => void;
   custom?: boolean;
 }
 
@@ -28,6 +30,8 @@ const Controls = ({
   handleSave,
   color,
   name,
+  isEditingEnabled,
+  toggleEditing,
   custom = false,
 }: Props) => {
   const router = useRouter();
@@ -63,6 +67,39 @@ const Controls = ({
         <Text style={{ fontSize: 28, marginLeft: 16 }}>
           {level > 1 ? "Create a new type of" : "Create a new emotion"}
         </Text>
+      </View>
+    );
+  } else if (isEditingEnabled) {
+    return (
+      <View
+        style={{
+          bottom: height * 0.06,
+          left: height * 0.03,
+          position: "absolute",
+          zIndex: 1,
+          elevation: 1,
+        }}
+      >
+        <View
+          style={{
+            paddingHorizontal: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 50,
+            width: 50,
+            backgroundColor: "rgba(227, 215, 183, 0.8)",
+            borderRadius: 30,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              toggleEditing(false);
+            }}
+            style={{ transform: [{ rotateY: "180deg" }] }}
+          >
+            <AntDesign name="close" size={26} color="black" />
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

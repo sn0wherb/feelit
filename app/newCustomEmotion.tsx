@@ -19,6 +19,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import { useSQLiteContext } from "expo-sqlite";
 import SuccessScreen from "@/components/SuccessScreen";
+import { uncapitalise } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -78,8 +79,7 @@ const newCustomEmotion = () => {
           {parent && (
             <View>
               <Text style={[styles.parentName, { color: color }]}>
-                {String(parent).charAt(0).toLowerCase() +
-                  String(parent).slice(1)}
+                {uncapitalise(parent)}
               </Text>
             </View>
           )}
@@ -158,7 +158,7 @@ const newCustomEmotion = () => {
                 alignItems: "center",
                 height: 60,
                 backgroundColor: "#e3d7b7",
-                borderRadius: 20,
+                borderRadius: 30,
               }}
             >
               <Text style={{ fontSize: 24 }}>Save</Text>

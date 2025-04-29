@@ -38,14 +38,15 @@ const { width, height } = Dimensions.get("window");
 
 export default function logNewEmotion() {
   // STATES
-  const [level, setLevel] = useState<number>(1),
-    [emotionStack, setEmotionStack] = useState<EmotionType[]>([]),
-    [data, setData] = useState<EmotionType[]>([]),
-    [bodyDrawingData, setBodyDrawingData] = useState<StrokeType[] | undefined>(
-      undefined
-    ),
-    [diaryData, setDiaryData] = useState<DiaryType | undefined>(undefined),
-    [refresh, setRefresh] = useState(0);
+  const [level, setLevel] = useState<number>(1);
+  const [emotionStack, setEmotionStack] = useState<EmotionType[]>([]);
+  const [data, setData] = useState<EmotionType[]>([]);
+  const [bodyDrawingData, setBodyDrawingData] = useState<
+    StrokeType[] | undefined
+  >(undefined);
+  const [diaryData, setDiaryData] = useState<DiaryType | undefined>(undefined);
+  const [refresh, setRefresh] = useState(0);
+  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
 
   // CONSTANTS
   const {
@@ -152,7 +153,8 @@ export default function logNewEmotion() {
     setEmotionStack([...emotionStack, currentEmotion]);
   };
 
-  const handleButtonClick = (item: EmotionType, svgData?: StrokeType[]) => {
+  // Clicking on an emotion
+  const handleClickEmotion = (item: EmotionType, svgData?: StrokeType[]) => {
     if (level === 4 && svgData && svgData.length > 1) {
       setBodyDrawingData(svgData);
     }
@@ -240,6 +242,10 @@ export default function logNewEmotion() {
     }
   };
 
+  const handleToggleEditing = (state: boolean) => {
+    setIsEditingEnabled(state);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
       <SafeAreaView style={styles.container}>
@@ -255,9 +261,9 @@ export default function logNewEmotion() {
             <Header
               level={level}
               handleGoBack={handleGoBack}
-              handleSave={handleSave}
               name={currentEmotion ? currentEmotion.name : ""}
               color={currentEmotion ? currentEmotion.color : ""}
+              isEditingEnabled={isEditingEnabled}
             />
 
             <EmotionDisplay
@@ -268,8 +274,10 @@ export default function logNewEmotion() {
               passBodyDrawingData={updateBodyDrawingData}
               diaryData={diaryData}
               passDiaryData={updateDiaryData}
-              passHandleButtonClickToParent={handleButtonClick}
+              passHandleClickEmotion={handleClickEmotion}
               handleCreateLog={handleCreateLog}
+              isEditingEnabled={isEditingEnabled}
+              toggleEditing={handleToggleEditing}
               refresh={() => {
                 setRefresh((refresh) => refresh + 1);
               }}
@@ -280,6 +288,8 @@ export default function logNewEmotion() {
               handleSave={handleSave}
               name={currentEmotion ? currentEmotion.name : ""}
               color={currentEmotion ? currentEmotion.color : ""}
+              toggleEditing={handleToggleEditing}
+              isEditingEnabled={isEditingEnabled}
             />
           </View>
         )}

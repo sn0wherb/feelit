@@ -13,9 +13,9 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 interface Props {
   level: number;
   handleGoBack: () => void;
-  handleSave?: () => void;
   color: string;
   name: string;
+  isEditingEnabled?: boolean;
   custom?: boolean;
 }
 
@@ -24,7 +24,7 @@ const { width, height } = Dimensions.get("window");
 const Header = ({
   level,
   handleGoBack,
-  handleSave,
+  isEditingEnabled,
   color,
   name,
   custom = false,
@@ -64,6 +64,41 @@ const Header = ({
         </Text>
       </View>
     );
+  } else if (isEditingEnabled) {
+    return (
+      <View
+        style={{
+          width: width,
+          paddingVertical: 10,
+          position: "absolute",
+          zIndex: 1,
+          elevation: 1,
+          paddingHorizontal: 20,
+        }}
+      >
+        {/* Current emotion */}
+        <View
+          style={{
+            marginHorizontal: 14,
+            height: 60,
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: color ? color : "rgba(227, 215, 183, 0.8)",
+            borderRadius: 50,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 28,
+            }}
+          >
+            Edit your emotions
+          </Text>
+        </View>
+      </View>
+    );
   }
 
   switch (level) {
@@ -71,31 +106,28 @@ const Header = ({
       return (
         <View
           style={{
-            top: height * 0.01,
+            width: width,
+            paddingVertical: 10,
             position: "absolute",
             zIndex: 1,
             elevation: 1,
             alignSelf: "center",
+            paddingHorizontal: 20,
           }}
         >
           <View
             style={{
+              marginHorizontal: 14,
+              backgroundColor: "rgba(227, 215, 183, 0.8)",
+              borderRadius: 50,
+              paddingHorizontal: 20,
+              height: 60,
               flexDirection: "row",
+              justifyContent: "center",
               alignItems: "center",
-              marginRight: 10,
             }}
           >
-            <View
-              style={{
-                backgroundColor: "rgba(227, 215, 183, 0.8)",
-                borderRadius: 50,
-                paddingHorizontal: 20,
-                height: 60,
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ fontSize: 28 }}>How are you feeling?</Text>
-            </View>
+            <Text style={{ fontSize: 28 }}>How are you feeling?</Text>
           </View>
         </View>
       );
@@ -104,12 +136,8 @@ const Header = ({
       return (
         <View
           style={{
-            justifyContent: "space-around",
-            alignItems: "center",
-            flexDirection: "row",
             width: width,
             paddingVertical: 10,
-            // top: 10,
             position: "absolute",
             zIndex: 1,
             elevation: 1,
@@ -120,7 +148,6 @@ const Header = ({
           <View
             style={{
               marginHorizontal: 14,
-              // paddingRight: 2,
               height: 60,
               flex: 1,
               flexDirection: "row",
@@ -128,10 +155,6 @@ const Header = ({
               alignItems: "center",
               backgroundColor: color,
               borderRadius: 50,
-              // borderBottomLeftRadius: 20,
-              // borderTopLeftRadius: 20,
-              // borderBottomRightRadius: 30,
-              // borderTopRightRadius: 30,
             }}
           >
             <Text

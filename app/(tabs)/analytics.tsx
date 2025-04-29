@@ -11,6 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 import { FlatList } from "react-native";
+import { uncapitalise } from "@/assets/functions";
+import Calendar from "@/components/Calendar";
 
 type LogType = {
   id: number;
@@ -135,138 +137,167 @@ const analytics = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ padding: 20 }}>
-        <FlatList
-          contentContainerStyle={{ gap: 10 }}
-          scrollEnabled={false}
-          horizontal={true}
-          data={timeFrames}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.timeFrameSelectButton}
-                onPress={() => {
-                  setSelectedTimeFrameIndex(item);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.timeFrameButtonText,
-                    {
-                      color: item == selectedTimeFrameIndex ? "#000" : "#777",
-                      textDecorationLine:
-                        item == selectedTimeFrameIndex ? "underline" : "none",
-                    },
-                  ]}
-                >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 100,
+        }}
+      >
+        {/* Calendar */}
+        <View style={{ alignItems: "center", marginTop: 20 }}>
+          <Calendar />
+        </View>
         {/* Top Emotions */}
-        <View style={{ paddingHorizontal: 20 }}>
+        <View style={{ padding: 20 }}>
           <Text
             style={{
               fontSize: 30,
               fontWeight: "bold",
-              marginBottom: 10,
+              marginBottom: 14,
             }}
           >
             My top emotions
           </Text>
-          <FlatList
-            scrollEnabled={false}
-            data={mostFrequentEmotions}
-            renderItem={({ item, index }) => {
-              let size, color, spotColor;
-              switch (index) {
-                case 0:
-                  color = "gold";
-                  size = 40;
-                  break;
-                case 1:
-                  color = "silver";
-                  size = 34;
-                  break;
-                case 2:
-                  color = "#CD7F32";
-                  size = 28;
-                  break;
-                default:
-                  color = "";
-                  size = 20;
-                  break;
-              }
-              const spotStyle = StyleSheet.create({
-                spot: {
-                  fontSize: size,
-                  fontWeight: "bold",
-                  color: color,
-                  textAlign: "center",
-                },
-              });
-
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: width * 0.04,
-                  }}
-                >
-                  <TouchableOpacity onPress={() => {}}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingLeft: 12,
-                        paddingRight: 14,
-                        paddingVertical: 10,
-                        backgroundColor: item.color,
-                        marginVertical: 6,
-                        borderRadius: 10,
-                        // TO-DO: make exponential
-                        width: width * (0.56 + (3 - index) / 20),
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: width * 0.08,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={spotStyle.spot}>{index + 1}</Text>
-                      </View>
-                      <Text style={{ fontSize: 24 }}>{item.emotion}</Text>
-                    </View>
-                  </TouchableOpacity>
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      width: width * 0.08,
+          {/* Timeframes */}
+          <View style={{ paddingBottom: 20 }}>
+            <FlatList
+              contentContainerStyle={{ gap: 10 }}
+              scrollEnabled={false}
+              horizontal={true}
+              data={timeFrames}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={styles.timeFrameSelectButton}
+                    onPress={() => {
+                      setSelectedTimeFrameIndex(item);
                     }}
                   >
                     <Text
+                      style={[
+                        styles.timeFrameButtonText,
+                        {
+                          color:
+                            item == selectedTimeFrameIndex ? "#000" : "#777",
+                          textDecorationLine:
+                            item == selectedTimeFrameIndex
+                              ? "underline"
+                              : "none",
+                        },
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+          {/* Emotions in selected timeframe */}
+          <View>
+            {mostFrequentEmotions.length > 0 ? (
+              // Emotions in this timeframe exist
+              <FlatList
+                scrollEnabled={false}
+                data={mostFrequentEmotions}
+                renderItem={({ item, index }) => {
+                  let size, color, spotColor;
+                  switch (index) {
+                    case 0:
+                      color = "gold";
+                      size = 40;
+                      break;
+                    case 1:
+                      color = "silver";
+                      size = 34;
+                      break;
+                    case 2:
+                      color = "#CD7F32";
+                      size = 28;
+                      break;
+                    default:
+                      color = "";
+                      size = 20;
+                      break;
+                  }
+                  const spotStyle = StyleSheet.create({
+                    spot: {
+                      fontSize: size,
+                      fontWeight: "bold",
+                      color: color,
+                      textAlign: "center",
+                    },
+                  });
+
+                  return (
+                    <View
                       style={{
-                        fontSize: size,
-                        fontWeight: "bold",
-                        color: item.color,
-                        textAlign: "center",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: width * 0.04,
                       }}
                     >
-                      {item.logCountByEmotion}
-                    </Text>
-                  </View>
-                </View>
-              );
-            }}
-          />
+                      <TouchableOpacity onPress={() => {}}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            paddingLeft: 12,
+                            paddingRight: 14,
+                            paddingVertical: 10,
+                            backgroundColor: item.color,
+                            marginVertical: 6,
+                            borderRadius: 10,
+                            // TO-DO: make exponential
+                            width: width * (0.56 + (3 - index) / 20),
+                          }}
+                        >
+                          <View
+                            style={{
+                              width: width * 0.08,
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={spotStyle.spot}>{index + 1}</Text>
+                          </View>
+                          <Text style={{ fontSize: 24 }}>{item.emotion}</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          width: width * 0.08,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: size,
+                            fontWeight: "bold",
+                            color: item.color,
+                            textAlign: "center",
+                          }}
+                        >
+                          {item.logCountByEmotion}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                }}
+              />
+            ) : (
+              // No emotions in this timeframe
+              <View>
+                <Text style={styles.noEmotionsInThisTimeframe}>
+                  You haven't added any emotions{" "}
+                  {selectedTimeFrameIndex == "Day"
+                    ? "today."
+                    : "this " + uncapitalise(selectedTimeFrameIndex) + "."}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -284,6 +315,10 @@ const styles = StyleSheet.create({
   timeFrameSelectButton: {},
   timeFrameButtonText: {
     // textDecorationLine: "underline",
+    fontSize: 20,
+  },
+  noEmotionsInThisTimeframe: {
+    color: "#444",
     fontSize: 20,
   },
 });
