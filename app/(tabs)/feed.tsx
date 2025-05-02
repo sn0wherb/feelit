@@ -34,7 +34,7 @@ type FormattedLogDataType = {
 
 const { height, width } = Dimensions.get("window");
 
-const overview = () => {
+const feed = () => {
   const [logData, setLogData] = useState<LogType[]>([]);
   const [logDataByDate, setLogDataByDate] = useState<FormattedLogDataType[]>();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -229,7 +229,7 @@ const overview = () => {
                         fontWeight: "bold",
                         fontSize: getFontSize(),
                         padding: 10,
-                        marginTop: 10,
+                        marginTop: 20,
                       }}
                     >
                       {logCollection.date}
@@ -238,13 +238,14 @@ const overview = () => {
                     <FlatList
                       data={logCollection.logs}
                       scrollEnabled={false}
+                      keyExtractor={(item) => String(item.id)}
                       renderItem={({ item }) => {
                         return (
                           // Card
                           <TouchableOpacity
                             style={{
                               marginHorizontal: 10,
-                              marginVertical: 8,
+                              marginVertical: 6,
                               padding: 16,
                               backgroundColor: item.color,
                               borderRadius: 10,
@@ -370,7 +371,7 @@ const overview = () => {
   }
 };
 
-export default overview;
+export default feed;
 
 const styles = StyleSheet.create({
   container: {

@@ -75,6 +75,12 @@ const settings = () => {
           data={testData}
           horizontal
           pagingEnabled
+          initialScrollIndex={8}
+          getItemLayout={(_, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
           renderItem={({ item }) => {
             return (
               <View style={{ width: width }}>

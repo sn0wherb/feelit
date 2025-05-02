@@ -4,6 +4,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { TouchableHighlight, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Entypo from "@expo/vector-icons/Entypo";
 
 export default function TabLayout() {
   const router = useRouter();
@@ -25,12 +26,12 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="overview"
+        name="feed"
         options={{
           title: "All logs",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons
-              name="access-time"
+            <Entypo
+              name="home"
               size={32}
               color={color}
               style={{
