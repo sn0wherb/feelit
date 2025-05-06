@@ -104,6 +104,7 @@ const analytics = () => {
         timeFrameSQL = `created_at LIKE '${today.toISOString().slice(0, 4)}%'`;
         break;
       default:
+        // All-time
         timeFrameSQL = `created_at LIKE '%'`;
         break;
     }

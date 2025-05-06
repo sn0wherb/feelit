@@ -7,7 +7,7 @@ import {
   View,
   FlatList,
 } from "react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Updates from "expo-updates";
 import { useSQLiteContext } from "expo-sqlite";
@@ -48,7 +48,41 @@ const settings = () => {
     }, [])
   );
 
-  const testData = [0, 1, 2, 3, 4, 5, 6];
+  const [testData, setTestData] = useState([
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    0,
+    1,
+    2,
+  ]);
+  const [scrollToMiddle, setScrollToMiddle] = useState(0);
+
+  const handleViewableItemsChanged = (viewableItems) => {
+    if (viewableItems.changed[0].index == 6) {
+      setScrollToMiddle((scrollToMiddle) => scrollToMiddle + 1);
+      let data = testData;
+      data[viewableItems.changed[0].index - 1] =
+        viewableItems.changed[0].item - 1;
+      console.log(data);
+      // data.pop();
+      setTestData(data);
+    }
+  };
+
+  // Problem: this happens before the flatlist renders
+  useEffect(() => {
+    flatListRef.current?.forceUpdate();
+    // flatListRef.current?.scrollToIndex({
+    //   index: 1,
+    //   animated: false,
+    // });
+  }, [scrollToMiddle]);
+
+  const flatListRef = useRef<FlatList>(null);
 
   return (
     <SafeAreaView>
@@ -71,19 +105,29 @@ const settings = () => {
         >
           <Text>Drop custom emotions table</Text>
         </TouchableHighlight>
+        {/* FlatList */}
         <FlatList
+          ref={flatListRef}
           data={testData}
           horizontal
           pagingEnabled
-          initialScrollIndex={8}
+          initialScrollIndex={7}
           getItemLayout={(_, index) => ({
             length: width,
             offset: width * index,
             index,
           })}
-          renderItem={({ item }) => {
+          onViewableItemsChanged={handleViewableItemsChanged}
+          viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+          renderItem={({ item, index }) => {
             return (
-              <View style={{ width: width }}>
+              <View
+                style={{
+                  width: width,
+                  height: height * 0.2,
+                  backgroundColor: `#${item}F${item}`,
+                }}
+              >
                 <Text>{item}</Text>
               </View>
             );

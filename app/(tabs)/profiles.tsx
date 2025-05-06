@@ -30,7 +30,11 @@ const profiles = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text style={{ fontSize: 50, color: "#6b5a2c" }}>Profiles</Text>
+        <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Days of the week</Text>
+        <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Times of the day</Text>
+        <Text style={{ fontSize: 40, color: "#6b5a2c" }}>
+          Each emotion profile: Most common cause Most common need Body map
+        </Text>
       </View>
     </SafeAreaView>
   );
