@@ -28,7 +28,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feed"
         options={{
-          title: "All logs",
+          title: "Feed",
           tabBarIcon: ({ color }) => (
             <Entypo
               name="home"
@@ -45,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="analytics"
         options={{
-          title: "Recently",
+          title: "Analytics",
           tabBarIcon: ({ color }) => (
             <FontAwesome6
               name="chart-simple"
@@ -71,14 +71,14 @@ export default function TabLayout() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
-                height: 64,
-                width: 64,
+                height: 60,
+                width: 60,
                 borderRadius: 50,
                 backgroundColor: "#e1be8e",
                 marginBottom: 10,
               }}
             >
-              <AntDesign name="plus" size={40} color={color} />
+              <AntDesign name="plus" size={36} color={color} />
             </View>
           ),
         }}

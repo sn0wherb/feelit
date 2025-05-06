@@ -60,7 +60,7 @@ const Header = ({
           </TouchableOpacity>
         </View>
         <Text style={{ fontSize: 28, marginLeft: 16 }}>
-          {level > 1 ? "Create a new type of" : "Create a new emotion"}
+          {level > 1 ? "Create a new type of" : "New emotion"}
         </Text>
       </View>
     );

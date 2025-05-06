@@ -208,6 +208,7 @@ const EmotionDisplay = ({
                   }
                   // Else, return normal emotion
                   return (
+                    // If editing is enabled, show delete button for custom emotions
                     <View>
                       {isEditingEnabled && item.isCustom == 1 && (
                         <TouchableOpacity
