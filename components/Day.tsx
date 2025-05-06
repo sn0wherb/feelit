@@ -5,24 +5,76 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSQLiteContext } from "expo-sqlite";
+
+type LogType = {
+  id: number;
+  emotion: string;
+  color: string;
+  root: string;
+  need: string;
+  extra: string;
+  created_at: string;
+};
 
 interface Props {
   digit: number;
   bounds: "outside" | "inside";
-  logReferenceIds: number[];
-  passOpenDay: (logReferenceIds: number[]) => void;
+  fullDate: Date;
+  passOpenDay: (logs: LogType[]) => void;
 }
 
 const { width, height } = Dimensions.get("window");
 
-const Day = ({ digit, bounds, logReferenceIds, passOpenDay }: Props) => {
-  const data = logReferenceIds;
+const Day = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
+  const db = useSQLiteContext();
+  const [logsOfToday, setLogsOfToday] = useState<LogType[]>([]);
+  const [color, setColor] = useState<String | null>(null);
+
+  // Functions
+  const getLogsOfToday = async (date: Date) => {
+    const dateString = date.toISOString().slice(0, 10);
+    try {
+      const data = await db.getAllAsync<LogType>(
+        `SELECT *
+              FROM emotion_logs
+              WHERE created_at LIKE '${dateString}%'
+              ORDER BY created_at DESC`
+      );
+      setLogsOfToday(data);
+      createBackgroundFromLogColors(data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const createBackgroundFromLogColors = (data: LogType[]) => {
+    // data.forEach(value => {
+
+    // })
+    if (data.length < 1) {
+      return;
+    } else {
+      setColor(data[0].color);
+    }
+  };
+
+  useEffect(() => {
+    getLogsOfToday(fullDate);
+  });
 
   return (
     <TouchableOpacity
-      style={[styles[bounds]]}
-      onPress={(logReferenceIds) => passOpenDay}
+      style={[
+        styles[bounds],
+        {
+          backgroundColor: color
+            ? String(color)
+            : styles[bounds].backgroundColor,
+        },
+      ]}
+      onPress={() => passOpenDay(logsOfToday)}
     >
       <Text style={styles.dayOutsideMonth}>{digit}</Text>
     </TouchableOpacity>

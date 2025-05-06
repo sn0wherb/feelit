@@ -11,6 +11,16 @@ import { useFocusEffect } from "expo-router";
 import Entypo from "@expo/vector-icons/Entypo";
 import Day from "./Day";
 
+type LogType = {
+  id: number;
+  emotion: string;
+  color: string;
+  root: string;
+  need: string;
+  extra: string;
+  created_at: string;
+};
+
 type YearType = [Date[]];
 type TinyEmotion = {
   id: number;
@@ -28,7 +38,7 @@ const Calendar = () => {
   const [index, setIndex] = useState(0);
   const [scrollToMonth, setScrollToMonth] = useState(0);
   const [display, setDisplay] = useState<"Day" | "Month">("Month");
-  const [displayData, setDisplayData] = useState<number[] | null>(null);
+  const [displayData, setDisplayData] = useState<LogType[]>();
 
   const getYear = true;
   const getMonth = false;
@@ -242,15 +252,13 @@ const Calendar = () => {
       })
     );
 
-    const data = getLogsOfToday();
-
     // Days in previous or next month
     if ((index < 7 && dateDigit > 7) || (index > 20 && dateDigit < 7)) {
       return (
         <Day
           digit={dateDigit}
+          fullDate={item}
           bounds={"outside"}
-          logReferenceIds={data}
           passOpenDay={handleOpenDay}
         />
       );
@@ -259,22 +267,18 @@ const Calendar = () => {
     return (
       <Day
         digit={dateDigit}
+        fullDate={item}
         bounds={"inside"}
-        logReferenceIds={data}
         passOpenDay={handleOpenDay}
       />
     );
   };
 
-  const getLogsOfToday = () => {
-    return [1, 2, 3];
-  };
-
   const keyExtractor = (index: any) => "key-" + index.toString();
 
-  const handleOpenDay = (logReferenceIds: number[]) => {
+  const handleOpenDay = (logs: LogType[]) => {
     setDisplay("Day");
-    setDisplayData(logReferenceIds);
+    setDisplayData(logs);
   };
 
   // Note: this was originally used with a callback, but that slowed everything down and created issues with state changes.
