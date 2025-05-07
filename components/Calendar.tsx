@@ -1,4 +1,5 @@
 import {
+  Button,
   Dimensions,
   FlatList,
   StyleSheet,
@@ -9,7 +10,14 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import Entypo from "@expo/vector-icons/Entypo";
-import Day from "./Day";
+import CalendarDay from "./CalendarDay";
+import DaysInMonth from "./DaysInMonth";
+
+export type {
+  ViewToken,
+  ViewabilityConfig,
+  ViewabilityConfigCallbackPair,
+} from "@react-native/virtualized-lists";
 
 type LogType = {
   id: number;
@@ -32,12 +40,12 @@ const { width, height } = Dimensions.get("window");
 
 const Calendar = () => {
   const [calendar, setCalendar] = useState<YearType>([[]]);
-  // const [threeMonths, setThreeMonths] = useState<YearType>([[]]);
+  const [threeMonths, setThreeMonths] = useState<YearType>([[]]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [index, setIndex] = useState(0);
   const [scrollToMonth, setScrollToMonth] = useState(0);
-  const [display, setDisplay] = useState<"Day" | "Month">("Month");
+  const [display, setDisplay] = useState<"Day" | "Month" | null>("Month");
   const [displayData, setDisplayData] = useState<LogType[]>();
 
   const getYear = true;
@@ -59,76 +67,119 @@ const Calendar = () => {
   const weekdays = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
 
   // Functions
+  const createThreeMonths = (
+    yearNumber: number,
+    currentMonthNumber: number
+  ) => {
+    let months: YearType = [[]];
+    months.pop(); // There's probably a beter way to initialize an empty typed array
 
-  // const createThreeMonths = (yearNumber: number, monthNumber: number) => {
-  //   let months: YearType = [[]];
-  //   for (let i = 0; i < 12; i++) {
-  //     // Insert new month
-  //     months.push([]);
-  //     // Get number of days in current month
-  //     let numOfDaysInCurrentMonth: number;
-  //     switch (i) {
-  //       // February
-  //       case 1:
-  //         // Check for leap months
-  //         numOfDaysInCurrentMonth =
-  //           new Date(monthNumber, 1, 29).getDate() === 29 ? 29 : 28;
-  //         break;
-  //       // Months with 30 days
-  //       case 3: // fallthrough
-  //       case 5: // fallthrough
-  //       case 8: // fallthrough
-  //       case 10:
-  //         numOfDaysInCurrentMonth = 30;
-  //         break;
-  //       // Months with 31 days
-  //       default:
-  //         numOfDaysInCurrentMonth = 31;
-  //         break;
-  //     }
+    // Insert previous, current and next month
+    for (
+      let i = 0, monthNumber = currentMonthNumber - 1;
+      i < 3;
+      i++, monthNumber++
+    ) {
+      // Adjust for cross-year
+      if (monthNumber == -1) {
+        yearNumber--;
+        monthNumber = 11;
+      } else if (monthNumber == 12) {
+        yearNumber++;
+        monthNumber = 0;
+      }
 
-  //     // Populate current month with days
-  //     for (let j = 1; j <= numOfDaysInCurrentMonth; j++) {
-  //       const day = new Date(Date.UTC(monthNumber, i, j));
-  //       // If first day of month is not a Monday, insert days from previous month up until the 1st of this month
-  //       if (j == 1) {
-  //         // Get weekday of first day in this month
-  //         const firstWeekdayOfMonth = day.getDay();
+      months.push(createMonth(yearNumber, monthNumber));
+    }
+    return months;
+  };
 
-  //         // If weekday is not monday
-  //         if (firstWeekdayOfMonth == 0 || firstWeekdayOfMonth > 1) {
-  //           // Convert sunday from 0 to 7
-  //           const fillerDays =
-  //             firstWeekdayOfMonth == 0 ? 6 : firstWeekdayOfMonth - 1;
-  //           // Insert days from previous month as the first elements in this array
-  //           for (let k = fillerDays; k > 0; k--) {
-  //             const previousMonthDay = new Date(day);
-  //             previousMonthDay.setDate(day.getDate() - k);
-  //             months[i].push(previousMonthDay);
-  //           }
-  //         }
-  //       }
+  const updateThreeMonths = (
+    yearNumber: number,
+    currentMonthNumber: number,
+    direction: "back" | "forth"
+  ) => {
+    const oldMonths = threeMonths;
+    const newMonths = createThreeMonths(yearNumber, currentMonthNumber);
 
-  //       months[i].push(day);
+    // Back
+    if (direction == "back") {
+      oldMonths.unshift(newMonths[0]);
+      oldMonths.pop();
+    } else {
+      // @ts-expect-error
+      oldMonths.push(newMonths[2]);
+      oldMonths.shift();
+    }
+    setThreeMonths(oldMonths);
+  };
 
-  //       // If last day of month is not Sunday, fill with days of next month until Sunday
-  //       if (j == numOfDaysInCurrentMonth) {
-  //         const lastWeekdayOfMonth = day.getDay();
-  //         // console.log("last weekday: " + day);
+  const createMonth = (yearNumber: number, monthNumber: number) => {
+    let month: Date[] = [];
 
-  //         if (lastWeekdayOfMonth > 0) {
-  //           const fillerDays = 7 - lastWeekdayOfMonth;
-  //           // console.log("filler: " + fillerDays);
-  //           for (let k = 0; k < fillerDays; k++) {
-  //             const nextMonthDay = new Date(day);
-  //             nextMonthDay.setDate(day.getDate() + k);
-  //             months[i].push(nextMonthDay);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+    // console.log(months[monthNumber]);
+
+    // Get number of days in current month
+    const dayCountOfMonth: number = getDayCountOfMonth(monthNumber);
+
+    // Populate current month with days
+    for (let j = 1; j <= dayCountOfMonth; j++) {
+      const day = new Date(Date.UTC(yearNumber, monthNumber, j));
+
+      // Insert days of previous month
+      if (j == 1) {
+        const firstWeekdayOfMonth = day.getDay();
+        // If this month doesn't start with a Monday, create a full week by inserting days from the previous month
+        if (firstWeekdayOfMonth == 0 || firstWeekdayOfMonth > 1) {
+          // Convert sunday from 0 to 7
+          const fillerDays =
+            firstWeekdayOfMonth == 0 ? 6 : firstWeekdayOfMonth - 1;
+          // Insert days from previous month as the first elements in this array
+          for (let k = fillerDays; k > 0; k--) {
+            const previousMonthDay = new Date(day);
+            previousMonthDay.setDate(day.getDate() - k);
+            month.push(previousMonthDay);
+          }
+        }
+      }
+      // Days inside this month
+      month.push(day);
+
+      // If last day of month is not Sunday, fill with days of next month until Sunday
+      if (j == dayCountOfMonth) {
+        const lastWeekdayOfMonth = day.getDay();
+        if (lastWeekdayOfMonth > 0) {
+          const fillerDays = 7 - lastWeekdayOfMonth;
+          // console.log("filler: " + fillerDays);
+          for (let k = 0; k < fillerDays; k++) {
+            const nextMonthDay = new Date(day);
+            nextMonthDay.setDate(day.getDate() + k);
+            month.push(nextMonthDay);
+          }
+        }
+      }
+    }
+
+    return month;
+  };
+
+  const getDayCountOfMonth = (monthNumber: number) => {
+    switch (monthNumber) {
+      // February
+      case 1:
+        // Check for leap year
+        return new Date(monthNumber, 1, 29).getDate() === 29 ? 29 : 28;
+      // Months with 30 days
+      case 3: // fallthrough
+      case 5: // fallthrough
+      case 8: // fallthrough
+      case 10:
+        return 30;
+      // Months with 31 days
+      default:
+        return 31;
+    }
+  };
 
   const createYear = (yearNumber: number) => {
     // Create year
@@ -224,54 +275,7 @@ const Calendar = () => {
 
   // @ts-expect-error
   const renderMonth = ({ item }) => {
-    return (
-      // Days
-      <FlatList
-        maxToRenderPerBatch={3}
-        scrollEnabled={false}
-        contentContainerStyle={styles.dayContainer}
-        numColumns={7}
-        data={item}
-        keyExtractor={keyExtractor}
-        removeClippedSubviews={true}
-        getItemLayout={(_item, index) => ({
-          length: width * 0.12 + 2,
-          offset: width * 0.12 + 2 * index,
-          index,
-        })}
-        renderItem={renderDay}
-      />
-    );
-  };
-
-  // @ts-expect-error
-  const renderDay = ({ item, index }) => {
-    const dateDigit: number = Number(
-      item.toLocaleDateString("default", {
-        day: "numeric",
-      })
-    );
-
-    // Days in previous or next month
-    if ((index < 7 && dateDigit > 7) || (index > 20 && dateDigit < 7)) {
-      return (
-        <Day
-          digit={dateDigit}
-          fullDate={item}
-          bounds={"outside"}
-          passOpenDay={handleOpenDay}
-        />
-      );
-    }
-    // Days in this month
-    return (
-      <Day
-        digit={dateDigit}
-        fullDate={item}
-        bounds={"inside"}
-        passOpenDay={handleOpenDay}
-      />
-    );
+    return <DaysInMonth data={item} passOpenDay={handleOpenDay} />;
   };
 
   const keyExtractor = (index: any) => "key-" + index.toString();
@@ -288,9 +292,11 @@ const Calendar = () => {
       return;
     }
 
-    const thisMonth = viewableItems[0].item[10].getMonth();
-    const thisYear = viewableItems[0].item[10].getFullYear();
-    const thisIndex = viewableItems[0].index;
+    const thisMonth = viewableItems[0].item[10].getMonth(),
+      thisYear = viewableItems[0].item[10].getFullYear(),
+      thisIndex = viewableItems[0].index;
+
+    // console.log("currentMonth = " + (thisMonth + 1));
 
     // Update visible current month title
     // TO-DO: change this to be a separate function that tracks an index? that would still take a state... ughhh ig i gotta optimize
@@ -298,15 +304,19 @@ const Calendar = () => {
 
     // If currently landed on january, create and insert previous year
     if (thisIndex == 0) {
-      updateCalendar(selectedYear - 1);
-      setScrollToMonth((scrollToMonth) => scrollToMonth + 1);
-      setIndex(12);
+      // console.log("index = 0");
+      updateThreeMonths(thisYear, thisMonth, "back");
       // If currently landed on december, create and insert next year
-    } else if (thisIndex == calendar.length - 1) {
-      updateCalendar(selectedYear + 1);
+    } else if (thisIndex == 2) {
+      // console.log("index = 2");
+      updateThreeMonths(thisYear, thisMonth, "forth");
     }
 
     thisYear != selectedYear && setSelectedYear(thisYear);
+  };
+
+  const handleReturnFromDay = () => {
+    setDisplay("Month");
   };
 
   const monthBack = () => {
@@ -334,17 +344,30 @@ const Calendar = () => {
   };
 
   // Create calendar of current year upon boot
+  // useEffect(() => {
+  //   setCalendar(createYear(selectedYear));
+  // }, []);
+
   useEffect(() => {
-    setCalendar(createYear(selectedYear));
+    setThreeMonths(createThreeMonths(selectedYear, selectedMonth));
   }, []);
 
   useEffect(() => {
-    monthFlatListRef.current?.scrollToIndex({ index, animated: false });
-  }, [scrollToMonth]);
+    monthFlatListRef.current?.forceUpdate();
+  }, [threeMonths]);
+
+  // useEffect(() => {
+  //   monthFlatListRef.current?.({ indexscrollToIndex, animated: false });
+  // }, [scrollToMonth]);
 
   const monthFlatListRef = useRef<FlatList>(null);
   const currentMonthRef = useRef(0);
   const currentYearRef = useRef(2025);
+
+  // // @ts-expect-error
+  // if (threeMonths[1]) {
+  //   console.log("", threeMonths[0][10].toLocaleDateString());
+  // }
 
   return (
     <View>
@@ -389,6 +412,7 @@ const Calendar = () => {
               />
               {/* Month */}
               <FlatList
+                showsHorizontalScrollIndicator={false}
                 ref={monthFlatListRef}
                 horizontal
                 pagingEnabled
@@ -398,16 +422,23 @@ const Calendar = () => {
                   offset: width * index,
                   index,
                 })}
-                initialScrollIndex={selectedMonth}
+                maintainVisibleContentPosition={{
+                  minIndexForVisible: 0,
+                }}
+                initialScrollIndex={1}
                 contentContainerStyle={styles.monthDisplay}
-                data={calendar}
+                data={threeMonths}
                 renderItem={renderMonth}
                 onViewableItemsChanged={handleCurrentMonthChange}
                 viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
               />
             </View>
           )}
-          {display == "Day" && <View></View>}
+          {display == "Day" && (
+            <View>
+              <CalendarDay data={displayData} onReturn={handleReturnFromDay} />
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -461,14 +492,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.08)",
     borderRadius: 50,
     padding: 4,
-  },
-  dayContainer: {
-    width: width,
-    alignItems: "center",
-    justifyContent: "center",
-    // padding: width * 0.02,
-    // flex: 1,
-    // borderWidth: 2,
   },
   weekday: {
     width: width * 0.12,
