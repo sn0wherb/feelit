@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 
 type LogType = {
@@ -62,7 +62,7 @@ const Day = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
 
   useEffect(() => {
     getLogsOfToday(fullDate);
-  });
+  }, []);
 
   return (
     <TouchableOpacity
@@ -81,7 +81,7 @@ const Day = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   );
 };
 
-export default Day;
+export default memo(Day);
 
 const styles = StyleSheet.create({
   outside: {

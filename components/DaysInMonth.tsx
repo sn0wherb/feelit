@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet, Text, View, FlatList } from "react-native";
-import React from "react";
+import React, { memo } from "react";
 import Day from "./Day";
 
 type LogType = {
@@ -71,7 +71,7 @@ const DaysInMonth = ({ data, passOpenDay }: Props) => {
   );
 };
 
-export default DaysInMonth;
+export default memo(DaysInMonth);
 
 const styles = StyleSheet.create({
   dayContainer: {

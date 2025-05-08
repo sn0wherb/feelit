@@ -13,12 +13,6 @@ import Entypo from "@expo/vector-icons/Entypo";
 import CalendarDay from "./CalendarDay";
 import DaysInMonth from "./DaysInMonth";
 
-export type {
-  ViewToken,
-  ViewabilityConfig,
-  ViewabilityConfigCallbackPair,
-} from "@react-native/virtualized-lists";
-
 type LogType = {
   id: number;
   emotion: string;
@@ -285,7 +279,7 @@ const Calendar = () => {
     setDisplayData(logs);
   };
 
-  // Note: this was originally used with a callback, but that slowed everything down and created issues with state changes.
+  // Note: this was originally used with a callback, but that breaks functionality.
   // @ts-expect-error
   const handleCurrentMonthChange = ({ viewableItems }) => {
     if (!viewableItems[0] || viewableItems[0].item.length < 1) {
@@ -342,11 +336,6 @@ const Calendar = () => {
       // setSelectedMonth(0);
     }
   };
-
-  // Create calendar of current year upon boot
-  // useEffect(() => {
-  //   setCalendar(createYear(selectedYear));
-  // }, []);
 
   useEffect(() => {
     setThreeMonths(createThreeMonths(selectedYear, selectedMonth));
