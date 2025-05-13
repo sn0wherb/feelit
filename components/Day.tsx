@@ -22,7 +22,7 @@ interface Props {
   digit: number;
   bounds: "outside" | "inside";
   fullDate: Date;
-  passOpenDay: (logs: LogType[]) => void;
+  passOpenDay: (logs: LogType[], digit: number) => void;
 }
 
 const { width, height } = Dimensions.get("window");
@@ -50,9 +50,6 @@ const Day = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   };
 
   const createBackgroundFromLogColors = (data: LogType[]) => {
-    // data.forEach(value => {
-
-    // })
     if (data.length < 1) {
       return;
     } else {
@@ -74,7 +71,7 @@ const Day = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
             : styles[bounds].backgroundColor,
         },
       ]}
-      onPress={() => passOpenDay(logsOfToday)}
+      onPress={() => passOpenDay(logsOfToday, digit)}
     >
       <Text style={styles.dayOutsideMonth}>{digit}</Text>
     </TouchableOpacity>

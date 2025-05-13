@@ -14,7 +14,7 @@ type LogType = {
 
 interface Props {
   data: Date[];
-  passOpenDay: (data: LogType[]) => void;
+  passOpenDay: (data: LogType[], digit: number) => void;
 }
 
 const { width, height } = Dimensions.get("window");
