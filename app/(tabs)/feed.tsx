@@ -16,6 +16,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect, useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import logModal from "../logModal";
+import { openLogModal, prettifyDate } from "@/assets/functions";
 
 type LogType = {
   id: number;
@@ -64,58 +65,9 @@ const feed = () => {
     let sortedIndex = 0;
     let sortedData: FormattedLogDataType[] = [];
 
-    // Check if date of current log is in the margins of this week
-    const isInWeek = (date: Date) => {
-      // Reduce day difference between the given date and today's date
-      for (let i = 6; i >= 0; i--) {
-        const givenDate = new Date(date);
-        givenDate.setDate(date.getDate() + i);
-
-        if (String(givenDate).slice(0, 10) == String(today).slice(0, 10)) {
-          if (i > 1) {
-            return date.toLocaleDateString("default", { weekday: "long" });
-          } else if (i == 1) {
-            return "Yesterday";
-          }
-          return "Today";
-        }
-      }
-      return false;
-    };
-
     // Iterate through each log
     data.map((value) => {
-      let date = "";
-      let dateFormat = new Date(value.created_at);
-      const yearString = String(dateFormat.getFullYear());
-      const currentYearString = String(today.getFullYear());
-      const isItCurrentYear = yearString == currentYearString ? true : false;
-      const monthString = String(
-        dateFormat.toLocaleDateString("default", { month: "long" })
-      );
-      const currentMonth = String(
-        today.toLocaleDateString("default", { month: "long" })
-      );
-      const isItCurrentMoth = monthString == currentMonth ? true : false;
-
-      // If log is of this year and month, check if it's in this week, else don't bother lol
-      const inWeek =
-        isItCurrentYear && isItCurrentMoth ? isInWeek(dateFormat) : false;
-
-      // FORMAT DATE
-      if (inWeek) {
-        date = inWeek;
-      } else {
-        const dayString = String(
-            dateFormat.toLocaleDateString("default", { weekday: "long" })
-          ),
-          dateString = String(dateFormat.getDate());
-
-        // If year == current year, display weekday name, but not year. Otherwise, don't display weekday name, but display year.
-        date = isItCurrentYear
-          ? `${dayString}, ${dateString} ${monthString}`
-          : `${dateString} ${monthString} ${yearString}`;
-      }
+      const date = prettifyDate(value.created_at);
 
       // INSERT LOG
       // Empty index - initialize entry on current index
@@ -139,16 +91,6 @@ const feed = () => {
     const time = gmtTime.toLocaleTimeString().slice(0, 5);
 
     return time;
-  };
-
-  const openLogModal = (log: LogType, date: string, time: string) => {
-    const params = Object.assign(log);
-    params["date"] = date;
-    params["time"] = time;
-    router.push({
-      pathname: "/logModal",
-      params: params,
-    });
   };
 
   // Re-fetch log data whenever tab is focused

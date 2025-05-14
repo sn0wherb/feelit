@@ -15,6 +15,7 @@ import DaysInMonth from "./DaysInMonth";
 import CalendarMonth from "./MonthDisplay";
 import DayDisplay from "./DayDisplay";
 import MonthDisplay from "./MonthDisplay";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 type LogType = {
   id: number;
@@ -283,8 +284,22 @@ const Calendar = () => {
         {/* Currently viewed month and year name, and controls*/}
         <View style={styles.aboveMonthContainer}>
           <View style={styles.monthDisplayTopRow}>
+            {display == "Day" && (
+              <TouchableOpacity
+                onPress={handleReturnFromDay}
+                style={{
+                  marginRight: 6,
+                  backgroundColor: "rgba(0,0,0,0.06)",
+                  borderRadius: 20,
+                  paddingHorizontal: 8,
+                  paddingVertical: 5,
+                }}
+              >
+                <AntDesign name="arrowleft" size={26} color="black" />
+              </TouchableOpacity>
+            )}
             {getTitle()}
-            {/* Controls */}
+            {/* Button scrolling */}
             {/* <View style={styles.controlsContainer}>
                   <TouchableOpacity style={styles.controls} onPress={monthBack}>
                     <Entypo name="chevron-left" size={28} color="black" />
@@ -339,7 +354,7 @@ const styles = StyleSheet.create({
   monthDisplayTopRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
   },
   monthTitle: {
     marginLeft: 6,
