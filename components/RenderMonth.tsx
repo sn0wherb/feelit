@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, View, FlatList } from "react-native";
 import React, { memo } from "react";
-import Day from "./Day";
+import RenderDay from "./RenderDay";
 
 type LogType = {
   id: number;
@@ -19,7 +19,7 @@ interface Props {
 
 const { width, height } = Dimensions.get("window");
 
-const DaysInMonth = ({ data, passOpenDay }: Props) => {
+const RenderMonth = ({ data, passOpenDay }: Props) => {
   const keyExtractor = (index: any) => "key-" + index.toString();
 
   // @ts-expect-error
@@ -33,7 +33,7 @@ const DaysInMonth = ({ data, passOpenDay }: Props) => {
     // Days in previous or next month
     if ((index < 7 && dateDigit > 7) || (index > 20 && dateDigit < 7)) {
       return (
-        <Day
+        <RenderDay
           digit={dateDigit}
           fullDate={item}
           bounds={"outside"}
@@ -43,7 +43,7 @@ const DaysInMonth = ({ data, passOpenDay }: Props) => {
     }
     // Days in this month
     return (
-      <Day
+      <RenderDay
         digit={dateDigit}
         fullDate={item}
         bounds={"inside"}
@@ -71,7 +71,7 @@ const DaysInMonth = ({ data, passOpenDay }: Props) => {
   );
 };
 
-export default memo(DaysInMonth);
+export default memo(RenderMonth);
 
 const styles = StyleSheet.create({
   dayContainer: {

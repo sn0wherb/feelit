@@ -10,9 +10,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import Entypo from "@expo/vector-icons/Entypo";
-import CalendarDay from "./DayDisplay";
-import DaysInMonth from "./DaysInMonth";
-import CalendarMonth from "./MonthDisplay";
+import RenderMonth from "./RenderMonth";
 import DayDisplay from "./DayDisplay";
 import MonthDisplay from "./MonthDisplay";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -185,7 +183,7 @@ const Calendar = () => {
 
   // @ts-expect-error
   const renderMonth = ({ item }) => {
-    return <DaysInMonth data={item} passOpenDay={handleOpenDay} />;
+    return <RenderMonth data={item} passOpenDay={handleOpenDay} />;
   };
 
   const keyExtractor = (index: any) => "key-" + index.toString();

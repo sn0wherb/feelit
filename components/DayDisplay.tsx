@@ -35,7 +35,6 @@ const { width, height } = Dimensions.get("window");
 const DayDisplay = ({ data, onReturn }: Props) => {
   // States
   const [logsByHour, setLogsByHour] = useState<LogByHourType>({});
-  const [firstEntry, setFirstEntry] = useState(true);
   const [startIndex, setStartIndex] = useState<number | null>(null);
   let hours: string[] = [];
 
@@ -56,6 +55,8 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     if (!data) {
       return;
     }
+
+    // Find first log of the day in order to automatically scroll to it when opening this day
     let earliest = 24;
 
     data.forEach((log) => {
@@ -78,13 +79,19 @@ const DayDisplay = ({ data, onReturn }: Props) => {
 
   const renderLogs = (index: number) => {
     return (
-      <FlatList
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 10 }}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={logsByHour[index].length > 1 ? true : false}
-        data={logsByHour[index]}
-        renderItem={renderLogsByHour}
-      />
+      <View>
+        <FlatList
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            justifyContent: "center",
+          }}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={logsByHour[index].length > 1 ? true : false}
+          data={logsByHour[index]}
+          renderItem={renderLogsByHour}
+        />
+      </View>
       /* <View
               style={{
                 width: 0.02,
@@ -109,17 +116,20 @@ const DayDisplay = ({ data, onReturn }: Props) => {
         }}
       >
         <Text style={{ color: "#555", marginBottom: 8 }}>{item}</Text>
-        <View
-          style={{
-            width: 0.01,
-            height: 0.4,
-            borderColor: "rgba(0,0,0,0.1)",
-            borderWidth: width * 0.004,
-            // backgroundColor: "#aaa",
-            flexGrow: 1,
-          }}
-        ></View>
-        {logsByHour[index] && renderLogs(index)}
+        {logsByHour[index] ? (
+          renderLogs(index)
+        ) : (
+          <View
+            style={{
+              width: 0.01,
+              height: 0.4,
+              borderColor: "rgba(0,0,0,0.1)",
+              borderWidth: width * 0.004,
+              // backgroundColor: "#aaa",
+              flexGrow: 1,
+            }}
+          />
+        )}
       </View>
     );
   };

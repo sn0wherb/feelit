@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { memo, useEffect, useRef, useState } from "react";
-import DaysInMonth from "./DaysInMonth";
+import DaysInMonth from "./RenderMonth";
 
 const { width, height } = Dimensions.get("window");
 

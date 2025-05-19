@@ -386,6 +386,43 @@ const EmotionDisplay = ({
                   }}
                 />
               </View>
+              {/* Custom time */}
+              <View>
+                <Text style={{ marginTop: 10, fontSize: 16 }}>
+                  Adding a log from a different day or time?
+                </Text>
+                <TextInput
+                  onPressIn={() => {
+                    bottomPadding != 260 && setBottomPadding(260);
+                  }}
+                  onEndEditing={() => {
+                    setBottomPadding(50);
+                  }}
+                  value={diaryData && diaryData.extra}
+                  multiline={true}
+                  numberOfLines={10}
+                  placeholder={"DD-MM-YYYY"}
+                  placeholderTextColor="#555"
+                  onChangeText={(value) => {
+                    passDiaryData("extra", value);
+                  }}
+                  style={{
+                    width: 320,
+                    minHeight: 90,
+                    height: "auto",
+                    padding: 10,
+                    marginTop: 6,
+                    fontSize: 16,
+                    borderRadius: 10,
+                    backgroundColor: String(currentEmotion.color),
+                    // Shadow
+                    shadowColor: String(currentEmotion.color),
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.8,
+                    shadowRadius: 8,
+                  }}
+                />
+              </View>
             </View>
           </ScrollView>
           {/* Save button */}
