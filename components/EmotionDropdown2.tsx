@@ -30,7 +30,13 @@ const EmotionDropdown2 = ({ emotion }: Props) => {
 
   // Functions
   const handleOpenEmotion = () => {
-    router.push("/emotionProfile");
+    const params = Object.assign(emotion);
+    // params["date"] = date;
+    // params["time"] = time;
+    router.push({
+      pathname: "/emotionProfile",
+      params: params,
+    });
   };
 
   return (
@@ -51,7 +57,7 @@ const EmotionDropdown2 = ({ emotion }: Props) => {
         <TouchableOpacity
           style={{
             padding: 8,
-            marginVertical: 6,
+            marginTop: 6,
             borderRadius: 20,
             backgroundColor: emotion.color,
             width: width * 0.7,

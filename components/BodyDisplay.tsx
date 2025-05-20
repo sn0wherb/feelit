@@ -52,7 +52,7 @@ type EmotionType = {
 interface Props {
   logId?: number;
   emotion?: string;
-  size: number;
+  size?: number;
 }
 
 const { height, width } = Dimensions.get("window");

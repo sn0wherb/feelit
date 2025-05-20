@@ -75,7 +75,7 @@ const profiles = () => {
   // @ts-expect-error
   const renderBodies = ({ item, index }) => {
     return (
-      <View>
+      <View style={{ height: height * 0.72 }}>
         <BodyDisplay size={0.66} emotion={item.name} />
         <View style={{ width: width, alignItems: "center" }}>
           <EmotionDropdown2 emotion={item} />
@@ -115,7 +115,7 @@ const profiles = () => {
             flexDirection: "row",
             width: width,
             margin: 10,
-            // marginBottom: 0,
+            marginBottom: 0,
             alignItems: "center",
             gap: 10,
           }}
@@ -142,12 +142,9 @@ const profiles = () => {
           />
         </View>
       </View>
-      {/* Dots */}
-      <DotNavigation items={emotions} selected={selectedEmotion} />
       {/* Emotions */}
       <FlatList
         showsHorizontalScrollIndicator={false}
-        // contentContainerStyle={{ borderWidth: 2 }}
         horizontal
         pagingEnabled
         data={emotions}
@@ -157,16 +154,18 @@ const profiles = () => {
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         onViewableItemsChanged={handleViewableItemsChanged}
       />
+      {/* Dots */}
+      <DotNavigation items={emotions} selected={selectedEmotion} />
       {/* Notes */}
-      <View style={{ width: width, padding: 10 }}>
-        {/* <View>
+      {/* <View style={{ width: width, padding: 10 }}>
+        <View>
         <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Days of the week</Text>
         <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Times of the day</Text>
         <Text style={{ fontSize: 40, color: "#6b5a2c" }}>
           Each emotion profile: Most common cause Most common need Body map
         </Text>
-      </View> */}
       </View>
+      </View> */}
     </SafeAreaView>
   );
 };

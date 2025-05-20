@@ -8,13 +8,18 @@ import {
 import React, { useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
 const emotionProfile = () => {
+  const data = useLocalSearchParams();
+
   return (
     <SafeAreaView>
-      <Text>Emotion profile</Text>
+      <View style={{ backgroundColor: String(data.color) }}>
+        <Text>{data.name}</Text>
+      </View>
     </SafeAreaView>
   );
 };
