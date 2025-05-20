@@ -30,18 +30,42 @@ type SvgDataType = {
   size: number;
 };
 
+type LogType = {
+  id: number;
+  emotion: string;
+  color: string;
+  root: string;
+  need: string;
+  extra: string;
+  created_at: string;
+};
+
+type EmotionType = {
+  id: number;
+  name: string;
+  parent: string | null;
+  color: string;
+  level: number;
+  isCustom: number;
+};
+
 interface Props {
-  logId: number;
+  logId?: number;
+  emotion?: string;
+  size: number;
 }
 
 const { height, width } = Dimensions.get("window");
 
-const BodyDisplay = ({ logId }: Props) => {
+const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]),
     [svgData, setSvgData] = useState<SvgDataType[]>([]);
 
   const silhouetteImage = require("../assets/images/silhouette_front.png");
+  const {
+    stockEmotionData,
+  } = require("@/assets/data/emotions/stockEmotionData");
 
   const db = useSQLiteContext();
 
@@ -49,6 +73,7 @@ const BodyDisplay = ({ logId }: Props) => {
     try {
       const data = await db.getAllAsync<SvgDataType>(
         "SELECT * FROM bodydrawing_svg_paths WHERE id = ?",
+        // @ts-expect-error
         [logId]
       );
       let strokeData: StrokeType[] = [];
@@ -62,16 +87,82 @@ const BodyDisplay = ({ logId }: Props) => {
     }
   };
 
+  const getAllData = async () => {
+    // @ts-expect-error
+    const children = getChildrenEmotions(emotion);
+    let logQuery = "";
+    children.forEach((value, index) => {
+      if (index == children.length - 1) {
+        logQuery += `emotion = '${value}'`;
+      } else {
+        logQuery += `emotion = '${value}' OR `;
+      }
+    });
+
+    // Get all logs under this base emotion and its child emotions
+    try {
+      const data = await db.getAllAsync<LogType>(
+        `SELECT * FROM emotion_logs WHERE ${logQuery}`
+      );
+
+      // Create query for getting all body drawing svgs from these logs
+      let logIdQuery = "id = ";
+      data.forEach((log, index) => {
+        index == data.length - 1
+          ? (logIdQuery += `${log.id}`)
+          : (logIdQuery += `${log.id} OR id = `);
+      });
+
+      // Get those svgs
+      try {
+        const data = await db.getAllAsync<SvgDataType>(
+          `SELECT * FROM bodydrawing_svg_paths WHERE ${logIdQuery}`
+        );
+        let strokeData: StrokeType[] = [];
+        data.forEach((value) => {
+          const svgArray = value.path.split("/");
+          strokeData.push([svgArray, value.color, value.size]);
+        });
+        setPaths(strokeData);
+      } catch (e) {
+        console.error(e);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getChildrenEmotions = (emotion: string) => {
+    let children: string[] = [];
+    const secondLvl: EmotionType[] = Object.values(
+      stockEmotionData[2][emotion]
+    );
+    secondLvl.forEach((secondLvlEmotion) => {
+      children.push(secondLvlEmotion.name);
+      const thirdLvl: EmotionType[] = Object.values(
+        stockEmotionData[3][secondLvlEmotion.name]
+      );
+      thirdLvl.forEach((thirdLvlEmotion) => {
+        children.push(thirdLvlEmotion.name);
+      });
+    });
+    return children;
+  };
+
   useFocusEffect(
     useCallback(() => {
-      getData();
+      if (emotion) {
+        getAllData();
+      } else {
+        logId && getData();
+      }
     }, [])
   );
 
   return (
-    <View style={styles.container}>
+    <View>
       {/* Drawing */}
-      <View style={styles.drawingBoard}>
+      <View style={{ height: height * size }}>
         <ImageBackground
           source={silhouetteImage}
           imageStyle={{ tintColor: "black", resizeMode: "contain" }}
@@ -84,6 +175,7 @@ const BodyDisplay = ({ logId }: Props) => {
                   key={`paths-${index}`}
                   d={item[0].join("")}
                   stroke={item[1]}
+                  opacity={0.7}
                   fill="transparent"
                   strokeWidth={item[2]}
                   strokeLinecap="round"
@@ -101,15 +193,7 @@ const BodyDisplay = ({ logId }: Props) => {
 export default BodyDisplay;
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // backgroundColor: "white",
-  },
   drawingBoard: {
-    // borderWidth: 5,
-    // borderColor: "rgba(0,0,0,0.1)",
-    // borderRadius: 10,
-    // margin: 10,
     height: height * 0.76,
   },
 });

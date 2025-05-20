@@ -71,14 +71,14 @@ export default function TabLayout() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
-                height: 60,
-                width: 60,
+                marginTop: 6,
+                height: 50,
+                width: 50,
                 borderRadius: 50,
                 backgroundColor: "#e1be8e",
-                marginBottom: 10,
               }}
             >
-              <AntDesign name="plus" size={36} color={color} />
+              <AntDesign name="plus" size={32} color={color} />
             </View>
           ),
         }}

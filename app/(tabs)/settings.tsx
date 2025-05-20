@@ -84,7 +84,6 @@ const settings = () => {
       let data = testData;
       data[viewableItems.changed[0].index - 1] =
         viewableItems.changed[0].item - 1;
-      console.log(data);
       // data.pop();
       setTestData(data);
     }

@@ -64,11 +64,11 @@ INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Intimate', 
 INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Hopeful', 3, 'Optimistic', '#99e28e');
 INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Inspired', 3, 'Optimistic', '#91da85');
 `,
-  createLogTable: `
-  CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion TEXT, color TEXT, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP);
-  `,
   createCustomEmotionsTable: `
   CREATE TABLE IF NOT EXISTS user_created_emotions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, parent TEXT, color TEXT, level INTEGER, isCustom INTEGER DEFAULT 1);
+  `,
+  createLogTable: `
+  CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion TEXT, color TEXT, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP);
   `,
   createLog: `
   INSERT INTO emotion_logs (emotion, root, need, extra) VALUES (?,?,?,?);

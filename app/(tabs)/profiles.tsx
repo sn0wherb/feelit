@@ -7,13 +7,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import Feather from "@expo/vector-icons/Feather";
 import EmotionDropdown from "@/components/EmotionDropdown";
 import { keyExtractor } from "@/assets/functions";
+import BodyDisplay from "@/components/BodyDisplay";
+import EmotionDropdown2 from "@/components/EmotionDropdown2";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Entypo from "@expo/vector-icons/Entypo";
+import DotNavigation from "@/components/DotNavigation";
 
 type LogType = {
   id: number;
@@ -40,6 +45,7 @@ const profiles = () => {
   const db = useSQLiteContext();
   const router = useRouter();
   const [emotions, setEmotions] = useState<EmotionType[]>([]);
+  const [selectedEmotion, setSelectedEmotion] = useState(0);
 
   const {
     stockEmotionData,
@@ -64,12 +70,30 @@ const profiles = () => {
   // @ts-expect-error
   const renderEmotions = ({ item, index }) => {
     return <EmotionDropdown emotion={item} />;
-    return <View></View>;
+  };
+
+  // @ts-expect-error
+  const renderBodies = ({ item, index }) => {
+    return (
+      <View>
+        <BodyDisplay size={0.66} emotion={item.name} />
+        <View style={{ width: width, alignItems: "center" }}>
+          <EmotionDropdown2 emotion={item} />
+        </View>
+      </View>
+    );
   };
 
   useEffect(() => {
     getEmotions();
   }, []);
+
+  const bodyRef = useRef<FlatList>(null);
+
+  // @ts-expect-error
+  const handleViewableItemsChanged = ({ viewableItems }) => {
+    setSelectedEmotion(viewableItems[0].index);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,25 +109,55 @@ const profiles = () => {
         </Text>
       </View> */}
       {/* Search */}
-      <View>
-        <TextInput
-          placeholder="Search emotions"
-          placeholderTextColor="#555"
+      <View style={{ width: width, justifyContent: "center" }}>
+        <View
           style={{
-            backgroundColor: "rgba(0,0,0,0.1)",
-            borderRadius: 16,
-            padding: 8,
+            flexDirection: "row",
+            width: width,
             margin: 10,
-            fontSize: 20,
+            // marginBottom: 0,
+            alignItems: "center",
+            gap: 10,
           }}
-        />
+        >
+          <TouchableOpacity
+            style={{
+              backgroundColor: "rgba(0,0,0,0.1)",
+              padding: 8,
+              borderRadius: 16,
+            }}
+          >
+            <Feather name="menu" size={24} color="black" />
+          </TouchableOpacity>
+          <TextInput
+            placeholder="Search emotions"
+            placeholderTextColor="#555"
+            style={{
+              backgroundColor: "rgba(0,0,0,0.1)",
+              borderRadius: 16,
+              padding: 8,
+              fontSize: 20,
+              width: width * 0.8,
+            }}
+          />
+        </View>
       </View>
+      {/* Dots */}
+      <DotNavigation items={emotions} selected={selectedEmotion} />
       {/* Emotions */}
       <FlatList
+        showsHorizontalScrollIndicator={false}
+        // contentContainerStyle={{ borderWidth: 2 }}
+        horizontal
+        pagingEnabled
         data={emotions}
-        renderItem={renderEmotions}
+        renderItem={renderBodies}
         keyExtractor={keyExtractor}
+        ref={bodyRef}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+        onViewableItemsChanged={handleViewableItemsChanged}
       />
+      {/* Notes */}
       <View style={{ width: width, padding: 10 }}>
         {/* <View>
         <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Days of the week</Text>
