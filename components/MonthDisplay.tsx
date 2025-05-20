@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React, { memo, useEffect, useRef, useState } from "react";
 import DaysInMonth from "./RenderMonth";
+import { keyExtractor } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -47,7 +48,6 @@ const MonthDisplay = ({
   const monthFlatListRef = useRef<FlatList>(null);
 
   //   Functions
-  const keyExtractor = (index: any) => "key-" + index.toString();
 
   const createThreeMonths = (
     yearNumber: number,

@@ -28,57 +28,44 @@ const EmotionDropdown = ({ emotion }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
+  // Functions
   const handleOpenEmotion = () => {
     router.push("/emotionProfile");
   };
 
-  if (isOpen) {
-    return (
-      <View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity
-            style={{ marginRight: 6 }}
-            onPress={() => setIsOpen(!isOpen)}
-          >
-            <Feather name="chevron-down" size={30} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              padding: 8,
-              borderRadius: 10,
-              backgroundColor: emotion.color,
-              width: width * 0.7,
-            }}
-            onPress={handleOpenEmotion}
-          >
-            <Text style={{ fontSize: 22 }}>{emotion.name}</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ marginLeft: 30, marginTop: 14 }}>
+  return (
+    <View>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {/* Chevron */}
+        <TouchableOpacity
+          style={{ marginHorizontal: 6 }}
+          onPress={() => setIsOpen(!isOpen)}
+        >
+          <Feather
+            name={isOpen ? "chevron-down" : "chevron-right"}
+            size={30}
+            color="black"
+          />
+        </TouchableOpacity>
+        {/* Emotion */}
+        <TouchableOpacity
+          style={{
+            padding: 8,
+            marginVertical: 6,
+            borderRadius: 10,
+            backgroundColor: emotion.color,
+            width: width * 0.7,
+          }}
+          onPress={handleOpenEmotion}
+        >
+          <Text style={{ fontSize: 22 }}>{emotion.name}</Text>
+        </TouchableOpacity>
+      </View>
+      {isOpen && (
+        <View style={{ marginLeft: 30 }}>
           <EmotionDropdown emotion={emotion} />
         </View>
-      </View>
-    );
-  }
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
-      <TouchableOpacity
-        style={{ marginRight: 6 }}
-        onPress={() => setIsOpen(!isOpen)}
-      >
-        <Feather name="chevron-right" size={30} color="black" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          padding: 8,
-          borderRadius: 10,
-          backgroundColor: emotion.color,
-          width: width * 0.7,
-        }}
-        onPress={handleOpenEmotion}
-      >
-        <Text style={{ fontSize: 22 }}>{emotion.name}</Text>
-      </TouchableOpacity>
+      )}
     </View>
   );
 };

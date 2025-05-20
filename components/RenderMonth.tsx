@@ -1,6 +1,7 @@
 import { Dimensions, StyleSheet, Text, View, FlatList } from "react-native";
 import React, { memo } from "react";
 import RenderDay from "./RenderDay";
+import { keyExtractor } from "@/assets/functions";
 
 type LogType = {
   id: number;
@@ -20,8 +21,6 @@ interface Props {
 const { width, height } = Dimensions.get("window");
 
 const RenderMonth = ({ data, passOpenDay }: Props) => {
-  const keyExtractor = (index: any) => "key-" + index.toString();
-
   // @ts-expect-error
   const renderDay = ({ item, index }) => {
     const dateDigit: number = Number(

@@ -88,3 +88,6 @@ export const isInWeek = (date: Date) => {
   }
   return false;
 };
+
+export const keyExtractor = (item: any, index: number) =>
+  "key-" + index.toString();

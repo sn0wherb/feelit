@@ -13,7 +13,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import Feather from "@expo/vector-icons/Feather";
 import EmotionDropdown from "@/components/EmotionDropdown";
-import { stockEmotionData } from "@/assets/data/emotions/stockEmotionData";
+import { keyExtractor } from "@/assets/functions";
 
 type LogType = {
   id: number;
@@ -41,49 +41,34 @@ const profiles = () => {
   const router = useRouter();
   const [emotions, setEmotions] = useState<EmotionType[]>([]);
 
-  class DropdownEmotion {
-    title: string;
-    open: boolean;
-    children: DropdownEmotion | FinalEmotion;
-
-    constructor(title: string, children: DropdownEmotion | FinalEmotion) {
-      this.title = title;
-      this.open = false;
-      this.children = children;
-    }
-  }
-
-  class FinalEmotion {
-    title: string;
-
-    constructor(title: string) {
-      this.title = title;
-    }
-  }
-
-  const test = new DropdownEmotion("Emotion", new FinalEmotion("Final"));
-
-  // setEmotions(stockEmotionData[1]);
+  const {
+    stockEmotionData,
+  } = require("@/assets/data/emotions/stockEmotionData");
 
   // Functions
   const getEmotions = async () => {
     try {
       const data = await db.getAllAsync<EmotionType>(
-        "SELECT * FROM user_created_emotions ORDER BY created_at ASC"
+        "SELECT * FROM user_created_emotions"
       );
-      setEmotions(data);
+      const allEmotions: EmotionType[] = Object.values(stockEmotionData[1]);
+      data.forEach((emotion) => {
+        allEmotions.push(emotion);
+      });
+      setEmotions(allEmotions);
     } catch (e) {
       console.error(e);
     }
   };
 
   // @ts-expect-error
-  const renderEmotions = ({ item, key }) => {
+  const renderEmotions = ({ item, index }) => {
     return <EmotionDropdown emotion={item} />;
+    return <View></View>;
   };
 
   useEffect(() => {
-    // getEmotions();
+    getEmotions();
   }, []);
 
   return (
@@ -114,7 +99,11 @@ const profiles = () => {
         />
       </View>
       {/* Emotions */}
-      <FlatList data={emotions} renderItem={renderEmotions} />
+      <FlatList
+        data={emotions}
+        renderItem={renderEmotions}
+        keyExtractor={keyExtractor}
+      />
       <View style={{ width: width, padding: 10 }}>
         {/* <View>
         <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Days of the week</Text>

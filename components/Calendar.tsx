@@ -186,8 +186,6 @@ const Calendar = () => {
     return <RenderMonth data={item} passOpenDay={handleOpenDay} />;
   };
 
-  const keyExtractor = (index: any) => "key-" + index.toString();
-
   const handleOpenDay = (logs: LogType[], digit: number) => {
     setDisplay("Day");
     setDisplayData(logs);
