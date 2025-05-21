@@ -19,6 +19,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSQLiteContext } from "expo-sqlite";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
+import BodyDataCompilation from "@/components/BodyDataCompilation";
 
 type LogType = {
   id: number;
@@ -217,7 +218,7 @@ export default function logModal() {
             </View>
             {/* BodyDrawing */}
             <View>
-              <BodyDisplay logId={Number(logData.id)} />
+              <BodyDataCompilation logId={Number(logData.id)} />
             </View>
             {/* Date of creation */}
             <View
