@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useCallback, useState } from "react";
-import { Svg, Path } from "react-native-svg";
+import React, { memo, useCallback, useState } from "react";
+import { Svg, Path, Circle } from "react-native-svg";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Slider from "@react-native-assets/slider";
 import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
@@ -51,7 +51,7 @@ type EmotionType = {
 
 interface Props {
   logId?: number;
-  emotion?: string;
+  emotion?: EmotionType;
   size?: number;
 }
 
@@ -61,6 +61,8 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]),
     [svgData, setSvgData] = useState<SvgDataType[]>([]);
+  const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
+  const [grid, setGrid] = useState<[[number, string]][]>([]);
 
   const silhouetteImage = require("../assets/images/silhouette_front.png");
   const {
@@ -81,7 +83,6 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
         const svgArray = value.path.split("/");
         strokeData.push([svgArray, value.color, value.size]);
       });
-      console.log(strokeData);
       compileBodyDisplayData(strokeData);
 
       // Get biggest difference
@@ -124,15 +125,19 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
 
   const getAllData = async () => {
     // @ts-expect-error
-    const children = getChildrenEmotions(emotion);
+    const children = await getChildrenEmotions(emotion);
     let logQuery = "";
-    children.forEach((value, index) => {
-      if (index == children.length - 1) {
-        logQuery += `emotion = '${value}'`;
-      } else {
-        logQuery += `emotion = '${value}' OR `;
-      }
-    });
+    if (children) {
+      children?.forEach((value, index) => {
+        if (index == children.length - 1) {
+          logQuery += `emotion = '${value}'`;
+        } else {
+          logQuery += `emotion = '${value}' OR `;
+        }
+      });
+    } else {
+      logQuery = `emotion = '${emotion?.name}'`;
+    }
 
     // Get all logs under this base emotion and its child emotions
     try {
@@ -159,6 +164,7 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
           strokeData.push([svgArray, value.color, value.size]);
         });
         setPaths(strokeData);
+        compileBodyDisplayData(strokeData);
       } catch (e) {
         console.error(e);
       }
@@ -167,10 +173,29 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
     }
   };
 
-  const getChildrenEmotions = (emotion: string) => {
+  const getCustomChildrenEmotions = async (emotion: EmotionType) => {
+    try {
+      const data = await db.getAllAsync<EmotionType>(
+        `SELECT * FROM emotions WHERE parent = '${emotion.name}'`
+      );
+      if (data.length > 0) {
+        data.forEach((value) => {
+          return getCustomChildrenEmotions(value);
+        })
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const getChildrenEmotions = (emotion: EmotionType) => {
+    if (emotion.isCustom) {
+      return getCustomChildrenEmotions(emotion);
+    }
+
     let children: string[] = [];
     const secondLvl: EmotionType[] = Object.values(
-      stockEmotionData[2][emotion]
+      stockEmotionData[2][emotion.name]
     );
     secondLvl.forEach((secondLvlEmotion) => {
       children.push(secondLvlEmotion.name);
@@ -194,113 +219,79 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
     }, [])
   );
 
+  // 
+  // SET GRID SECTION AMOUNT HERE
+  // 
+  const gridSections = 20;
+  const strokeMultiplier = gridSections / 20;
+  const gridIncrementX = width / gridSections;
+  const gridIncrementY = (height * size) / gridSections;
+
   const compileBodyDisplayData = (data: StrokeType[]) => {
+    // console.log(data);
     // Create grid
-    const createGrid = (rows: number, columns: number) => {
-      let grid = [];
+    const createGrid = (rows: number, columns: number = rows) => {
+      let grid: [[number, string]][] = [];
 
       // Rows
       for (let i = 0; i < rows; i++) {
+        // @ts-expect-error
         grid.push([]);
         // Columns
         for (let j = 0; j < columns; j++) {
-          // @ts-expect-error
-          grid[i].push(0);
+          grid[i].push([0, "black"]);
         }
       }
       return grid;
     };
 
-    const gridSections = 5;
+    const gridData = createGrid(gridSections);
 
-    const gridIncrementX = width / gridSections;
-    const gridIncrementY = (height * size) / gridSections;
-    const grid = createGrid(gridSections, gridSections);
+    // Gridlines
+    let gridTemp = gridVisualized;
+    for (let i = 0; i < gridSections; i++) {
+      gridTemp.push([gridIncrementX * i, gridIncrementY * i]);
+    }
+    setGridVisualized(gridTemp);
+
     const regExAll = /\d{1,}/g; // Regex that matches the digits in svg stroke strings
-    let length = [];
+
+    // Locate stroke in gridData
+    const locate = (point: number, axis: "x" | "y", start: number = 0, end: number = gridSections - 1) => {
+      if (start >= end) return start;
+      
+      const mid = Math.floor((start + end) / 2);
+      const midPoint = mid * (axis === "x" ? gridIncrementX : gridIncrementY);
+      
+      if (point >= midPoint && point < midPoint + (axis === "x" ? gridIncrementX : gridIncrementY)) {
+        return mid;
+      }
+      
+      if (point < midPoint) {
+        return locate(point, axis, start, mid);
+      } else {
+        return locate(point, axis, mid + 1, end);
+      }
+    };
+
     // Go through all paths
     for (let i = 0; i < data.length; i++) {
       // Go through all points in this path
-      console.log(data[i][0].length);
       for (let j = 0; j < data[i][0].length; j++) {
         const stroke = data[i][0][j];
         const pointsStrings = [...stroke.matchAll(regExAll)];
         const points = [Number(pointsStrings[0]), Number(pointsStrings[1])];
 
-        // Locate stroke in grid
-        // prettier-ignore
-
-        // horizontal recursive
-        const locateHorizontally = (
-          x: number,
-          index: number = gridSections
-        ) => {
-          const middleIndex = index % 2 == 0
-            ? index / 2
-            : (index - 1) / 2
-          const middle = middleIndex * gridIncrementX;
-          // Breakout statement
-          if (
-            (x > middle && x < middle + gridIncrementX) ||
-            x == middleIndex ||
-            (x < middle && x > middle - gridIncrementX)
-          ) {
-            // Return index of row
-            return middleIndex;
-          }
-          // console.log("middleIndex: " + middleIndex);
-          // console.log("x: " + x);
-
-          // Recursive statements
-          if (x > middleIndex) {
-            return locateHorizontally(x, middleIndex);
-          } else {
-            return locateHorizontally(x, middleIndex);
-          }
-        };
-
-        console.log("original: " + points[0]);
-        const x = locateHorizontally(points[0]);
-        console.log(x);
-        length.push(x);
-
-        // horizontal
-        // switch (true) {
-        //   case points[0] >= 150:
-        //     x = 1;
-        //     break;
-        //   default:
-        //     x = 0;
-        // }
-
-        // // vertical
-        // switch (true) {
-        //   case points[1] >= 250:
-        //     y = 1;
-        //     break;
-        //   default:
-        //     y = 0;
-        // }
-
-        // grid[x][y]++;
-
-        // console.log(grid);
+        const x = locate(points[0], 'x');
+        const y = locate(points[1], 'y');
+        gridData[x][y][0]++;
+        gridData[x][y][1] = data[i][1];
       }
     }
-    console.log(length.length);
+    setGrid(gridData);
   };
 
-  const renderSvgs = () => {
-    for (let i = 0; i <= 20; i++) {
-      return (
-        <Path
-          d={`M${(width / 20) * i},0 ${(width / 20) * i},${height * size}`}
-          stroke={"black"}
-          strokeWidth={5}
-        />
-      );
-    }
-  };
+  // console.log(grid);
 
   return (
     <View>
@@ -312,7 +303,7 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
         >
           <Svg>
             {/* previous strokes */}
-            {paths.map((item, index) => {
+            {/* {paths.map((item, index) => {
               return (
                 <Path
                   key={`paths-${index}`}
@@ -325,8 +316,37 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
                   strokeLinejoin="round"
                 />
               );
+            })} */}
+            {/* grid lines */}
+            {/* {gridVisualized.map((item, index) => {
+              return (
+                <Path
+                  key={`grid-${index}`}
+                  d={`M${item[0]},0 ${item[0]},${height * size} M0,${item[1]} ${width},${item[1]}`}
+                  stroke={"black"}
+                  strokeWidth={3}
+                />
+              )
+            })} */}
+            {/* Compiled data */}
+            {grid.map((item, index) => {
+              const x = index;
+              return (
+                item.map((item, index) => {
+                  // console.log(item);
+                  return (
+                    <Circle
+                      key={`grid-${index}`}
+                      cx={x * gridIncrementX + gridIncrementX / 2}
+                      cy={index * gridIncrementY + gridIncrementY / 2}
+                      r={item[0] * strokeMultiplier}
+                      fill={item[1]}
+                      opacity={0.5}
+                    />
+                  );
+                })
+              )
             })}
-            {renderSvgs()}
             <Path d={"M0,0"} stroke={"black"} strokeWidth={5} />
           </Svg>
         </ImageBackground>

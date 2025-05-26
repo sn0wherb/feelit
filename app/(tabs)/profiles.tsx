@@ -19,6 +19,7 @@ import EmotionDropdown2 from "@/components/EmotionDropdown2";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import DotNavigation from "@/components/DotNavigation";
+import BodyDataCompilation from "@/components/BodyDataCompilation";
 
 type LogType = {
   id: number;
@@ -55,7 +56,7 @@ const profiles = () => {
   const getEmotions = async () => {
     try {
       const data = await db.getAllAsync<EmotionType>(
-        "SELECT * FROM user_created_emotions"
+        "SELECT * FROM user_created_emotions WHERE parent IS NULL"
       );
       const allEmotions: EmotionType[] = Object.values(stockEmotionData[1]);
       data.forEach((emotion) => {
@@ -76,7 +77,7 @@ const profiles = () => {
   const renderBodies = ({ item, index }) => {
     return (
       <View style={{ height: height * 0.72 }}>
-        <BodyDisplay size={0.66} emotion={item.name} />
+        <BodyDataCompilation size={0.66} emotion={item} />
         <View style={{ width: width, alignItems: "center" }}>
           <EmotionDropdown2 emotion={item} />
         </View>

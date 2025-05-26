@@ -218,7 +218,7 @@ export default function logModal() {
             </View>
             {/* BodyDrawing */}
             <View>
-              <BodyDataCompilation logId={Number(logData.id)} />
+              <BodyDisplay logId={Number(logData.id)} />
             </View>
             {/* Date of creation */}
             <View
