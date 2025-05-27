@@ -7,8 +7,8 @@ import {
   View,
 } from "react-native";
 import React, { memo, useEffect, useRef, useState } from "react";
-import DaysInMonth from "./RenderMonth";
-import { keyExtractor } from "@/assets/functions";
+import RenderMonth from "./RenderMonth";
+// import { keyExtractor } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -48,6 +48,7 @@ const MonthDisplay = ({
   const monthFlatListRef = useRef<FlatList>(null);
 
   //   Functions
+  const keyExtractor = (item: Date[]) => 'key-' + item[10].toString();
 
   const createThreeMonths = (
     yearNumber: number,
@@ -145,7 +146,7 @@ const MonthDisplay = ({
 
   //@ts-expect-error
   const renderMonth = ({ item }) => {
-    return <DaysInMonth data={item} passOpenDay={passHandleOpenDay} />;
+    return <RenderMonth data={item} passOpenDay={passHandleOpenDay} />;
   };
 
   const updateThreeMonths = (
@@ -242,6 +243,7 @@ const MonthDisplay = ({
           viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         />
       ) : (
+        // Loading
         <View
           style={{
             height: height * 0.46,

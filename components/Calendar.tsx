@@ -67,52 +67,52 @@ const Calendar = () => {
   const weekdays = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
 
   // Functions
-  const createThreeMonths = (
-    yearNumber: number,
-    currentMonthNumber: number
-  ) => {
-    let months: YearType = [[]];
-    months.pop(); // There's probably a beter way to initialize an empty typed array
+  // const createThreeMonths = (
+  //   yearNumber: number,
+  //   currentMonthNumber: number
+  // ) => {
+  //   let months: YearType = [[]];
+  //   months.pop(); // There's probably a beter way to initialize an empty typed array
 
-    // Insert previous, current and next month
-    for (
-      let i = 0, monthNumber = currentMonthNumber - 1;
-      i < 3;
-      i++, monthNumber++
-    ) {
-      // Adjust for cross-year
-      if (monthNumber == -1) {
-        yearNumber--;
-        monthNumber = 11;
-      } else if (monthNumber == 12) {
-        yearNumber++;
-        monthNumber = 0;
-      }
+  //   // Insert previous, current and next month
+  //   for (
+  //     let i = 0, monthNumber = currentMonthNumber - 1;
+  //     i < 3;
+  //     i++, monthNumber++
+  //   ) {
+  //     // Adjust for cross-year
+  //     if (monthNumber == -1) {
+  //       yearNumber--;
+  //       monthNumber = 11;
+  //     } else if (monthNumber == 12) {
+  //       yearNumber++;
+  //       monthNumber = 0;
+  //     }
 
-      months.push(createMonth(yearNumber, monthNumber));
-    }
-    return months;
-  };
+  //     months.push(createMonth(yearNumber, monthNumber));
+  //   }
+  //   return months;
+  // };
 
-  const updateThreeMonths = (
-    yearNumber: number,
-    currentMonthNumber: number,
-    direction: "back" | "forth"
-  ) => {
-    const oldMonths = threeMonths;
-    const newMonths = createThreeMonths(yearNumber, currentMonthNumber);
+  // const updateThreeMonths = (
+  //   yearNumber: number,
+  //   currentMonthNumber: number,
+  //   direction: "back" | "forth"
+  // ) => {
+  //   const oldMonths = threeMonths;
+  //   const newMonths = createThreeMonths(yearNumber, currentMonthNumber);
 
-    // Back
-    if (direction == "back") {
-      oldMonths.unshift(newMonths[0]);
-      oldMonths.pop();
-    } else {
-      // @ts-expect-error
-      oldMonths.push(newMonths[2]);
-      oldMonths.shift();
-    }
-    setThreeMonths(oldMonths);
-  };
+  //   // Back
+  //   if (direction == "back") {
+  //     oldMonths.unshift(newMonths[0]);
+  //     oldMonths.pop();
+  //   } else {
+  //     // @ts-expect-error
+  //     oldMonths.push(newMonths[2]);
+  //     oldMonths.shift();
+  //   }
+  //   setThreeMonths(oldMonths);
+  // };
 
   const createMonth = (yearNumber: number, monthNumber: number) => {
     let month: Date[] = [];
@@ -192,32 +192,32 @@ const Calendar = () => {
     setSelectedDay(digit);
   };
 
-  // @ts-expect-error
-  const handleCurrentMonthChange = ({ viewableItems }) => {
-    // In case data hasn't rendered yet, don't try to read undefined values
-    if (!viewableItems[0] || viewableItems[0].item.length < 1) {
-      return;
-    }
+  // // @ts-expect-error
+  // const handleCurrentMonthChange = ({ viewableItems }) => {
+  //   // In case data hasn't rendered yet, don't try to read undefined values
+  //   if (!viewableItems[0] || viewableItems[0].item.length < 1) {
+  //     return;
+  //   }
 
-    // Get data from current element
-    const thisMonth = viewableItems[0].item[10].getMonth(),
-      thisYear = viewableItems[0].item[10].getFullYear(),
-      thisIndex = viewableItems[0].index;
+  //   // Get data from current element
+  //   const thisMonth = viewableItems[0].item[10].getMonth(),
+  //     thisYear = viewableItems[0].item[10].getFullYear(),
+  //     thisIndex = viewableItems[0].index;
 
-    // Update visible current month title
-    setSelectedMonth(thisMonth);
+  //   // Update visible current month title
+  //   setSelectedMonth(thisMonth);
 
-    // If currently landed on january, create and insert previous year
-    if (thisIndex == 0) {
-      updateThreeMonths(thisYear, thisMonth, "back");
-      // If currently landed on december, create and insert next year
-    } else if (thisIndex == 2) {
-      updateThreeMonths(thisYear, thisMonth, "forth");
-    }
+  //   // If currently landed on january, create and insert previous year
+  //   if (thisIndex == 0) {
+  //     updateThreeMonths(thisYear, thisMonth, "back");
+  //     // If currently landed on december, create and insert next year
+  //   } else if (thisIndex == 2) {
+  //     updateThreeMonths(thisYear, thisMonth, "forth");
+  //   }
 
-    // Only update year value if itš different
-    thisYear != selectedYear && setSelectedYear(thisYear);
-  };
+  //   // Only update year value if itš different
+  //   thisYear != selectedYear && setSelectedYear(thisYear);
+  // };
 
   const handleReturnFromDay = () => {
     setDisplay("Month");
@@ -266,13 +266,14 @@ const Calendar = () => {
     }
   };
 
-  useEffect(() => {
-    setThreeMonths(createThreeMonths(selectedYear, selectedMonth));
-  }, []);
+  // Effects
+  // useEffect(() => {
+  //   setThreeMonths(createThreeMonths(selectedYear, selectedMonth));
+  // }, []);
 
-  useEffect(() => {
-    monthFlatListRef.current?.forceUpdate();
-  }, [threeMonths]);
+  // useEffect(() => {
+  //   monthFlatListRef.current?.forceUpdate();
+  // }, [threeMonths]);
 
   return (
     <View>

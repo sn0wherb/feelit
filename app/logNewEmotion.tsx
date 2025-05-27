@@ -68,9 +68,9 @@ export default function logNewEmotion() {
 
   useFocusEffect(
     useCallback(() => {
-      if (level === 6) {
-        setLevel(0);
-      }
+      // if (level === 6) {
+      //   setLevel(1);
+      // }
       getData();
     }, [level, refresh])
   );
@@ -245,6 +245,7 @@ export default function logNewEmotion() {
   const handleToggleEditing = (state: boolean) => {
     setIsEditingEnabled(state);
   };
+  console.log(level);
 
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
