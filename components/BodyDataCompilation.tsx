@@ -23,6 +23,8 @@ import { useFocusEffect } from "expo-router";
 
 type StrokeType = [string[], string, number];
 
+type GridType = [[number, string]][];
+
 type SvgDataType = {
   id: number;
   path: string;
@@ -59,10 +61,14 @@ const { height, width } = Dimensions.get("window");
 
 const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
   // Svg states
-  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]),
-    [svgData, setSvgData] = useState<SvgDataType[]>([]);
+  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
+  const [svgData, setSvgData] = useState<SvgDataType[]>([]);
   const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
-  const [grid, setGrid] = useState<[[number, string]][]>([]);
+  const [grid, setGrid] = useState<GridType[]>([]);
+
+  // Display options
+  const showRawData = false;
+  const showGridLines = false;
 
   const silhouetteImage = require("../assets/images/silhouette_front.png");
   const {
@@ -223,28 +229,37 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
   // SET GRID SECTION AMOUNT HERE
   // 
   const gridSections = 20;
-  const strokeMultiplier = gridSections / 20;
+  const dataOpacity = 0.4;
+
+  const strokeMultiplier = gridSections / 10;
   const gridIncrementX = width / gridSections;
   const gridIncrementY = (height * size) / gridSections;
 
-  const compileBodyDisplayData = (data: StrokeType[]) => {
-    // console.log(data);
-    // Create grid
-    const createGrid = (rows: number, columns: number = rows) => {
-      let grid: [[number, string]][] = [];
+  // Create grid
+  const createGrid = (rows: number, columns: number = rows) => {
+    // [                                - rows
+    //  [                               - columns
+    //    [0, "black"], [0, "black"]    - points, separated by color
+    //  ], 
+    //  [
+    //    [0, "black"], [0, "black"]
+    //  ]
+    // ]
+    let grid: GridType[] = [];
 
-      // Rows
-      for (let i = 0; i < rows; i++) {
+    // Rows
+    for (let i = 0; i < rows; i++) {
+      grid.push([]);
+      // Columns
+      for (let j = 0; j < columns; j++) {
         // @ts-expect-error
-        grid.push([]);
-        // Columns
-        for (let j = 0; j < columns; j++) {
-          grid[i].push([0, "black"]);
-        }
+        grid[i].push([]);
       }
-      return grid;
-    };
+    }
+    return grid;
+  };
 
+  const compileBodyDisplayData = (data: StrokeType[]) => {
     const gridData = createGrid(gridSections);
 
     // Gridlines
@@ -276,22 +291,93 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
 
     // Go through all paths
     for (let i = 0; i < data.length; i++) {
-      // Go through all points in this path
+      // Go through all points in current path
       for (let j = 0; j < data[i][0].length; j++) {
         const stroke = data[i][0][j];
         const pointsStrings = [...stroke.matchAll(regExAll)];
         const points = [Number(pointsStrings[0]), Number(pointsStrings[1])];
 
-        const x = locate(points[0], 'x');
-        const y = locate(points[1], 'y');
-        gridData[x][y][0]++;
-        gridData[x][y][1] = data[i][1];
+        // console.log(points);
+
+        if (data[i][1] !== "black") {
+          // Locate point in grid
+          const x = locate(points[0], 'x'),
+          y = locate(points[1], 'y');
+
+          const getColor = (value: [number, string]) => {
+            return value[1] === data[i][1];
+          }
+
+          const thisColorIndex = gridData[x][y].findIndex(getColor);
+
+          // If point of this color exists, increment count
+          if (thisColorIndex > -1) {
+            gridData[x][y][thisColorIndex][0]++;
+          } else {
+            // If point of this color does not exist, create it
+            gridData[x][y].push([1, data[i][1]]);
+          }
+          // console.log(gridData[x][y]);
+        }
+
       }
     }
+    // console.log(gridData);
     setGrid(gridData);
   };
 
-  // console.log(grid);
+  // Renderers
+  const renderData = (item: GridType, index: number) => {
+    const x = index;
+    return (
+      // Columns
+      item.map((item, index) => {
+        const y = index;
+        return (
+          // Points
+          item.map((item, index) => {
+            return (
+          <Circle
+            key={`grid-${index}`}
+            cx={x * gridIncrementX + gridIncrementX / 2}
+            cy={y * gridIncrementY + gridIncrementY / 2}
+            r={item[0] * strokeMultiplier}
+            fill={item[1]}
+            opacity={dataOpacity}
+          />
+            )
+          })
+        );
+      })
+    )
+  }
+
+  const renderRawData = (item: StrokeType, index: number) => {
+    return (
+      <Path
+        key={`paths-${index}`}
+        d={item[0].join("")}
+        stroke={item[1]}
+        // opacity={0.7}
+        fill="transparent"
+        strokeWidth={item[2]}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    );
+  }
+
+  const renderGridLines = (item: number[], index: number) => {
+    return (
+      <Path
+        key={`grid-${index}`}
+        d={`M${item[0]},0 ${item[0]},${height * size} M0,${item[1]} ${width},${item[1]}`}
+        stroke={"black"}
+        opacity={0.3}
+        strokeWidth={2}
+      />
+    )
+  }
 
   return (
     <View>
@@ -303,51 +389,11 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
         >
           <Svg>
             {/* previous strokes */}
-            {/* {paths.map((item, index) => {
-              return (
-                <Path
-                  key={`paths-${index}`}
-                  d={item[0].join("")}
-                  stroke={item[1]}
-                  // opacity={0.7}
-                  fill="transparent"
-                  strokeWidth={item[2]}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              );
-            })} */}
+            {showRawData && paths.map(renderRawData)}
             {/* grid lines */}
-            {/* {gridVisualized.map((item, index) => {
-              return (
-                <Path
-                  key={`grid-${index}`}
-                  d={`M${item[0]},0 ${item[0]},${height * size} M0,${item[1]} ${width},${item[1]}`}
-                  stroke={"black"}
-                  strokeWidth={3}
-                />
-              )
-            })} */}
+            {showGridLines && gridVisualized.map(renderGridLines)}
             {/* Compiled data */}
-            {grid.map((item, index) => {
-              const x = index;
-              return (
-                item.map((item, index) => {
-                  // console.log(item);
-                  return (
-                    <Circle
-                      key={`grid-${index}`}
-                      cx={x * gridIncrementX + gridIncrementX / 2}
-                      cy={index * gridIncrementY + gridIncrementY / 2}
-                      r={item[0] * strokeMultiplier}
-                      fill={item[1]}
-                      opacity={0.5}
-                    />
-                  );
-                })
-              )
-            })}
-            <Path d={"M0,0"} stroke={"black"} strokeWidth={5} />
+            {grid.map(renderData)}
           </Svg>
         </ImageBackground>
       </View>

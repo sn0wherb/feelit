@@ -25,8 +25,8 @@ const DotNavigation = ({ items, selected }: Props) => {
     return (
       <View
         style={{
-          width: index == selected ? width * 0.036 : width * 0.02,
-          height: index == selected ? width * 0.036 : width * 0.02,
+          width: index == selected ? width * 0.036 : width * 0.016,
+          height: index == selected ? width * 0.036 : width * 0.016,
           //   borderWidth: index == selected ? 1 : 0,
           borderColor: "rgba(0,0,0,0.1)",
           borderRadius: 999,

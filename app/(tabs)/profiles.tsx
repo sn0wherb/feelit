@@ -109,7 +109,7 @@ const profiles = () => {
           Emotion profiles
         </Text>
       </View> */}
-      {/* Search */}
+      {/* Top */}
       <View style={{ width: width, justifyContent: "center" }}>
         <View
           style={{
@@ -121,6 +121,7 @@ const profiles = () => {
             gap: 10,
           }}
         >
+          {/* Options */}
           <TouchableOpacity
             style={{
               backgroundColor: "rgba(0,0,0,0.1)",
@@ -130,6 +131,7 @@ const profiles = () => {
           >
             <Feather name="menu" size={24} color="black" />
           </TouchableOpacity>
+          {/* Search */}
           <TextInput
             placeholder="Search emotions"
             placeholderTextColor="#555"
