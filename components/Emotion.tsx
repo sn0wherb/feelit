@@ -13,9 +13,10 @@ interface Props {
   name: string | ReactNode;
   color: string;
   onClick: (name: string) => void;
+  hidden: boolean;
 }
 
-function Emotion({ name, color, onClick }: Props) {
+function Emotion({ name, color, onClick, hidden }: Props) {
   const styles = StyleSheet.create({
     emotion: {
       height: 134,
@@ -24,6 +25,7 @@ function Emotion({ name, color, onClick }: Props) {
       marginHorizontal: 14,
       paddingHorizontal: 8,
       backgroundColor: color,
+      opacity: hidden ? 0.5 : 1,
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 50,

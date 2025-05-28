@@ -26,11 +26,6 @@ type LogType = {
 };
 
 type YearType = [Date[]];
-type TinyEmotion = {
-  id: number;
-  created_at: string;
-  color: string;
-};
 
 const { width, height } = Dimensions.get("window");
 

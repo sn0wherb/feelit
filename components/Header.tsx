@@ -9,6 +9,7 @@ import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Redirect, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Feather from "@expo/vector-icons/Feather";
 
 interface Props {
   level: number;
@@ -94,7 +95,7 @@ const Header = ({
               fontSize: 28,
             }}
           >
-            Edit your emotions
+            Edit emotions
           </Text>
         </View>
       </View>

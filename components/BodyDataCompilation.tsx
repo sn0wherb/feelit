@@ -42,15 +42,6 @@ type LogType = {
   created_at: string;
 };
 
-type EmotionType = {
-  id: number;
-  name: string;
-  parent: string | null;
-  color: string;
-  level: number;
-  isCustom: number;
-};
-
 interface Props {
   logId?: number;
   emotion?: EmotionType;
@@ -379,13 +370,15 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
     )
   }
 
+  const pad = 12;
+
   return (
     <View>
       {/* Drawing */}
-      <View style={{ height: height * size }}>
+      <View style={{ height: height * size + pad}}>
         <ImageBackground
           source={silhouetteImage}
-          imageStyle={{ tintColor: "black", resizeMode: "contain" }}
+          imageStyle={{ tintColor: "black", resizeMode: "contain", paddingBottom: pad }}
         >
           <Svg>
             {/* previous strokes */}

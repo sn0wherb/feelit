@@ -31,15 +31,6 @@ type LogType = {
   created_at: string;
 };
 
-type EmotionType = {
-  id: number;
-  name: string;
-  parent: string | null;
-  color: string;
-  level: number;
-  isCustom: number;
-};
-
 const { width, height } = Dimensions.get("window");
 
 const profiles = () => {
@@ -47,10 +38,12 @@ const profiles = () => {
   const router = useRouter();
   const [emotions, setEmotions] = useState<EmotionType[]>([]);
   const [selectedEmotion, setSelectedEmotion] = useState(0);
+  const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] = useState(false);
 
   const {
     stockEmotionData,
   } = require("@/assets/data/emotions/stockEmotionData");
+  const bodyHeight = 0.74;
 
   // Functions
   const getEmotions = async () => {
@@ -76,11 +69,11 @@ const profiles = () => {
   // @ts-expect-error
   const renderBodies = ({ item, index }) => {
     return (
-      <View style={{ height: height * 0.72 }}>
-        <BodyDataCompilation size={0.66} emotion={item} />
-        <View style={{ width: width, alignItems: "center" }}>
+      <View style={{ width: width}}>
+        <BodyDataCompilation size={bodyHeight} emotion={item} />
+        {/* <View style={{ width: width, alignItems: "center" }}>
           <EmotionDropdown2 emotion={item} />
-        </View>
+        </View> */}
       </View>
     );
   };
@@ -98,19 +91,8 @@ const profiles = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <View>
-        <Text
-          style={{
-            fontSize: 40,
-            marginTop: 20,
-            marginLeft: 20,
-          }}
-        >
-          Emotion profiles
-        </Text>
-      </View> */}
       {/* Top */}
-      <View style={{ width: width, justifyContent: "center" }}>
+      <View style={{ width: width, justifyContent: "center", display: 'none' }}>
         <View
           style={{
             flexDirection: "row",
@@ -128,9 +110,25 @@ const profiles = () => {
               padding: 8,
               borderRadius: 16,
             }}
+            onPress={() => {
+              setIsOptionsDropdownVisible(!isOptionsDropdownVisible);
+            }}
           >
             <Feather name="menu" size={24} color="black" />
           </TouchableOpacity>
+          {/* Options dropdown */}
+          {isOptionsDropdownVisible && (
+            <View
+              style={styles.optionsDropdown}
+            >
+              <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
+                <Text style={{ fontSize: 18 }}>Filter</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
+                <Text style={{ fontSize: 18 }}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           {/* Search */}
           <TextInput
             placeholder="Search emotions"
@@ -146,7 +144,9 @@ const profiles = () => {
         </View>
       </View>
       {/* Emotions */}
+      <View>
       <FlatList
+        contentContainerStyle={{ marginTop: 20}}
         showsHorizontalScrollIndicator={false}
         horizontal
         pagingEnabled
@@ -158,7 +158,10 @@ const profiles = () => {
         onViewableItemsChanged={handleViewableItemsChanged}
       />
       {/* Dots */}
-      <DotNavigation items={emotions} selected={selectedEmotion} />
+      <View style={{marginTop: 4}}>
+        <DotNavigation items={emotions} selected={selectedEmotion} />
+      </View>
+      </View>
       {/* Notes */}
       {/* <View style={{ width: width, padding: 10 }}>
         <View>
@@ -179,5 +182,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "beige",
+  },
+  optionsDropdown: {
+    position: "absolute",
+    zIndex: 1,
+    elevation: 1,
+    top: height * 0.08,
+    left: 0,
+    gap: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
+    paddingLeft: 12,
+    paddingRight: 20,
+    width: width * 0.4,
+    height: height * 0.2,
+    borderRadius: 16,
+    backgroundColor: "rgba(0,0,0,0.1)"
+    // borderColor: "rgba(0,0,0,0.3)",
+  },
+  optionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
 });

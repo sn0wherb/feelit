@@ -17,15 +17,6 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
 import Controls from "@/components/Controls";
 
-type EmotionType = {
-  id: number;
-  name: string;
-  parent: string | null;
-  color: string;
-  level: number;
-  isCustom: number;
-};
-
 type DiaryType = {
   root: string | undefined;
   need: string | undefined;
@@ -56,21 +47,17 @@ export default function logNewEmotion() {
   const db = useSQLiteContext();
   const router = useRouter();
   const currentEmotion = emotionStack[emotionStack.length - 1];
+  const [hiddenEmotions, setHiddenEmotions] = useState<string[]>([]);
 
   // EFFECTS
   useEffect(() => {
     if (level === 1) {
       setEmotionStack([]);
-    } else if (level > 3) {
-      return;
     }
   }, [level]);
 
   useFocusEffect(
     useCallback(() => {
-      // if (level === 6) {
-      //   setLevel(1);
-      // }
       getData();
     }, [level, refresh])
   );
@@ -78,38 +65,48 @@ export default function logNewEmotion() {
   // FUNCTIONS
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
   const getData = async () => {
+    const hiddenEmotions: string[] = await getHiddenEmotions();
+    let stockData: EmotionType[] = [];
+    let customData: EmotionType[] = [];
+
     if (level > 1 && currentEmotion) {
       // Get stock emotions
-      const stockData: EmotionType[] = Object.values(
+      stockData = Object.values(
         stockEmotionData[level][currentEmotion.name] || {}
       );
       // Get user created emotions
-      const customData = await db.getAllAsync<EmotionType>(
+      customData = await db.getAllAsync<EmotionType>(
         `SELECT * FROM user_created_emotions WHERE parent = ?`,
         [currentEmotion.name]
       );
-
-      // Add user created emotions to stock emotions
-      customData.forEach((value) => {
-        stockData.push(value);
-      });
-
-      setData(stockData);
     } else {
-      const stockData: EmotionType[] = Object.values(
+      stockData = Object.values(
         stockEmotionData[level] || {}
       );
-      const customData = await db.getAllAsync<EmotionType>(
+      customData = await db.getAllAsync<EmotionType>(
         `SELECT * FROM user_created_emotions WHERE parent IS NULL`
       );
-
-      customData.forEach((value) => {
-        stockData.push(value);
-      });
-
-      setData(stockData);
     }
+    
+    // Add user created emotions to stock emotions
+    customData.forEach((value) => {
+      stockData.push(value);
+    });
+
+    // Hide hidden emotions
+    stockData.forEach((value) => {
+      hiddenEmotions.includes(value.name) ? value.hidden = true : value.hidden = false;
+    })
+
+    setData(stockData);    
   };
+    
+  const getHiddenEmotions = async () => {
+    const data = await db.getAllAsync<{ name: string }>("SELECT * FROM hidden_emotions");
+    const stringData = data.map((value) => value.name);
+    setHiddenEmotions(stringData);
+    return stringData;
+  }
 
   const handleGoBack = () => {
     if (level !== 1) {
@@ -245,7 +242,19 @@ export default function logNewEmotion() {
   const handleToggleEditing = (state: boolean) => {
     setIsEditingEnabled(state);
   };
-  console.log(level);
+
+  const handleToggleHideEmotion = async (name: string) => {
+    let query;
+    hiddenEmotions.includes(name) ? query = 'DELETE FROM hidden_emotions WHERE name = ?' : query = 'INSERT INTO hidden_emotions (name) VALUES (?)';
+    
+    try {
+      await db.runAsync(query, [name]);
+    } catch (e) {
+      console.error(e);
+    }
+
+    setRefresh((refresh) => refresh + 1);
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
@@ -279,6 +288,7 @@ export default function logNewEmotion() {
               handleCreateLog={handleCreateLog}
               isEditingEnabled={isEditingEnabled}
               toggleEditing={handleToggleEditing}
+              onToggleHideEmotion={handleToggleHideEmotion}
               refresh={() => {
                 setRefresh((refresh) => refresh + 1);
               }}

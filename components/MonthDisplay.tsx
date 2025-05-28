@@ -47,7 +47,7 @@ const MonthDisplay = ({
   // Refs
   const monthFlatListRef = useRef<FlatList>(null);
 
-  //   Functions
+  // Functions
   const keyExtractor = (item: Date[]) => 'key-' + item[10].toString();
 
   const createThreeMonths = (

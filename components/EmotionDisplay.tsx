@@ -24,6 +24,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import * as Haptics from "expo-haptics";
 import { uncapitalise } from "@/assets/functions";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Feather from "@expo/vector-icons/Feather";
 
 type DiaryType = {
   root: string | undefined;
@@ -44,16 +45,8 @@ interface Props {
   isEditingEnabled: boolean;
   toggleEditing: (state: boolean) => void;
   refresh: () => void;
+  onToggleHideEmotion: (name: string) => void;
 }
-
-type EmotionType = {
-  id: number;
-  name: string;
-  parent: string | null;
-  color: string;
-  level: number;
-  isCustom: number;
-};
 
 type StrokeType = [string[], string, number];
 
@@ -72,6 +65,7 @@ const EmotionDisplay = ({
   toggleEditing,
   isEditingEnabled,
   refresh,
+  onToggleHideEmotion,
 }: Props) => {
   const router = useRouter();
   const params = useGlobalSearchParams<{ level: string }>();
@@ -119,8 +113,6 @@ const EmotionDisplay = ({
     );
   };
 
-  const height = Dimensions.get("window").height;
-
   // Add a placeholder +1 item at the end, in the place of which a button to create a new emotion will be placed
   data = [
     ...data,
@@ -131,8 +123,11 @@ const EmotionDisplay = ({
       name: "placeholder",
       parent: null,
       isCustom: 0,
+      hidden: true,
     },
   ];
+
+  !isEditingEnabled && (data = data.filter((value) => !value.hidden));
 
   // Emotion selection
   switch (level) {
@@ -153,6 +148,7 @@ const EmotionDisplay = ({
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 20, paddingTop: 80 }}
           >
+            {/* Hold to edit */}
             <Pressable
               onLongPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -210,8 +206,35 @@ const EmotionDisplay = ({
                   return (
                     // If editing is enabled, show delete button for custom emotions
                     <View>
-                      {isEditingEnabled && item.isCustom == 1 && (
-                        <TouchableOpacity
+                      {isEditingEnabled && (
+                        <View>
+                          { item.isCustom == 1 ? (
+                            <TouchableOpacity
+                            style={{
+                              position: "absolute",
+                              top: height * 0.02,
+                              left: width * 0.04,
+                              zIndex: 1,
+                              elevation: 1,
+                              backgroundColor: "#dcdcc5",
+                              borderRadius: 50,
+                              height: height * 0.05,
+                              width: height * 0.05,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              deleteEmotion(item.id);
+                            }}
+                          >
+                                                      <MaterialCommunityIcons
+                            name="trash-can-outline"
+                            size={24}
+                            color="black"
+                          />
+                          </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
                           style={{
                             position: "absolute",
                             top: height * 0.02,
@@ -220,22 +243,28 @@ const EmotionDisplay = ({
                             elevation: 1,
                             backgroundColor: "#dcdcc5",
                             borderRadius: 50,
-                            padding: 4,
+                            height: height * 0.05,
+                            width: height * 0.05,
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                           onPress={() => {
-                            deleteEmotion(item.id);
+                            onToggleHideEmotion(item.name);
                           }}
                         >
-                          <MaterialCommunityIcons
-                            name="trash-can-outline"
-                            size={22}
-                            color="black"
-                          />
+                          {item.hidden ? (
+                            <Feather name="eye" size={20} color="black" />
+                          ) : (
+                            <Feather name="eye-off" size={20} color="black" />
+                          )}
                         </TouchableOpacity>
+                          )}
+                        </View>
                       )}
                       <Emotion
                         name={item["name"]}
                         color={item["color"]}
+                        hidden={item.hidden}
                         onClick={() => {
                           isEditingEnabled
                             ? () => {} // Disable advancing if editing is enabled

@@ -10,6 +10,7 @@ export default function Layout() {
       await db.execAsync(queries["createLogTable"]);
       await db.execAsync(queries["createCustomEmotionsTable"]);
       await db.execAsync(queries["createBodyDrawingSvgPathsTable"]);
+      await db.execAsync(queries["createHiddenEmotionsTable"]);
     } catch (e) {
       console.error(e);
     }
