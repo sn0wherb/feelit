@@ -11,11 +11,12 @@ import axios from "axios";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/Header";
-import EmotionDisplay from "@/components/EmotionDisplay";
+import EmotionDisplay from "@/components/EmotionLoggingController";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
 import Controls from "@/components/Controls";
+import EmotionLoggingController from "@/components/EmotionLoggingController";
 
 type DiaryType = {
   root: string | undefined;
@@ -276,7 +277,7 @@ export default function logNewEmotion() {
               isEditingEnabled={isEditingEnabled}
             />
 
-            <EmotionDisplay
+            <EmotionLoggingController
               level={level}
               currentEmotion={currentEmotion}
               data={data}
@@ -287,7 +288,7 @@ export default function logNewEmotion() {
               passHandleClickEmotion={handleClickEmotion}
               handleCreateLog={handleCreateLog}
               isEditingEnabled={isEditingEnabled}
-              toggleEditing={handleToggleEditing}
+              passToggleEditing={handleToggleEditing}
               onToggleHideEmotion={handleToggleHideEmotion}
               refresh={() => {
                 setRefresh((refresh) => refresh + 1);

@@ -7,3 +7,5 @@ declare type EmotionType = {
   isCustom: number;
   hidden: boolean;
 };
+
+type StrokeType = [string[], string, number];

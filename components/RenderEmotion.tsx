@@ -16,7 +16,7 @@ interface Props {
   hidden: boolean;
 }
 
-function Emotion({ name, color, onClick, hidden }: Props) {
+const RenderEmotion = ({ name, color, onClick, hidden }: Props) => {
   const styles = StyleSheet.create({
     emotion: {
       height: 134,
@@ -53,4 +53,4 @@ function Emotion({ name, color, onClick, hidden }: Props) {
   );
 }
 
-export default Emotion;
+export default RenderEmotion;

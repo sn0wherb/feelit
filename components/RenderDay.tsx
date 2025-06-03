@@ -65,16 +65,21 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   // Get colors
   const colors: string[] = [];
   for (let i = 0; i < logsOfToday.length; i++) {
+    // Colors don't repeat
     !colors.includes(logsOfToday[i].color) && colors.push(logsOfToday[i].color);
+    // Stop loop if 3 colors have been added
     i = colors.length === 3 ? logsOfToday.length : i;
   }
 
-  // Create background
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  // Render item
   switch (logsOfToday.length) {
     case 0:
       return (
         <TouchableOpacity
-          style={styles[bounds]}
+          style={[styles[bounds], { borderWidth: today.getTime() === fullDate.getTime() ? 3 : 0, borderColor: '#555' }]}
           onPress={() => passOpenDay(logsOfToday, digit)}
         >
           <Text style={styles.dayWithoutLogs}>{digit}</Text>
@@ -87,6 +92,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
             styles[bounds],
             {
               backgroundColor: logsOfToday[0].color,
+              borderWidth: today.getTime() === fullDate.getTime() ? 3 : 0, borderColor: '#555' 
             },
           ]}
           onPress={() => passOpenDay(logsOfToday, digit)}
@@ -104,7 +110,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
         </LinearGradient>
       ) : (
         <TouchableOpacity
-          style={[styles[bounds], { backgroundColor: colors[0] }]}
+          style={[styles[bounds], { backgroundColor: colors[0],  borderWidth: today.getTime() === fullDate.getTime() ? 3 : 0, borderColor: '#555'  }]}
           onPress={() => passOpenDay(logsOfToday, digit)}
         >
           <Text style={styles.dayWithLogs}>{digit}</Text>

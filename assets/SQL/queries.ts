@@ -79,6 +79,9 @@ INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Inspired', 
   createHiddenEmotionsTable: `
   CREATE TABLE IF NOT EXISTS hidden_emotions (name TEXT PRIMARY KEY);
   `,
+  createPeopleTable: `
+  CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, color TEXT);
+  `,
 };
 
 export { queries };

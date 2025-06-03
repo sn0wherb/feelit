@@ -11,6 +11,7 @@ export default function Layout() {
       await db.execAsync(queries["createCustomEmotionsTable"]);
       await db.execAsync(queries["createBodyDrawingSvgPathsTable"]);
       await db.execAsync(queries["createHiddenEmotionsTable"]);
+      await db.execAsync(queries["createPeopleTable"]);
     } catch (e) {
       console.error(e);
     }

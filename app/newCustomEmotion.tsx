@@ -70,19 +70,12 @@ const newCustomEmotion = () => {
       ) : (
         <SafeAreaView>
           <Header
-            color=""
-            name=""
+            color={color ? color : "#FFF"}
+            name={parent ? uncapitalise(parent) : ""}
             level={level}
             handleGoBack={handleGoBack}
             custom={true}
           />
-          {parent && (
-            <View>
-              <Text style={[styles.parentName, { color: color }]}>
-                {uncapitalise(parent)}
-              </Text>
-            </View>
-          )}
           {/* Form */}
           <View style={styles.form}>
             <View

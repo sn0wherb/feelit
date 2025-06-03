@@ -23,6 +23,7 @@ const { width, height } = Dimensions.get("window");
 const RenderMonth = ({ data, passOpenDay }: Props) => {
   // @ts-expect-error
   const renderDay = ({ item, index }) => {
+    // Get the date digit
     const dateDigit: number = Number(
       item.toLocaleDateString("default", {
         day: "numeric",

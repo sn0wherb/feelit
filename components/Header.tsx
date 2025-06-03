@@ -18,6 +18,7 @@ interface Props {
   name: string;
   isEditingEnabled?: boolean;
   custom?: boolean;
+  type?: "person" | "emotion";
 }
 
 const { width, height } = Dimensions.get("window");
@@ -29,39 +30,77 @@ const Header = ({
   color,
   name,
   custom = false,
+  type = "emotion",
 }: Props) => {
   const router = useRouter();
+
+  // Create person header
+  if (type === "person") {
+    return (
+      <View
+          style={{
+            alignItems: "center",
+            flexDirection: "row",
+            width: width,
+            height: 60,
+            marginTop: 10,
+            paddingHorizontal: 20,
+          }}
+        >
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 46,
+              width: 46,
+              backgroundColor: "#e3d7b7",
+              borderRadius: 30,
+            }}
+          >
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="close" size={26} color="black" />
+            </TouchableOpacity>
+          </View>
+        <Text style={{ fontSize: 28, marginLeft: 16 }}>
+          Add new person
+        </Text>
+      </View>
+    );
+
+  }
 
   // Create new emotion header
   if (custom) {
     return (
       <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          width: width,
-          height: 40,
-          marginTop: 20,
-        }}
-      >
-        <View
           style={{
-            paddingHorizontal: 10,
-            justifyContent: "center",
             alignItems: "center",
-            height: 50,
-            width: 50,
-            backgroundColor: "#e3d7b7",
-            borderRadius: 20,
-            marginLeft: 20,
+            flexDirection: "row",
+            width: width,
+            height: 60,
+            marginTop: 10,
+            paddingHorizontal: 20,
           }}
         >
-          <TouchableOpacity onPress={handleGoBack}>
-            <AntDesign name="close" size={30} color="black" />
-          </TouchableOpacity>
-        </View>
+          <View
+            style={{
+              paddingHorizontal: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              height: 46,
+              width: 46,
+              backgroundColor: "#e3d7b7",
+              borderRadius: 30,
+            }}
+          >
+            <TouchableOpacity onPress={handleGoBack}>
+              <AntDesign name="close" size={26} color="black" />
+            </TouchableOpacity>
+          </View>
         <Text style={{ fontSize: 28, marginLeft: 16 }}>
-          {level > 1 ? "Create a new type of" : "New emotion"}
+          {level > 1 ? `New type of ` : "New emotion"}
+          <Text style={{color: color}}>{name}</Text>
         </Text>
       </View>
     );
