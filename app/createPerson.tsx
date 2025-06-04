@@ -52,7 +52,7 @@ import {
     if (saved) {
       setTimeout(() => {
         router.back();
-      }, 1600);
+      }, 1000);
     }
   
     return (

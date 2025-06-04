@@ -29,6 +29,14 @@ export default function Layout() {
             // gestureDirection: "vertical",
           }}
         />
+        <Stack.Screen
+          name="personSelectionModal"
+          options={{
+            presentation: "modal",
+            animation: "slide_from_bottom",
+            gestureEnabled: false,
+          }}
+        />
         <Stack.Screen name="logModal" />
       </Stack>
       <StatusBar barStyle="dark-content" />
