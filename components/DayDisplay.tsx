@@ -13,16 +13,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getLocalTime, openLogModal, prettifyDate } from "@/assets/functions";
 
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
 type LogByHourType = { [hour: number]: LogType[] };
 
 interface Props {

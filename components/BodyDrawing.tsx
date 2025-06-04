@@ -20,8 +20,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Octicons from "@expo/vector-icons/Octicons";
 import { isColor } from "react-native-reanimated";
 
-type StrokeType = [string[], string, number];
-
 interface Props {
   onNext: () => void;
   passPathsToParent: (data: StrokeType[]) => void;

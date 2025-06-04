@@ -12,6 +12,7 @@ export default function Layout() {
       await db.execAsync(queries["createBodyDrawingSvgPathsTable"]);
       await db.execAsync(queries["createHiddenEmotionsTable"]);
       await db.execAsync(queries["createPeopleTable"]);
+      await db.execAsync(queries["createEmotionLogPeopleTable"]);
     } catch (e) {
       console.error(e);
     }
@@ -27,14 +28,6 @@ export default function Layout() {
             animation: "fade_from_bottom",
             gestureEnabled: false,
             // gestureDirection: "vertical",
-          }}
-        />
-        <Stack.Screen
-          name="personSelectionModal"
-          options={{
-            presentation: "modal",
-            animation: "slide_from_bottom",
-            gestureEnabled: false,
           }}
         />
         <Stack.Screen name="logModal" />

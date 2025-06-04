@@ -3,16 +3,6 @@ import React, { memo } from "react";
 import RenderDay from "./RenderDay";
 import { keyExtractor } from "@/assets/functions";
 
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
 interface Props {
   data: Date[];
   passOpenDay: (data: LogType[], digit: number) => void;

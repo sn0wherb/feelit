@@ -21,8 +21,6 @@ import Octicons from "@expo/vector-icons/Octicons";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 
-type StrokeType = [string[], string, number];
-
 type GridType = [[number, string]][];
 
 type SvgDataType = {
@@ -30,16 +28,6 @@ type SvgDataType = {
   path: string;
   color: string;
   size: number;
-};
-
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
 };
 
 interface Props {

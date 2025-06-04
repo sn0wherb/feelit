@@ -3,15 +3,6 @@ import React from "react";
 import { keyExtractor } from "@/assets/functions";
 import { useRouter } from "expo-router";
 
-type EmotionType = {
-  id: number;
-  name: string;
-  parent: string | null;
-  color: string;
-  level: number;
-  isCustom: number;
-};
-
 interface Props {
   items: EmotionType[];
   selected: number;

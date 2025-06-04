@@ -28,12 +28,6 @@ import RenderEmotion from "./RenderEmotion";
 import EmotionDisplay from "./EmotionDisplay";
 import Journal from "./Journal";
 
-type DiaryType = {
-  root: string | undefined;
-  need: string | undefined;
-  extra: string | undefined;
-};
-
 interface Props {
   level: number;
   data: EmotionType[];
@@ -43,11 +37,13 @@ interface Props {
   bodyDrawingData: StrokeType[] | undefined;
   passBodyDrawingData: (data: StrokeType[]) => void;
   diaryData: DiaryType | undefined;
-  passDiaryData: (field: string, data: string) => void;
+  passDiaryData: (field: 'root' | 'need' | 'extra', data: string) => void;
   isEditingEnabled: boolean;
   passToggleEditing: (state: boolean) => void;
   refresh: () => void;
   onToggleHideEmotion: (name: string) => void;
+  selectedPeople: PersonType[];
+  onUpdateSelectedPeople: (people: PersonType[]) => void;
 }
 
 const { width, height } = Dimensions.get("window");
@@ -66,6 +62,8 @@ const EmotionLoggingController = ({
   isEditingEnabled,
   refresh,
   onToggleHideEmotion,
+  selectedPeople = [],
+  onUpdateSelectedPeople,
 }: Props) => {
   const params = useGlobalSearchParams<{ level: string }>();
 
@@ -112,7 +110,10 @@ const EmotionLoggingController = ({
           <Journal
             currentEmotion={currentEmotion}
             passDiaryData={passDiaryData}
+            diaryData={diaryData}
             handleCreateLog={handleCreateLog}
+            selectedPeople={selectedPeople}
+            onUpdateSelectedPeople={onUpdateSelectedPeople}
           />
         </View>
       );

@@ -18,16 +18,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import logModal from "../logModal";
 import { openLogModal, prettifyDate } from "@/assets/functions";
 
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
 type FormattedLogDataType = {
   date: string;
   logs: LogType[];

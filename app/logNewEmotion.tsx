@@ -18,14 +18,6 @@ import SuccessScreen from "@/components/SuccessScreen";
 import Controls from "@/components/Controls";
 import EmotionLoggingController from "@/components/EmotionLoggingController";
 
-type DiaryType = {
-  root: string | undefined;
-  need: string | undefined;
-  extra: string | undefined;
-};
-
-type StrokeType = [string[], string, number];
-
 const { width, height } = Dimensions.get("window");
 
 export default function logNewEmotion() {
@@ -39,6 +31,7 @@ export default function logNewEmotion() {
   const [diaryData, setDiaryData] = useState<DiaryType | undefined>(undefined);
   const [refresh, setRefresh] = useState(0);
   const [isEditingEnabled, setIsEditingEnabled] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState<PersonType[]>([]);
 
   // CONSTANTS
   const {
@@ -160,6 +153,10 @@ export default function logNewEmotion() {
     setEmotionStack([...emotionStack, item]);
   };
 
+  const handleUpdateSelectedPeople = (people: PersonType[]) => {
+    setSelectedPeople(people);
+  };
+
   const handleCreateLog = async () => {
     try {
       // Save log to sql db
@@ -177,13 +174,24 @@ export default function logNewEmotion() {
       const thisLogId = await db.getFirstAsync<{ id: number }>(
         "SELECT id FROM emotion_logs WHERE id = (SELECT MAX(id) FROM emotion_logs);"
       );
+
       const query = generateSvgEntry(Number(thisLogId?.id));
       query && (await db.runAsync(query));
+
+      // Save selected people
+      if (selectedPeople.length > 0) {
+        const logId = Number(thisLogId?.id);
+        const peopleQuery = `INSERT INTO emotion_log_people (log_id, person_id) VALUES ${selectedPeople
+          .map(person => `(${logId}, ${person.id})`)
+          .join(", ")};`;
+        await db.runAsync(peopleQuery);
+      }
+
       setLevel(level + 1);
       setTimeout(() => {
         setLevel(1);
         router.replace("/(tabs)/feed");
-      }, 1600);
+      }, 1000);
     } catch (e) {
       console.error(e);
     }
@@ -212,7 +220,7 @@ export default function logNewEmotion() {
     setBodyDrawingData(data);
   };
 
-  const updateDiaryData = (field: string, data: string) => {
+  const updateDiaryData = (field: 'root' | 'need' | 'extra', data: string) => {
     switch (field) {
       case "root":
         setDiaryData({
@@ -279,20 +287,20 @@ export default function logNewEmotion() {
 
             <EmotionLoggingController
               level={level}
-              currentEmotion={currentEmotion}
               data={data}
+              currentEmotion={currentEmotion}
+              passHandleClickEmotion={handleClickEmotion}
+              handleCreateLog={handleCreateLog}
               bodyDrawingData={bodyDrawingData}
               passBodyDrawingData={updateBodyDrawingData}
               diaryData={diaryData}
               passDiaryData={updateDiaryData}
-              passHandleClickEmotion={handleClickEmotion}
-              handleCreateLog={handleCreateLog}
               isEditingEnabled={isEditingEnabled}
               passToggleEditing={handleToggleEditing}
+              refresh={getData}
               onToggleHideEmotion={handleToggleHideEmotion}
-              refresh={() => {
-                setRefresh((refresh) => refresh + 1);
-              }}
+              selectedPeople={selectedPeople}
+              onUpdateSelectedPeople={handleUpdateSelectedPeople}
             />
             <Controls
               level={level}

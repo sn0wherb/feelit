@@ -9,27 +9,21 @@ import { Dimensions, FlatList, Text, TextInput, TouchableOpacity, View } from "r
 interface Props {
     title: string;
     placeholder?: string;
-    value: string;
-    // onChangeText: (text: string) => void;
+    value?: string;
+    onChangeText?: (text: string) => void;
     currentEmotion: EmotionType;
     type?: "selection" | "text";
-}
-
-type PersonType = {
-    id: number;
-    name: string;
-    color: string;
-    selected: boolean;
+    selectedPeople?: PersonType[];
+    onUpdateSelectedPeople?: (people: PersonType[]) => void;
 }
 
 const { width, height } = Dimensions.get("window");
 
-const JournalField = ({ title, placeholder, value, currentEmotion, type = 'text' }: Props) => {
+const JournalField = ({ title, value, currentEmotion, type = 'text', selectedPeople = [], onUpdateSelectedPeople, onChangeText }: Props) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isPersonModalOpen, setIsPersonModalOpen] = useState(false);
     const db = useSQLiteContext();
     const [people, setPeople] = useState<PersonType[]>([]);
-    const [selectedPeople, setSelectedPeople] = useState<PersonType[]>([]);
 
     // Functions
     const getPeople = async () => {
@@ -44,7 +38,7 @@ const JournalField = ({ title, placeholder, value, currentEmotion, type = 'text'
     const renderPerson = ({ item, index }: { item: PersonType, index: number }) => {
         if (index === people.length - 1) {
             return (
-                <View style={{ paddingVertical: 8}}>
+                <View style={{ paddingVertical: 4}}>
                     <TouchableOpacity style={{ backgroundColor: 'rgba(0,0,0,0.1)', padding: 10, borderRadius: 20 }}
                         onPress={() => {
                             createPerson();
@@ -57,7 +51,7 @@ const JournalField = ({ title, placeholder, value, currentEmotion, type = 'text'
         }
 
         return (
-            <View style={{ paddingVertical: 8}}>
+            <View style={{ paddingVertical: 4}}>
                 {selectedPeople.includes(item) && (
                     <View style={{ position: "absolute", zIndex: 1, elevation: 1, top: 0, right: 0, backgroundColor: "rgba(227, 215, 183, 0.8)", padding: 4, borderRadius: 100, height: 24, width: 24, justifyContent: "center", alignItems: "center" }}>
                         <FontAwesome6 name="check" size={16} color="black" />
@@ -69,9 +63,9 @@ const JournalField = ({ title, placeholder, value, currentEmotion, type = 'text'
                     }}
                     onPress={() => {
                     if (selectedPeople.includes(item)) {
-                        setSelectedPeople(selectedPeople.filter(person => person.id !== item.id));
+                        onUpdateSelectedPeople?.(selectedPeople.filter(person => person.id !== item.id));
                     } else {
-                        setSelectedPeople([...selectedPeople, item]);
+                        onUpdateSelectedPeople?.([...selectedPeople, item]);
                     }
                     }}
                     >
@@ -101,7 +95,7 @@ const JournalField = ({ title, placeholder, value, currentEmotion, type = 'text'
                     height: 40, width: 40}}>
                     <AntDesign name="close" size={30} color="black" />
                 </TouchableOpacity>
-            <View style={{width: width * 0.8, position: "absolute", zIndex: 1, elevation: 1, top: height * 0.02, backgroundColor: "rgba(227, 215, 183, 1)", height: height * 0.64, alignSelf: 'center', borderRadius: 20, padding: 10}}>
+            <View style={{width: width * 0.8, position: "absolute", zIndex: 1, elevation: 1, top: height * 0.02, backgroundColor: "rgba(227, 215, 183, 1)", height: height * 0.64, alignSelf: 'center', borderRadius: 20, padding: 20}}>
                 <FlatList
                     contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}
                     scrollEnabled={false}
@@ -153,9 +147,9 @@ const JournalField = ({ title, placeholder, value, currentEmotion, type = 'text'
                             numberOfLines={10}
                             placeholder={"Type here..."}
                             placeholderTextColor="#555"
-                        //   onChangeText={(value) => {
-                        //     passDiaryData("root", value);
-                        //   }}
+                            onChangeText={(value) => {
+                                onChangeText?.(value);
+                            }}
                             style={{
                             width: 320,
                             minHeight: 60,

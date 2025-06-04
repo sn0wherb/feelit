@@ -82,6 +82,9 @@ INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Inspired', 
   createPeopleTable: `
   CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, color TEXT);
   `,
+  createEmotionLogPeopleTable: `
+  CREATE TABLE IF NOT EXISTS emotion_log_people (log_id INTEGER, person_id INTEGER, FOREIGN KEY(log_id) REFERENCES emotion_logs(id), FOREIGN KEY(person_id) REFERENCES people(id));
+  `,
 };
 
 export { queries };

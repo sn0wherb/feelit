@@ -15,18 +15,6 @@ import DayDisplay from "./DayDisplay";
 import MonthDisplay from "./MonthDisplay";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
-type YearType = [Date[]];
-
 const { width, height } = Dimensions.get("window");
 
 const Calendar = () => {
@@ -317,7 +305,7 @@ const Calendar = () => {
           </View>
         )}
         {display == "Day" && (
-          <View>
+          <View style={{paddingTop: 10}}>
             <DayDisplay data={displayData} onReturn={handleReturnFromDay} />
           </View>
         )}
@@ -330,7 +318,7 @@ export default Calendar;
 
 const styles = StyleSheet.create({
   calendar: {
-    height: height * 0.56,
+    height: height * 0.58,
     width: width,
     // borderWidth: 2,
   },

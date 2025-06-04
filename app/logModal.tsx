@@ -1,12 +1,13 @@
 import {
   Alert,
   Dimensions,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -21,24 +22,17 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import BodyDataCompilation from "@/components/BodyDataCompilation";
 
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
 const { width, height } = Dimensions.get("window");
 
 export default function logModal() {
   const logData = useLocalSearchParams();
   const db = useSQLiteContext();
+  const router = useRouter();
 
   const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] =
     useState(false);
+
+  const [logPeople, setLogPeople] = useState<PersonType[]>([]);
 
   // Functions
   const deleteLog = () => {
@@ -66,7 +60,25 @@ export default function logModal() {
     }
   };
 
-  const router = useRouter();
+  const getLogPeople = async () => {
+    const people = await db.getAllAsync<PersonType>("SELECT * FROM people WHERE id IN (SELECT person_id FROM emotion_log_people WHERE log_id = ?)", [
+      Number(logData.id),
+    ]);
+    setLogPeople(people);
+  }
+
+  const renderPerson = ({ item }: { item: PersonType }) => {
+    return (
+      <View style={{backgroundColor: item.color, padding: 10, borderRadius: 20}}>
+        <Text>{item.name}</Text>
+      </View>
+    );
+  }
+
+  useEffect(() => {
+    getLogPeople();
+  }, []);
+
   return (
     <View style={{ backgroundColor: "beige", height: height, width: width }}>
       <View style={{ flex: 1 }}>
@@ -150,6 +162,7 @@ export default function logModal() {
         )}
         {/* Log Data */}
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
           }}
@@ -160,16 +173,19 @@ export default function logModal() {
               flexGrow: 1,
             }}
           >
-            {/* Diary */}
+            {/* Journal */}
             <View
               style={{
-                justifyContent: "center",
+                alignItems: "center",
                 paddingHorizontal: 20,
+                flex: 1,
+                width: width,
               }}
             >
               {/* Cause */}
               {logData.root.length > 0 && (
-                <View style={{ marginTop: 20 }}>
+                <View style={styles.emotionDetail}>
+                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
                   <Text
                     style={[
                       styles.emotionDetailTitle,
@@ -178,40 +194,75 @@ export default function logModal() {
                       },
                     ]}
                   >
-                    Cause
+                    Why?
                   </Text>
+                  </View>
                   <Text style={styles.detailContent}>{logData.root}</Text>
                 </View>
               )}
               {/* Need */}
               {logData.need.length > 0 && (
-                <View style={{ marginTop: 8 }}>
+                <View style={styles.emotionDetail}>
+                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
                   <Text
                     style={[
                       styles.emotionDetailTitle,
                       {
-                        backgroundColor: "rgba(0, 0, 0, 0.17)",
+                        backgroundColor: "rgba(0, 0, 0, 0.15)",
                       },
                     ]}
                   >
-                    Need
+                    What did I need?
                   </Text>
+                  </View>
                   <Text style={styles.detailContent}>{logData.need}</Text>
                 </View>
               )}
-              {/* Diary */}
-              {logData.extra.length > 0 && (
-                <View style={{ marginTop: 8 }}>
+              {/* People */}
+              {logPeople.length > 0 && (
+                <View style={styles.emotionDetail}>
+                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
                   <Text
                     style={[
                       styles.emotionDetailTitle,
                       {
-                        backgroundColor: "rgba(0, 0, 0, 0.23)",
+                        backgroundColor: "rgba(0, 0, 0, 0.20)",
+                      },
+                    ]}
+                  >
+                    Who was I with?
+                  </Text>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={logPeople}
+                    renderItem={renderPerson}
+                    contentContainerStyle={{
+                      marginVertical: 6,
+                      gap: 10,
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  />
+              </View>
+              )}
+              {/* Diary */}
+              {logData.extra.length > 0 && (
+                <View style={styles.emotionDetail}>
+                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
+                  <Text
+                    style={[
+                      styles.emotionDetailTitle,
+                      {
+                        backgroundColor: "rgba(0, 0, 0, 0.25)",
                       },
                     ]}
                   >
                     Diary
                   </Text>
+                  </View>
                   <Text style={styles.detailContent}>{logData.extra}</Text>
                 </View>
               )}
@@ -221,18 +272,17 @@ export default function logModal() {
               <BodyDisplay logId={Number(logData.id)} />
             </View>
             {/* Date of creation */}
-            <View
-              style={{
-                marginTop: 10,
-                paddingTop: 16,
-                paddingBottom: 16,
-                backgroundColor: "rgba(0,0,0,0.1)",
-              }}
-            >
-              <Text style={styles.date}>
-                {logData.date} • {logData.time}
-              </Text>
-            </View>
+              <View
+                style={{
+                  height: height * 0.08,
+                  justifyContent: "center",
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                }}
+              >
+                <Text style={styles.date}>
+                  {logData.date} • {logData.time}
+                </Text>
+              </View>
           </View>
         </ScrollView>
       </View>
@@ -243,14 +293,23 @@ export default function logModal() {
 // export default logModal;
 
 const styles = StyleSheet.create({
-  emotionDetailTitle: {
-    width: width * 0.2,
-    textAlign: "center",
-    fontSize: 20,
+  emotionDetailTitleBackground: {
     borderRadius: 30,
-    marginBottom: 4,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
+    height: height * 0.04,
+    marginVertical: 8,
+  },
+  emotionDetail: {
+    flex: 1,
+    marginTop: 20,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  emotionDetailTitle: {
+    textAlign: "center",
+    fontSize: 17,
+    borderRadius: 30,
+    paddingHorizontal: 40,
+    paddingVertical: 4,
   },
   detailContent: {
     fontSize: 16,

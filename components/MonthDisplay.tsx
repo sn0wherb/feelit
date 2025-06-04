@@ -12,17 +12,6 @@ import RenderMonth from "./RenderMonth";
 
 const { width, height } = Dimensions.get("window");
 
-type YearType = [Date[]];
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
 interface Props {
   passHandleOpenDay: (logs: LogType[], digit: number) => void;
   selectedMonth: number;
