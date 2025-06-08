@@ -98,7 +98,7 @@ const EmotionLoggingController = ({
             passPathsToParent={(paths) => {
               passBodyDrawingData(paths);
             }}
-            onNext={() => {
+            onButtonPress={() => {
               passHandleClickEmotion(currentEmotion);
             }}
           />
@@ -111,7 +111,7 @@ const EmotionLoggingController = ({
             currentEmotion={currentEmotion}
             passDiaryData={passDiaryData}
             diaryData={diaryData}
-            handleCreateLog={handleCreateLog}
+            onButtonPress={handleCreateLog}
             selectedPeople={selectedPeople}
             onUpdateSelectedPeople={onUpdateSelectedPeople}
           />

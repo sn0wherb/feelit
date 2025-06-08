@@ -21,6 +21,13 @@ type LogType = {
 
 type StrokeType = [string[], string, number];
 
+type SvgDataType = {
+  id: number;
+  path: string;
+  color: string;
+  size: number;
+};
+
 type PersonType = {
   id: number;
   name: string;

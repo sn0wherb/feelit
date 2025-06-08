@@ -21,19 +21,21 @@ import Octicons from "@expo/vector-icons/Octicons";
 import { isColor } from "react-native-reanimated";
 
 interface Props {
-  onNext: () => void;
+  onButtonPress?: () => void;
   passPathsToParent: (data: StrokeType[]) => void;
   initialColor: string;
   initialPaths?: StrokeType[];
+  editMode?: boolean;
 }
 
 const { height, width } = Dimensions.get("window");
 
 const BodyDrawing = ({
   passPathsToParent,
-  onNext,
+  onButtonPress,
   initialColor,
   initialPaths,
+  editMode = false,
 }: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
@@ -67,7 +69,7 @@ const BodyDrawing = ({
 
     // Don't add invisible points
     if (path[0].length > 1) {
-      paths.push(path);
+      setPaths([...paths, path]);
     }
     setCurrentPath([]);
   };
@@ -256,6 +258,23 @@ const BodyDrawing = ({
             justifyContent: "space-around",
           }}
         >
+          {editMode && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#e3d7b7",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 20,
+                gap: 8,
+                borderRadius: 50,
+              }}
+              onPress={onButtonPress}
+            >
+              <AntDesign name="arrowleft" size={24} color="black" />
+              <Text style={{ fontSize: 20 }}>Journal</Text>
+            </TouchableOpacity>
+          )}
           {/* Brush size */}
           <TouchableOpacity
             style={styles.drawingOptionsButton}
@@ -281,40 +300,24 @@ const BodyDrawing = ({
           >
             <MaterialIcons name="undo" size={28} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#e3d7b7",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingHorizontal: 20,
-              gap: 8,
-              borderRadius: 50,
-            }}
-            onPress={onNext}
-          >
-            <Text style={{ fontSize: 20 }}>Next</Text>
-            <AntDesign name="arrowright" size={24} color="black" />
-          </TouchableOpacity>
-          {/* <TouchableOpacity
-                        style={{
-                          flexDirection: "row",
-                          gap: 16,
-                          width: 320,
-                          paddingHorizontal: 20,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          height: 60,
-                          backgroundColor: "#e3d7b7",
-                          borderRadius: 20,
-                        }}
-                        onPress={() => {
-                          passHandleButtonClickToParent(currentEmotion);
-                        }}
-                      >
-                        <Text style={{ fontSize: 24 }}>Next</Text>
-                        <AntDesign name="arrowright" size={30} color="black" />
-                      </TouchableOpacity> */}
+          {/* Next */}
+          {!editMode && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#e3d7b7",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 20,
+                gap: 8,
+                borderRadius: 50,
+              }}
+              onPress={onButtonPress}
+            >
+              <Text style={{ fontSize: 20 }}>Next</Text>
+              <AntDesign name="arrowright" size={24} color="black" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -348,6 +351,7 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     // margin: 10,
     height: height * 0.76,
+    width: width,
     marginBottom: 6,
   },
   drawingOptionsButton: {

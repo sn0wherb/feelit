@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import JournalField from "./JournalField";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const { width, height } = Dimensions.get("window");
 
@@ -17,24 +18,24 @@ interface Props {
   currentEmotion: EmotionType;
   passDiaryData: (field: "root" | "need" | "extra", data: string) => void;
   diaryData: DiaryType | undefined;
-  handleCreateLog: () => void;
+  onButtonPress: () => void;
   selectedPeople: PersonType[];
   onUpdateSelectedPeople: (people: PersonType[]) => void;
-  saveButtonVisible: boolean;
   initialFieldState?: boolean;
+  editMode?: boolean;
 }
 
 const Journal = ({
   currentEmotion,
   passDiaryData,
   diaryData,
-  handleCreateLog,
+  onButtonPress,
   selectedPeople,
   onUpdateSelectedPeople,
-  saveButtonVisible,
   initialFieldState = false,
+  editMode = false,
 }: Props) => {
-  const [bottomPadding, setBottomPadding] = useState(50);
+  const bottomPadding = 50;
   const [isJournalFieldOpen, setIsJournalFieldOpen] = useState(false);
 
   // Functions
@@ -102,7 +103,7 @@ const Journal = ({
         </View>
       </ScrollView>
       {/* Save button */}
-      {saveButtonVisible && (
+      {editMode ? (
         <View
           style={{
             position: "absolute",
@@ -114,9 +115,35 @@ const Journal = ({
           }}
         >
           <TouchableOpacity
-            onPress={() => {
-              handleCreateLog();
+            onPress={onButtonPress}
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 20,
+              justifyContent: "center",
+              gap: 10,
+              alignItems: "center",
+              height: 50,
+              backgroundColor: "#e3d7b7",
+              borderRadius: 50,
             }}
+          >
+            <Text style={{ fontSize: 20 }}>Drawing</Text>
+            <AntDesign name="arrowright" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 20,
+            right: 20,
+            // flexDirection: "row",
+            // justifyContent: "center",
+            // paddingBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            onPress={onButtonPress}
             style={{
               flexDirection: "row",
               paddingHorizontal: 20,
