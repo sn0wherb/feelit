@@ -21,13 +21,32 @@ import { useSQLiteContext } from "expo-sqlite";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import BodyDataCompilation from "@/components/BodyDrawing/BodyDataCompilation";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Journal from "@/components/Emotion Logging/Journal";
+import { sortDiaryData } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
 export default function logModal() {
+  // localSearchParams type:
+  // params["date"] = date;
+  // params["time"] = time;
+  // params["emotion"] = emotion;
+  // params["color"] = color;
+  // params["root"] = root;
+  // params["need"] = need;
+  // params["extra"] = extra;
+  // params["id"] = id;
   const logData = useLocalSearchParams();
   const db = useSQLiteContext();
   const router = useRouter();
+  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
+  const [diaryData, setDiaryData] = useState<DiaryType>({
+    root: String(logData.root),
+    need: String(logData.need),
+    extra: String(logData.extra),
+  });
+  const [newPeople, setNewPeople] = useState<PersonType[]>([]);
 
   const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] =
     useState(false);
@@ -66,6 +85,7 @@ export default function logModal() {
       [Number(logData.id)]
     );
     setLogPeople(people);
+    setNewPeople(people);
   };
 
   const renderPerson = ({ item }: { item: PersonType }) => {
@@ -78,14 +98,87 @@ export default function logModal() {
     );
   };
 
+  const exitEditing = () => {
+    setIsEditingEnabled(false);
+  };
+
+  const updateDiaryData = (field: "root" | "need" | "extra", data: string) => {
+    // @ts-expect-error
+    setDiaryData(sortDiaryData(field, data, diaryData));
+  };
+
+  const handleCancelChanges = () => {
+    if (
+      diaryData.root !== String(logData.root) ||
+      diaryData.need !== String(logData.need) ||
+      diaryData.extra !== String(logData.extra) ||
+      newPeople.some((person) => !logPeople.some((p) => p.id == person.id)) ||
+      newPeople.length !== logPeople.length
+    ) {
+      Alert.alert("Discard changes?", "Your changes won't be saved.", [
+        {
+          text: "Discard",
+          style: "destructive",
+          onPress: () => {
+            setIsEditingEnabled(false);
+            setDiaryData({
+              root: String(logData.root),
+              need: String(logData.need),
+              extra: String(logData.extra),
+            });
+            setNewPeople(logPeople);
+          },
+        },
+        {
+          text: "Resume editing",
+        },
+      ]);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      await db.runAsync(
+        "UPDATE emotion_logs SET root = ?, need = ?, extra = ? WHERE id = ?",
+        [
+          diaryData.root ? diaryData.root : "",
+          diaryData.need ? diaryData.need : "",
+          diaryData.extra ? diaryData.extra : "",
+          Number(logData.id),
+        ]
+      );
+      await db.runAsync("DELETE FROM emotion_log_people WHERE log_id = ?", [
+        Number(logData.id),
+      ]);
+      const peopleQuery = `INSERT INTO emotion_log_people (log_id, person_id) VALUES ${newPeople
+        .map((person) => `(${Number(logData.id)}, ${person.id})`)
+        .join(", ")};`;
+      peopleQuery && (await db.runAsync(peopleQuery));
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Update the localSearchParams
+    logData.root = diaryData.root ? diaryData.root : "";
+    logData.need = diaryData.need ? diaryData.need : "";
+    logData.extra = diaryData.extra ? diaryData.extra : "";
+    getLogPeople();
+
+    router.setParams(logData);
+
+    setIsEditingEnabled(false);
+  };
+
   useEffect(() => {
     getLogPeople();
   }, []);
 
+  // console.log(newPeople);
+
   return (
     <View style={{ backgroundColor: "beige", height: height, width: width }}>
       <View style={{ flex: 1 }}>
-        {/* Title & Exit button */}
+        {/* Header */}
         <View
           style={{
             paddingTop: 30,
@@ -96,48 +189,83 @@ export default function logModal() {
             height: height * 0.12,
           }}
         >
-          <View
-            style={{
-              position: "sticky",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
-            {/* Exit log */}
-            <TouchableOpacity
-              onPress={() => {
-                router.back();
-              }}
-            >
-              <Ionicons name="chevron-back" size={30} color="black" />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontSize: 30,
-                fontWeight: "bold",
-              }}
-            >
-              {logData.emotion}
-            </Text>
-            {/* Options */}
-            {isOptionsDropdownVisible ? (
-              <TouchableOpacity
-                onPress={() => {
-                  setIsOptionsDropdownVisible(false);
+          <View>
+            {isEditingEnabled ? (
+              <View
+                style={{
+                  position: "sticky",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
                 }}
               >
-                <AntDesign name="close" size={24} color="black" />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={exitEditing}
+                  onPressIn={handleCancelChanges}
+                >
+                  <Ionicons name="close" size={30} color="black" />
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    fontSize: 30,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Editing...
+                </Text>
+                <TouchableOpacity onPress={handleSaveChanges}>
+                  <FontAwesome6 name="check" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
             ) : (
-              <TouchableOpacity
-                onPress={() => {
-                  setIsOptionsDropdownVisible(true);
+              <View
+                style={{
+                  position: "sticky",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
                 }}
               >
-                <Entypo name="dots-three-vertical" size={24} color="black" />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    router.back();
+                  }}
+                >
+                  <Ionicons name="chevron-back" size={30} color="black" />
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    fontSize: 30,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {logData.emotion}
+                </Text>
+                {/* Options */}
+                {isOptionsDropdownVisible ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsOptionsDropdownVisible(false);
+                    }}
+                  >
+                    <AntDesign name="close" size={24} color="black" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsOptionsDropdownVisible(true);
+                    }}
+                  >
+                    <Entypo
+                      name="dots-three-vertical"
+                      size={24}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
             )}
           </View>
         </View>
@@ -149,7 +277,13 @@ export default function logModal() {
               { backgroundColor: String(logData.color) },
             ]}
           >
-            <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
+            <TouchableOpacity
+              onPress={() => {
+                setIsEditingEnabled(true);
+                setIsOptionsDropdownVisible(false);
+              }}
+              style={styles.optionItem}
+            >
               <Feather name="edit-2" size={24} color="black" />
               <Text style={{ fontSize: 18 }}>Edit</Text>
             </TouchableOpacity>
@@ -164,150 +298,186 @@ export default function logModal() {
           </View>
         )}
         {/* Log Data */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}
-        >
-          <View
-            style={{
-              justifyContent: "space-between",
+        {isEditingEnabled ? (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
               flexGrow: 1,
             }}
           >
-            {/* Journal */}
             <View
               style={{
-                alignItems: "center",
-                paddingHorizontal: 20,
-                flex: 1,
-                width: width,
+                justifyContent: "space-between",
+                flexGrow: 1,
               }}
             >
-              {/* Cause */}
-              {logData.root.length > 0 && (
-                <View style={styles.emotionDetail}>
-                  <View
-                    style={[
-                      styles.emotionDetailTitleBackground,
-                      { backgroundColor: String(logData.color) },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.emotionDetailTitle,
-                        {
-                          backgroundColor: "rgba(0, 0, 0, 0.1)",
-                        },
-                      ]}
-                    >
-                      Why?
-                    </Text>
-                  </View>
-                  <Text style={styles.detailContent}>{logData.root}</Text>
-                </View>
-              )}
-              {/* Need */}
-              {logData.need.length > 0 && (
-                <View style={styles.emotionDetail}>
-                  <View
-                    style={[
-                      styles.emotionDetailTitleBackground,
-                      { backgroundColor: String(logData.color) },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.emotionDetailTitle,
-                        {
-                          backgroundColor: "rgba(0, 0, 0, 0.15)",
-                        },
-                      ]}
-                    >
-                      What did I need?
-                    </Text>
-                  </View>
-                  <Text style={styles.detailContent}>{logData.need}</Text>
-                </View>
-              )}
-              {/* People */}
-              {logPeople.length > 0 && (
-                <View style={styles.emotionDetail}>
-                  <View
-                    style={[
-                      styles.emotionDetailTitleBackground,
-                      { backgroundColor: String(logData.color) },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.emotionDetailTitle,
-                        {
-                          backgroundColor: "rgba(0, 0, 0, 0.20)",
-                        },
-                      ]}
-                    >
-                      Who was I with?
-                    </Text>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={logPeople}
-                    renderItem={renderPerson}
-                    contentContainerStyle={{
-                      marginVertical: 6,
-                      gap: 10,
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  />
-                </View>
-              )}
-              {/* Diary */}
-              {logData.extra.length > 0 && (
-                <View style={styles.emotionDetail}>
-                  <View
-                    style={[
-                      styles.emotionDetailTitleBackground,
-                      { backgroundColor: String(logData.color) },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.emotionDetailTitle,
-                        {
-                          backgroundColor: "rgba(0, 0, 0, 0.25)",
-                        },
-                      ]}
-                    >
-                      Diary
-                    </Text>
-                  </View>
-                  <Text style={styles.detailContent}>{logData.extra}</Text>
-                </View>
-              )}
+              {/* Hack because i'm too lazy to redo the whole stock emotion system */}
+              <Journal
+                initialFieldState={true}
+                saveButtonVisible={false}
+                currentEmotion={{
+                  id: 0,
+                  name: String(logData.emotion),
+                  parent: null,
+                  color: String(logData.color),
+                  level: 0,
+                  isCustom: 0,
+                  hidden: false,
+                }}
+                passDiaryData={updateDiaryData}
+                diaryData={diaryData}
+                handleCreateLog={() => {}}
+                selectedPeople={newPeople}
+                onUpdateSelectedPeople={setNewPeople}
+              />
             </View>
-            {/* BodyDrawing */}
-            <View>
-              <BodyDisplay logId={Number(logData.id)} />
-            </View>
-            {/* Date of creation */}
+          </ScrollView>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
+          >
             <View
               style={{
-                height: height * 0.08,
-                justifyContent: "center",
-                backgroundColor: "rgba(0,0,0,0.1)",
+                justifyContent: "space-between",
+                flexGrow: 1,
               }}
             >
-              <Text style={styles.date}>
-                {logData.date} • {logData.time}
-              </Text>
+              {/* Journal */}
+              <View
+                style={{
+                  alignItems: "center",
+                  paddingHorizontal: 20,
+                  flex: 1,
+                  width: width,
+                }}
+              >
+                {/* Cause */}
+                {logData.root.length > 0 && (
+                  <View style={styles.emotionDetail}>
+                    <View
+                      style={[
+                        styles.emotionDetailTitleBackground,
+                        { backgroundColor: String(logData.color) },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.emotionDetailTitle,
+                          {
+                            backgroundColor: "rgba(0, 0, 0, 0.1)",
+                          },
+                        ]}
+                      >
+                        Why?
+                      </Text>
+                    </View>
+                    <Text style={styles.detailContent}>{logData.root}</Text>
+                  </View>
+                )}
+                {/* Need */}
+                {logData.need.length > 0 && (
+                  <View style={styles.emotionDetail}>
+                    <View
+                      style={[
+                        styles.emotionDetailTitleBackground,
+                        { backgroundColor: String(logData.color) },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.emotionDetailTitle,
+                          {
+                            backgroundColor: "rgba(0, 0, 0, 0.15)",
+                          },
+                        ]}
+                      >
+                        What did I need?
+                      </Text>
+                    </View>
+                    <Text style={styles.detailContent}>{logData.need}</Text>
+                  </View>
+                )}
+                {/* People */}
+                {logPeople.length > 0 && (
+                  <View style={styles.emotionDetail}>
+                    <View
+                      style={[
+                        styles.emotionDetailTitleBackground,
+                        { backgroundColor: String(logData.color) },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.emotionDetailTitle,
+                          {
+                            backgroundColor: "rgba(0, 0, 0, 0.20)",
+                          },
+                        ]}
+                      >
+                        Who was I with?
+                      </Text>
+                    </View>
+                    <FlatList
+                      scrollEnabled={false}
+                      data={logPeople}
+                      renderItem={renderPerson}
+                      contentContainerStyle={{
+                        marginVertical: 6,
+                        gap: 10,
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    />
+                  </View>
+                )}
+                {/* Diary */}
+                {logData.extra.length > 0 && (
+                  <View style={styles.emotionDetail}>
+                    <View
+                      style={[
+                        styles.emotionDetailTitleBackground,
+                        { backgroundColor: String(logData.color) },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.emotionDetailTitle,
+                          {
+                            backgroundColor: "rgba(0, 0, 0, 0.25)",
+                          },
+                        ]}
+                      >
+                        Diary
+                      </Text>
+                    </View>
+                    <Text style={styles.detailContent}>{logData.extra}</Text>
+                  </View>
+                )}
+              </View>
+              {/* BodyDrawing */}
+              <View>
+                <BodyDisplay logId={Number(logData.id)} />
+              </View>
+              {/* Date of creation */}
+              <View
+                style={{
+                  height: height * 0.08,
+                  justifyContent: "center",
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                }}
+              >
+                <Text style={styles.date}>
+                  {logData.date} • {logData.time}
+                </Text>
+              </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        )}
       </View>
     </View>
   );

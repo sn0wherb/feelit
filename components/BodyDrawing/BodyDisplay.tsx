@@ -88,71 +88,9 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
     }
   };
 
-  // const getAllData = async () => {
-  //   // @ts-expect-error
-  //   const children = getChildrenEmotions(emotion);
-  //   let logQuery = "";
-  //   children.forEach((value, index) => {
-  //     if (index == children.length - 1) {
-  //       logQuery += `emotion = '${value}'`;
-  //     } else {
-  //       logQuery += `emotion = '${value}' OR `;
-  //     }
-  //   });
-
-  //   // Get all logs under this base emotion and its child emotions
-  //   try {
-  //     const data = await db.getAllAsync<LogType>(
-  //       `SELECT * FROM emotion_logs WHERE ${logQuery}`
-  //     );
-
-  //     // Create query for getting all body drawing svgs from these logs
-  //     let logIdQuery = "id = ";
-  //     data.forEach((log, index) => {
-  //       index == data.length - 1
-  //         ? (logIdQuery += `${log.id}`)
-  //         : (logIdQuery += `${log.id} OR id = `);
-  //     });
-
-  //     // Get those svgs
-  //     try {
-  //       const data = await db.getAllAsync<SvgDataType>(
-  //         `SELECT * FROM bodydrawing_svg_paths WHERE ${logIdQuery}`
-  //       );
-  //       let strokeData: StrokeType[] = [];
-  //       data.forEach((value) => {
-  //         const svgArray = value.path.split("/");
-  //         strokeData.push([svgArray, value.color, value.size]);
-  //       });
-  //       setPaths(strokeData);
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
-
-  const getChildrenEmotions = (emotion: string) => {
-    let children: string[] = [];
-    const secondLvl: EmotionType[] = Object.values(
-      stockEmotionData[2][emotion]
-    );
-    secondLvl.forEach((secondLvlEmotion) => {
-      children.push(secondLvlEmotion.name);
-      const thirdLvl: EmotionType[] = Object.values(
-        stockEmotionData[3][secondLvlEmotion.name]
-      );
-      thirdLvl.forEach((thirdLvlEmotion) => {
-        children.push(thirdLvlEmotion.name);
-      });
-    });
-    return children;
-  };
-
   useFocusEffect(
     useCallback(() => {
-      logId && getData();
+      getData();
     }, [])
   );
 

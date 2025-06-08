@@ -91,3 +91,32 @@ export const isInWeek = (date: Date) => {
 
 export const keyExtractor = (item: any, index: number) =>
   "key-" + index.toString();
+
+export const sortDiaryData = (
+  field: "root" | "need" | "extra",
+  newData: string,
+  existingData: DiaryType | undefined
+) => {
+  switch (field) {
+    case "root":
+      return {
+        root: newData,
+        need: existingData?.need,
+        extra: existingData?.extra,
+      };
+    case "need":
+      return {
+        root: existingData?.root,
+        need: newData,
+        extra: existingData?.extra,
+      };
+    case "extra":
+      return {
+        root: existingData?.root,
+        need: existingData?.need,
+        extra: newData,
+      };
+    default:
+      break;
+  }
+};

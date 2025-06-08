@@ -16,6 +16,7 @@ type LogType = {
   need: string;
   extra: string;
   created_at: string;
+  isEdited: number;
 };
 
 type StrokeType = [string[], string, number];
@@ -25,7 +26,7 @@ type PersonType = {
   name: string;
   color: string;
   selected: boolean;
-}
+};
 
 type DiaryType = {
   root: string | undefined;

@@ -17,6 +17,7 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
 import Controls from "@/components/Emotion Logging/Controls";
 import EmotionLoggingController from "@/components/Emotion Logging/EmotionLoggingController";
+import { sortDiaryData } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -223,31 +224,7 @@ export default function logNewEmotion() {
   };
 
   const updateDiaryData = (field: "root" | "need" | "extra", data: string) => {
-    switch (field) {
-      case "root":
-        setDiaryData({
-          root: data,
-          need: diaryData?.need,
-          extra: diaryData?.extra,
-        });
-        break;
-      case "need":
-        setDiaryData({
-          root: diaryData?.root,
-          need: data,
-          extra: diaryData?.extra,
-        });
-        break;
-      case "extra":
-        setDiaryData({
-          root: diaryData?.root,
-          need: diaryData?.need,
-          extra: data,
-        });
-        break;
-      default:
-        break;
-    }
+    setDiaryData(sortDiaryData(field, data, diaryData));
   };
 
   const handleToggleEditing = (state: boolean) => {

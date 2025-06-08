@@ -1,6 +1,7 @@
 import {
   Dimensions,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -40,6 +41,9 @@ const profiles = () => {
   const [selectedEmotion, setSelectedEmotion] = useState(0);
   const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] =
     useState(false);
+  const [level, setLevel] = useState(1);
+  const [logData, setLogData] = useState<LogType[]>([]);
+  const [commonPeople, setCommonPeople] = useState<PersonType[]>([]);
 
   const {
     stockEmotionData,
@@ -62,20 +66,63 @@ const profiles = () => {
     }
   };
 
-  // @ts-expect-error
-  const renderEmotions = ({ item, index }) => {
-    return <EmotionDropdown emotion={item} />;
+  const handleSelectEmotion = (emotion: EmotionType, level: number) => {
+    // setSelectedEmotion(emotion);
+    // setLevel(level);
+  };
+
+  const handleSetLogData = (data: LogType[]) => {
+    setLogData(data);
+    getCommonPeople(data);
   };
 
   // @ts-expect-error
   const renderBodies = ({ item, index }) => {
     return (
-      <View style={{ width: width }}>
-        <BodyDataCompilation size={bodyHeight} emotion={item} />
-        {/* <View style={{ width: width, alignItems: "center" }}>
-          <EmotionDropdown2 emotion={item} />
-        </View> */}
-      </View>
+      <ScrollView>
+        <View style={{ width: width }}>
+          <BodyDataCompilation
+            size={bodyHeight}
+            emotion={item}
+            setLogData={handleSetLogData}
+          />
+        </View>
+        <View style={{ gap: 12, paddingBottom: 50 }}>
+          <View style={styles.section}>
+            <Text style={styles.title}>Most common cause</Text>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.title}>Most common need</Text>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.title}>Person</Text>
+            <FlatList
+              data={commonPeople}
+              contentContainerStyle={{
+                gap: 10,
+                flexDirection: "row",
+                flexWrap: "wrap",
+              }}
+              scrollEnabled={false}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    backgroundColor: item.color,
+                    padding: 10,
+                    borderRadius: 20,
+                  }}
+                >
+                  <Text>{item.name}</Text>
+                </View>
+              )}
+              keyExtractor={keyExtractor}
+            />
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.title}>Place</Text>
+          </View>
+        </View>
+      </ScrollView>
     );
   };
 
@@ -90,88 +137,84 @@ const profiles = () => {
     setSelectedEmotion(viewableItems[0].index);
   };
 
+  const getCommonPeople = async (data: LogType[]) => {
+    try {
+      // Create an array to store person counts
+      const personCounts: { person: number; count: number }[] = [];
+
+      // For each log in logData
+      for (const log of data) {
+        // Get associated people from emotion_log_people table
+        const associatedPeople = await db.getAllAsync<{ person_id: number }>(
+          `SELECT person_id FROM emotion_log_people WHERE log_id = ${log.id}`
+        );
+
+        // For each associated person
+        for (const { person_id } of associatedPeople) {
+          // Find if this person already exists in our counts array
+          const existingPerson = personCounts.find(
+            (p) => p.person === person_id
+          );
+
+          if (existingPerson) {
+            // If person exists, increment their count
+            existingPerson.count++;
+          } else {
+            // If person doesn't exist, add them with count 1
+            personCounts.push({ person: person_id, count: 1 });
+          }
+        }
+      }
+
+      // Sort by count in descending order
+      personCounts.sort((a, b) => b.count - a.count);
+
+      // Get the actual person data for the top results
+      const topPeople = (
+        await Promise.all(
+          personCounts.slice(0, 5).map(async ({ person }) => {
+            const personData = await db.getFirstAsync<PersonType>(
+              `SELECT * FROM people WHERE id = ${person}`
+            );
+            return personData;
+          })
+        )
+      ).filter((person): person is PersonType => person !== null);
+
+      setCommonPeople(topPeople);
+      console.log(topPeople);
+    } catch (e) {
+      console.error("Error getting common people:", e);
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Top */}
-      <View style={{ width: width, justifyContent: "center", display: "none" }}>
-        <View
-          style={{
-            flexDirection: "row",
-            width: width,
-            margin: 10,
-            marginBottom: 0,
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          {/* Options */}
-          <TouchableOpacity
-            style={{
-              backgroundColor: "rgba(0,0,0,0.1)",
-              padding: 8,
-              borderRadius: 16,
-            }}
-            onPress={() => {
-              setIsOptionsDropdownVisible(!isOptionsDropdownVisible);
-            }}
-          >
-            <Feather name="menu" size={24} color="black" />
-          </TouchableOpacity>
-          {/* Options dropdown */}
-          {isOptionsDropdownVisible && (
-            <View style={styles.optionsDropdown}>
-              <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
-                <Text style={{ fontSize: 18 }}>Filter</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
-                <Text style={{ fontSize: 18 }}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          {/* Search */}
-          <TextInput
-            placeholder="Search emotions"
-            placeholderTextColor="#555"
-            style={{
-              backgroundColor: "rgba(0,0,0,0.1)",
-              borderRadius: 16,
-              padding: 8,
-              fontSize: 20,
-              width: width * 0.8,
-            }}
+    <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
+          {/* Dots */}
+          <DotNavigation
+            items={emotions}
+            selected={selectedEmotion}
+            level={level}
+            selectEmotion={handleSelectEmotion}
+          />
+          {/* Emotions */}
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingTop: height * 0.08 }}
+            horizontal
+            pagingEnabled
+            data={emotions}
+            renderItem={renderBodies}
+            keyExtractor={keyExtractor}
+            ref={bodyRef}
+            viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+            onViewableItemsChanged={handleViewableItemsChanged}
           />
         </View>
-      </View>
-      {/* Emotions */}
-      <View>
-        <FlatList
-          contentContainerStyle={{ marginTop: 20 }}
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          pagingEnabled
-          data={emotions}
-          renderItem={renderBodies}
-          keyExtractor={keyExtractor}
-          ref={bodyRef}
-          viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-          onViewableItemsChanged={handleViewableItemsChanged}
-        />
-        {/* Dots */}
-        <View style={{ marginTop: 4 }}>
-          <DotNavigation items={emotions} selected={selectedEmotion} />
-        </View>
-      </View>
-      {/* Notes */}
-      {/* <View style={{ width: width, padding: 10 }}>
-        <View>
-        <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Days of the week</Text>
-        <Text style={{ fontSize: 40, color: "#6b5a2c" }}>Times of the day</Text>
-        <Text style={{ fontSize: 40, color: "#6b5a2c" }}>
-          Each emotion profile: Most common cause Most common need Body map
-        </Text>
-      </View>
-      </View> */}
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 };
 
@@ -181,6 +224,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "beige",
+    height: height,
+    width: width,
+  },
+  contentContainer: {
+    flex: 1,
   },
   optionsDropdown: {
     position: "absolute",
@@ -203,5 +251,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  section: {
+    padding: 12,
+  },
+  title: {
+    fontSize: 18,
   },
 });

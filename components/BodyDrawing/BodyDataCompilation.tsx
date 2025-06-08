@@ -34,11 +34,17 @@ interface Props {
   logId?: number;
   emotion?: EmotionType;
   size?: number;
+  setLogData: (data: LogType[]) => void;
 }
 
 const { height, width } = Dimensions.get("window");
 
-const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
+const BodyDataCompilation = ({
+  logId,
+  emotion,
+  size = 0.76,
+  setLogData,
+}: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
   const [svgData, setSvgData] = useState<SvgDataType[]>([]);
@@ -55,58 +61,6 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
   } = require("@/assets/data/emotions/stockEmotionData");
 
   const db = useSQLiteContext();
-
-  const getData = async () => {
-    try {
-      const data = await db.getAllAsync<SvgDataType>(
-        "SELECT * FROM bodydrawing_svg_paths WHERE id = ?",
-        // @ts-expect-error
-        [logId]
-      );
-      let strokeData: StrokeType[] = [];
-      data.forEach((value) => {
-        const svgArray = value.path.split("/");
-        strokeData.push([svgArray, value.color, value.size]);
-      });
-      compileBodyDisplayData(strokeData);
-
-      // Get biggest difference
-      // let biggest = 0;
-      // for (let i = 0; i < strokeData.length; i++) {
-      //   let sum = 0;
-      //   for (let j = 1; j < strokeData[i][0].length; j++) {
-      //     const regex = /\d{3}/;
-      //     if (
-      //       regex.exec(strokeData[i][0][j]) &&
-      //       regex.exec(strokeData[i][0][j - 1])
-      //     ) {
-      //       const match1 = Number(regex.exec(strokeData[i][0][j])[0]);
-      //       const match2 = Number(regex.exec(strokeData[i][0][j - 1])[0]);
-      //       // console.log(match1, match2);
-      //       if (match1 - match2 > 0) {
-      //         sum += match1 - match2;
-      //         // if (match1 - match2 > biggest) {
-      //         //   console.log(match1 - match2);
-      //         //   biggest = match1 - match2;
-      //         // }
-      //       } else {
-      //         sum += match2 - match1;
-      //         // if (match2 - match1 > biggest) {
-      //         //   console.log(match2 - match1);
-      //         //   biggest = match2 - match1;
-      //         // }
-      //       }
-      //     }
-      //   }
-      //   let average = sum / strokeData[i][0].length;
-      //   // console.log(average);
-      // }
-
-      setPaths(strokeData);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   const getAllData = async () => {
     // @ts-expect-error
@@ -129,6 +83,12 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
       const data = await db.getAllAsync<LogType>(
         `SELECT * FROM emotion_logs WHERE ${logQuery}`
       );
+
+      if (data.length < 1) {
+        return;
+      }
+
+      setLogData(data);
 
       // Create query for getting all body drawing svgs from these logs
       let logIdQuery = "id = ";
@@ -154,7 +114,7 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
         console.error(e);
       }
     } catch (e) {
-      console.error(e);
+      console.error("Error getting data", e);
     }
   };
 
@@ -196,11 +156,7 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (emotion) {
-        getAllData();
-      } else {
-        logId && getData();
-      }
+      getAllData();
     }, [])
   );
 
