@@ -14,7 +14,7 @@ import {
   useRouter,
 } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Header from "@/components/Header";
+import Header from "@/components/Emotion Logging/Header";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import { useSQLiteContext } from "expo-sqlite";

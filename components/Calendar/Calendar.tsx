@@ -10,7 +10,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import Entypo from "@expo/vector-icons/Entypo";
-import RenderMonth from "./RenderMonth";
+import RenderMonth from "../Calendar/RenderMonth";
 import DayDisplay from "./DayDisplay";
 import MonthDisplay from "./MonthDisplay";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -305,7 +305,7 @@ const Calendar = () => {
           </View>
         )}
         {display == "Day" && (
-          <View style={{paddingTop: 10}}>
+          <View style={{ paddingTop: 10 }}>
             <DayDisplay data={displayData} onReturn={handleReturnFromDay} />
           </View>
         )}

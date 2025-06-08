@@ -13,18 +13,18 @@ import {
   Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import Emotion from "./RenderEmotion";
+import Emotion from "../RenderEmotion";
 import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Dimensions } from "react-native";
-import BodyDrawing from "./BodyDrawing";
+import BodyDrawing from "../BodyDrawing/BodyDrawing";
 import { useGlobalSearchParams, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useSQLiteContext } from "expo-sqlite";
 import { uncapitalise } from "@/assets/functions";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
-import RenderEmotion from "./RenderEmotion";
+import RenderEmotion from "../RenderEmotion";
 import EmotionDisplay from "./EmotionDisplay";
 import Journal from "./Journal";
 
@@ -37,7 +37,7 @@ interface Props {
   bodyDrawingData: StrokeType[] | undefined;
   passBodyDrawingData: (data: StrokeType[]) => void;
   diaryData: DiaryType | undefined;
-  passDiaryData: (field: 'root' | 'need' | 'extra', data: string) => void;
+  passDiaryData: (field: "root" | "need" | "extra", data: string) => void;
   isEditingEnabled: boolean;
   passToggleEditing: (state: boolean) => void;
   refresh: () => void;

@@ -49,7 +49,7 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
   const showRawData = false;
   const showGridLines = false;
 
-  const silhouetteImage = require("../assets/images/silhouette_front.png");
+  const silhouetteImage = require("@/assets/images/silhouette_front.png");
   const {
     stockEmotionData,
   } = require("@/assets/data/emotions/stockEmotionData");
@@ -166,12 +166,12 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
       if (data.length > 0) {
         data.forEach((value) => {
           return getCustomChildrenEmotions(value);
-        })
+        });
       }
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   const getChildrenEmotions = (emotion: EmotionType) => {
     if (emotion.isCustom) {
@@ -204,9 +204,9 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
     }, [])
   );
 
-  // 
+  //
   // SET GRID SECTION AMOUNT HERE
-  // 
+  //
   const gridSections = 20;
   const dataOpacity = 0.4;
 
@@ -219,7 +219,7 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
     // [                                - rows
     //  [                               - columns
     //    [0, "black"], [0, "black"]    - points, separated by color
-    //  ], 
+    //  ],
     //  [
     //    [0, "black"], [0, "black"]
     //  ]
@@ -251,16 +251,24 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
     const regExAll = /\d{1,}/g; // Regex that matches the digits in svg stroke strings
 
     // Locate stroke in gridData
-    const locate = (point: number, axis: "x" | "y", start: number = 0, end: number = gridSections - 1) => {
+    const locate = (
+      point: number,
+      axis: "x" | "y",
+      start: number = 0,
+      end: number = gridSections - 1
+    ) => {
       if (start >= end) return start;
-      
+
       const mid = Math.floor((start + end) / 2);
       const midPoint = mid * (axis === "x" ? gridIncrementX : gridIncrementY);
-      
-      if (point >= midPoint && point < midPoint + (axis === "x" ? gridIncrementX : gridIncrementY)) {
+
+      if (
+        point >= midPoint &&
+        point < midPoint + (axis === "x" ? gridIncrementX : gridIncrementY)
+      ) {
         return mid;
       }
-      
+
       if (point < midPoint) {
         return locate(point, axis, start, mid);
       } else {
@@ -280,12 +288,12 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
 
         if (data[i][1] !== "black") {
           // Locate point in grid
-          const x = locate(points[0], 'x'),
-          y = locate(points[1], 'y');
+          const x = locate(points[0], "x"),
+            y = locate(points[1], "y");
 
           const getColor = (value: [number, string]) => {
             return value[1] === data[i][1];
-          }
+          };
 
           const thisColorIndex = gridData[x][y].findIndex(getColor);
 
@@ -298,7 +306,6 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
           }
           // console.log(gridData[x][y]);
         }
-
       }
     }
     // console.log(gridData);
@@ -316,20 +323,20 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
           // Points
           item.map((item, index) => {
             return (
-          <Circle
-            key={`grid-${index}`}
-            cx={x * gridIncrementX + gridIncrementX / 2}
-            cy={y * gridIncrementY + gridIncrementY / 2}
-            r={item[0] * strokeMultiplier}
-            fill={item[1]}
-            opacity={dataOpacity}
-          />
-            )
+              <Circle
+                key={`grid-${index}`}
+                cx={x * gridIncrementX + gridIncrementX / 2}
+                cy={y * gridIncrementY + gridIncrementY / 2}
+                r={item[0] * strokeMultiplier}
+                fill={item[1]}
+                opacity={dataOpacity}
+              />
+            );
           })
         );
       })
-    )
-  }
+    );
+  };
 
   const renderRawData = (item: StrokeType, index: number) => {
     return (
@@ -344,29 +351,35 @@ const BodyDataCompilation = ({ logId, emotion, size = 0.76 }: Props) => {
         strokeLinejoin="round"
       />
     );
-  }
+  };
 
   const renderGridLines = (item: number[], index: number) => {
     return (
       <Path
         key={`grid-${index}`}
-        d={`M${item[0]},0 ${item[0]},${height * size} M0,${item[1]} ${width},${item[1]}`}
+        d={`M${item[0]},0 ${item[0]},${height * size} M0,${item[1]} ${width},${
+          item[1]
+        }`}
         stroke={"black"}
         opacity={0.3}
         strokeWidth={2}
       />
-    )
-  }
+    );
+  };
 
   const pad = 12;
 
   return (
     <View>
       {/* Drawing */}
-      <View style={{ height: height * size + pad}}>
+      <View style={{ height: height * size + pad }}>
         <ImageBackground
           source={silhouetteImage}
-          imageStyle={{ tintColor: "black", resizeMode: "contain", paddingBottom: pad }}
+          imageStyle={{
+            tintColor: "black",
+            resizeMode: "contain",
+            paddingBottom: pad,
+          }}
         >
           <Svg>
             {/* previous strokes */}

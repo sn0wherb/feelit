@@ -12,14 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import Feather from "@expo/vector-icons/Feather";
-import EmotionDropdown from "@/components/EmotionDropdown";
+import EmotionDropdown from "@/components/Profiles/EmotionDropdown";
 import { keyExtractor } from "@/assets/functions";
-import BodyDisplay from "@/components/BodyDisplay";
-import EmotionDropdown2 from "@/components/EmotionDropdown2";
+import BodyDisplay from "@/components/BodyDrawing/BodyDisplay";
+import EmotionDropdown2 from "@/components/Profiles/EmotionDropdown2";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
-import DotNavigation from "@/components/DotNavigation";
-import BodyDataCompilation from "@/components/BodyDataCompilation";
+import DotNavigation from "@/components/Profiles/DotNavigation";
+import BodyDataCompilation from "@/components/BodyDrawing/BodyDataCompilation";
 
 type LogType = {
   id: number;
@@ -38,7 +38,8 @@ const profiles = () => {
   const router = useRouter();
   const [emotions, setEmotions] = useState<EmotionType[]>([]);
   const [selectedEmotion, setSelectedEmotion] = useState(0);
-  const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] = useState(false);
+  const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] =
+    useState(false);
 
   const {
     stockEmotionData,
@@ -69,7 +70,7 @@ const profiles = () => {
   // @ts-expect-error
   const renderBodies = ({ item, index }) => {
     return (
-      <View style={{ width: width}}>
+      <View style={{ width: width }}>
         <BodyDataCompilation size={bodyHeight} emotion={item} />
         {/* <View style={{ width: width, alignItems: "center" }}>
           <EmotionDropdown2 emotion={item} />
@@ -92,7 +93,7 @@ const profiles = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Top */}
-      <View style={{ width: width, justifyContent: "center", display: 'none' }}>
+      <View style={{ width: width, justifyContent: "center", display: "none" }}>
         <View
           style={{
             flexDirection: "row",
@@ -118,9 +119,7 @@ const profiles = () => {
           </TouchableOpacity>
           {/* Options dropdown */}
           {isOptionsDropdownVisible && (
-            <View
-              style={styles.optionsDropdown}
-            >
+            <View style={styles.optionsDropdown}>
               <TouchableOpacity onPress={() => {}} style={styles.optionItem}>
                 <Text style={{ fontSize: 18 }}>Filter</Text>
               </TouchableOpacity>
@@ -145,22 +144,22 @@ const profiles = () => {
       </View>
       {/* Emotions */}
       <View>
-      <FlatList
-        contentContainerStyle={{ marginTop: 20}}
-        showsHorizontalScrollIndicator={false}
-        horizontal
-        pagingEnabled
-        data={emotions}
-        renderItem={renderBodies}
-        keyExtractor={keyExtractor}
-        ref={bodyRef}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-        onViewableItemsChanged={handleViewableItemsChanged}
-      />
-      {/* Dots */}
-      <View style={{marginTop: 4}}>
-        <DotNavigation items={emotions} selected={selectedEmotion} />
-      </View>
+        <FlatList
+          contentContainerStyle={{ marginTop: 20 }}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          pagingEnabled
+          data={emotions}
+          renderItem={renderBodies}
+          keyExtractor={keyExtractor}
+          ref={bodyRef}
+          viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+          onViewableItemsChanged={handleViewableItemsChanged}
+        />
+        {/* Dots */}
+        <View style={{ marginTop: 4 }}>
+          <DotNavigation items={emotions} selected={selectedEmotion} />
+        </View>
       </View>
       {/* Notes */}
       {/* <View style={{ width: width, padding: 10 }}>
@@ -197,7 +196,7 @@ const styles = StyleSheet.create({
     width: width * 0.4,
     height: height * 0.2,
     borderRadius: 16,
-    backgroundColor: "rgba(0,0,0,0.1)"
+    backgroundColor: "rgba(0,0,0,0.1)",
     // borderColor: "rgba(0,0,0,0.3)",
   },
   optionItem: {

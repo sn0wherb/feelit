@@ -12,15 +12,15 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Entypo from "@expo/vector-icons/Entypo";
-import BodyDrawing from "@/components/BodyDrawing";
+import BodyDrawing from "@/components/BodyDrawing/BodyDrawing";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
-import BodyDisplay from "@/components/BodyDisplay";
+import BodyDisplay from "@/components/BodyDrawing/BodyDisplay";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSQLiteContext } from "expo-sqlite";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
-import BodyDataCompilation from "@/components/BodyDataCompilation";
+import BodyDataCompilation from "@/components/BodyDrawing/BodyDataCompilation";
 
 const { width, height } = Dimensions.get("window");
 
@@ -61,19 +61,22 @@ export default function logModal() {
   };
 
   const getLogPeople = async () => {
-    const people = await db.getAllAsync<PersonType>("SELECT * FROM people WHERE id IN (SELECT person_id FROM emotion_log_people WHERE log_id = ?)", [
-      Number(logData.id),
-    ]);
+    const people = await db.getAllAsync<PersonType>(
+      "SELECT * FROM people WHERE id IN (SELECT person_id FROM emotion_log_people WHERE log_id = ?)",
+      [Number(logData.id)]
+    );
     setLogPeople(people);
-  }
+  };
 
   const renderPerson = ({ item }: { item: PersonType }) => {
     return (
-      <View style={{backgroundColor: item.color, padding: 10, borderRadius: 20}}>
+      <View
+        style={{ backgroundColor: item.color, padding: 10, borderRadius: 20 }}
+      >
         <Text>{item.name}</Text>
       </View>
     );
-  }
+  };
 
   useEffect(() => {
     getLogPeople();
@@ -185,17 +188,22 @@ export default function logModal() {
               {/* Cause */}
               {logData.root.length > 0 && (
                 <View style={styles.emotionDetail}>
-                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
-                  <Text
+                  <View
                     style={[
-                      styles.emotionDetailTitle,
-                      {
-                        backgroundColor: "rgba(0, 0, 0, 0.1)",
-                      },
+                      styles.emotionDetailTitleBackground,
+                      { backgroundColor: String(logData.color) },
                     ]}
                   >
-                    Why?
-                  </Text>
+                    <Text
+                      style={[
+                        styles.emotionDetailTitle,
+                        {
+                          backgroundColor: "rgba(0, 0, 0, 0.1)",
+                        },
+                      ]}
+                    >
+                      Why?
+                    </Text>
                   </View>
                   <Text style={styles.detailContent}>{logData.root}</Text>
                 </View>
@@ -203,17 +211,22 @@ export default function logModal() {
               {/* Need */}
               {logData.need.length > 0 && (
                 <View style={styles.emotionDetail}>
-                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
-                  <Text
+                  <View
                     style={[
-                      styles.emotionDetailTitle,
-                      {
-                        backgroundColor: "rgba(0, 0, 0, 0.15)",
-                      },
+                      styles.emotionDetailTitleBackground,
+                      { backgroundColor: String(logData.color) },
                     ]}
                   >
-                    What did I need?
-                  </Text>
+                    <Text
+                      style={[
+                        styles.emotionDetailTitle,
+                        {
+                          backgroundColor: "rgba(0, 0, 0, 0.15)",
+                        },
+                      ]}
+                    >
+                      What did I need?
+                    </Text>
                   </View>
                   <Text style={styles.detailContent}>{logData.need}</Text>
                 </View>
@@ -221,17 +234,22 @@ export default function logModal() {
               {/* People */}
               {logPeople.length > 0 && (
                 <View style={styles.emotionDetail}>
-                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
-                  <Text
+                  <View
                     style={[
-                      styles.emotionDetailTitle,
-                      {
-                        backgroundColor: "rgba(0, 0, 0, 0.20)",
-                      },
+                      styles.emotionDetailTitleBackground,
+                      { backgroundColor: String(logData.color) },
                     ]}
                   >
-                    Who was I with?
-                  </Text>
+                    <Text
+                      style={[
+                        styles.emotionDetailTitle,
+                        {
+                          backgroundColor: "rgba(0, 0, 0, 0.20)",
+                        },
+                      ]}
+                    >
+                      Who was I with?
+                    </Text>
                   </View>
                   <FlatList
                     scrollEnabled={false}
@@ -246,22 +264,27 @@ export default function logModal() {
                       alignItems: "center",
                     }}
                   />
-              </View>
+                </View>
               )}
               {/* Diary */}
               {logData.extra.length > 0 && (
                 <View style={styles.emotionDetail}>
-                  <View style={[styles.emotionDetailTitleBackground, {backgroundColor: String(logData.color)}]}>
-                  <Text
+                  <View
                     style={[
-                      styles.emotionDetailTitle,
-                      {
-                        backgroundColor: "rgba(0, 0, 0, 0.25)",
-                      },
+                      styles.emotionDetailTitleBackground,
+                      { backgroundColor: String(logData.color) },
                     ]}
                   >
-                    Diary
-                  </Text>
+                    <Text
+                      style={[
+                        styles.emotionDetailTitle,
+                        {
+                          backgroundColor: "rgba(0, 0, 0, 0.25)",
+                        },
+                      ]}
+                    >
+                      Diary
+                    </Text>
                   </View>
                   <Text style={styles.detailContent}>{logData.extra}</Text>
                 </View>
@@ -272,17 +295,17 @@ export default function logModal() {
               <BodyDisplay logId={Number(logData.id)} />
             </View>
             {/* Date of creation */}
-              <View
-                style={{
-                  height: height * 0.08,
-                  justifyContent: "center",
-                  backgroundColor: "rgba(0,0,0,0.1)",
-                }}
-              >
-                <Text style={styles.date}>
-                  {logData.date} • {logData.time}
-                </Text>
-              </View>
+            <View
+              style={{
+                height: height * 0.08,
+                justifyContent: "center",
+                backgroundColor: "rgba(0,0,0,0.1)",
+              }}
+            >
+              <Text style={styles.date}>
+                {logData.date} • {logData.time}
+              </Text>
+            </View>
           </View>
         </ScrollView>
       </View>

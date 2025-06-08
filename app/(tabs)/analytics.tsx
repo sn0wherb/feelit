@@ -12,8 +12,8 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 import { FlatList } from "react-native";
 import { uncapitalise } from "@/assets/functions";
-import Calendar from "@/components/Calendar";
-import MostFrequentEmotions from "@/components/MostFrequentEmotions";
+import Calendar from "@/components/Calendar/Calendar";
+import MostFrequentEmotions from "@/components/Analytics/MostFrequentEmotions";
 
 type LogType = {
   id: number;

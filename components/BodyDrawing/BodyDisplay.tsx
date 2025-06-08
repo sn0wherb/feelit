@@ -62,7 +62,7 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]),
     [svgData, setSvgData] = useState<SvgDataType[]>([]);
 
-  const silhouetteImage = require("../assets/images/silhouette_front.png");
+  const silhouetteImage = require("@/assets/images/silhouette_front.png");
   const {
     stockEmotionData,
   } = require("@/assets/data/emotions/stockEmotionData");
@@ -152,7 +152,7 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
 
   useFocusEffect(
     useCallback(() => {
-        logId && getData();
+      logId && getData();
     }, [])
   );
 

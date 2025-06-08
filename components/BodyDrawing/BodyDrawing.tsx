@@ -45,7 +45,7 @@ const BodyDrawing = ({
   const [isBrushSizeModalVisible, setIsBrushSizeModalVisible] = useState(false);
   const [isColorModalVisible, setIsColorModalVisible] = useState(false);
 
-  const silhouetteImage = require("../assets/images/silhouette_front.png");
+  const silhouetteImage = require("@/assets/images/silhouette_front.png");
 
   // Functions
   const onTouchMove = (event: GestureResponderEvent) => {

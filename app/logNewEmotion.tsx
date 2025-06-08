@@ -10,13 +10,13 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
-import Header from "@/components/Header";
-import EmotionDisplay from "@/components/EmotionLoggingController";
+import Header from "@/components/Emotion Logging/Header";
+import EmotionDisplay from "@/components/Emotion Logging/EmotionLoggingController";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
-import Controls from "@/components/Controls";
-import EmotionLoggingController from "@/components/EmotionLoggingController";
+import Controls from "@/components/Emotion Logging/Controls";
+import EmotionLoggingController from "@/components/Emotion Logging/EmotionLoggingController";
 
 const { width, height } = Dimensions.get("window");
 
@@ -74,14 +74,12 @@ export default function logNewEmotion() {
         [currentEmotion.name]
       );
     } else {
-      stockData = Object.values(
-        stockEmotionData[level] || {}
-      );
+      stockData = Object.values(stockEmotionData[level] || {});
       customData = await db.getAllAsync<EmotionType>(
         `SELECT * FROM user_created_emotions WHERE parent IS NULL`
       );
     }
-    
+
     // Add user created emotions to stock emotions
     customData.forEach((value) => {
       stockData.push(value);
@@ -89,18 +87,22 @@ export default function logNewEmotion() {
 
     // Hide hidden emotions
     stockData.forEach((value) => {
-      hiddenEmotions.includes(value.name) ? value.hidden = true : value.hidden = false;
-    })
+      hiddenEmotions.includes(value.name)
+        ? (value.hidden = true)
+        : (value.hidden = false);
+    });
 
-    setData(stockData);    
+    setData(stockData);
   };
-    
+
   const getHiddenEmotions = async () => {
-    const data = await db.getAllAsync<{ name: string }>("SELECT * FROM hidden_emotions");
+    const data = await db.getAllAsync<{ name: string }>(
+      "SELECT * FROM hidden_emotions"
+    );
     const stringData = data.map((value) => value.name);
     setHiddenEmotions(stringData);
     return stringData;
-  }
+  };
 
   const handleGoBack = () => {
     if (level !== 1) {
@@ -182,7 +184,7 @@ export default function logNewEmotion() {
       if (selectedPeople.length > 0) {
         const logId = Number(thisLogId?.id);
         const peopleQuery = `INSERT INTO emotion_log_people (log_id, person_id) VALUES ${selectedPeople
-          .map(person => `(${logId}, ${person.id})`)
+          .map((person) => `(${logId}, ${person.id})`)
           .join(", ")};`;
         await db.runAsync(peopleQuery);
       }
@@ -220,7 +222,7 @@ export default function logNewEmotion() {
     setBodyDrawingData(data);
   };
 
-  const updateDiaryData = (field: 'root' | 'need' | 'extra', data: string) => {
+  const updateDiaryData = (field: "root" | "need" | "extra", data: string) => {
     switch (field) {
       case "root":
         setDiaryData({
@@ -254,8 +256,10 @@ export default function logNewEmotion() {
 
   const handleToggleHideEmotion = async (name: string) => {
     let query;
-    hiddenEmotions.includes(name) ? query = 'DELETE FROM hidden_emotions WHERE name = ?' : query = 'INSERT INTO hidden_emotions (name) VALUES (?)';
-    
+    hiddenEmotions.includes(name)
+      ? (query = "DELETE FROM hidden_emotions WHERE name = ?")
+      : (query = "INSERT INTO hidden_emotions (name) VALUES (?)");
+
     try {
       await db.runAsync(query, [name]);
     } catch (e) {
@@ -263,7 +267,7 @@ export default function logNewEmotion() {
     }
 
     setRefresh((refresh) => refresh + 1);
-  }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
