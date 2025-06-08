@@ -14,7 +14,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import Feather from "@expo/vector-icons/Feather";
 import EmotionDropdown from "@/components/Profiles/EmotionDropdown";
-import { keyExtractor } from "@/assets/functions";
+import { keyExtractor, uncapitalise } from "@/assets/functions";
 import BodyDisplay from "@/components/BodyDrawing/BodyDisplay";
 import EmotionDropdown2 from "@/components/Profiles/EmotionDropdown2";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -43,7 +43,7 @@ const profiles = () => {
     useState(false);
   const [level, setLevel] = useState(1);
   const [logData, setLogData] = useState<LogType[]>([]);
-  const [commonPeople, setCommonPeople] = useState<PersonType[]>([]);
+  const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
 
   const {
     stockEmotionData,
@@ -51,7 +51,7 @@ const profiles = () => {
   const bodyHeight = 0.74;
 
   // Functions
-  const getEmotions = async () => {
+  const getAllBaseEmotions = async () => {
     try {
       const data = await db.getAllAsync<EmotionType>(
         "SELECT * FROM user_created_emotions WHERE parent IS NULL"
@@ -79,55 +79,19 @@ const profiles = () => {
   // @ts-expect-error
   const renderBodies = ({ item, index }) => {
     return (
-      <ScrollView>
-        <View style={{ width: width }}>
-          <BodyDataCompilation
-            size={bodyHeight}
-            emotion={item}
-            setLogData={handleSetLogData}
-          />
-        </View>
-        <View style={{ gap: 12, paddingBottom: 50 }}>
-          <View style={styles.section}>
-            <Text style={styles.title}>Most common cause</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.title}>Most common need</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.title}>Person</Text>
-            <FlatList
-              data={commonPeople}
-              contentContainerStyle={{
-                gap: 10,
-                flexDirection: "row",
-                flexWrap: "wrap",
-              }}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    backgroundColor: item.color,
-                    padding: 10,
-                    borderRadius: 20,
-                  }}
-                >
-                  <Text>{item.name}</Text>
-                </View>
-              )}
-              keyExtractor={keyExtractor}
-            />
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.title}>Place</Text>
-          </View>
-        </View>
-      </ScrollView>
+      <View style={{ width: width }}>
+        {/* Body */}
+        <BodyDataCompilation
+          size={bodyHeight}
+          emotion={item}
+          setLogData={handleSetLogData}
+        />
+      </View>
     );
   };
 
   useEffect(() => {
-    getEmotions();
+    getAllBaseEmotions();
   }, []);
 
   const bodyRef = useRef<FlatList>(null);
@@ -173,16 +137,16 @@ const profiles = () => {
       const topPeople = (
         await Promise.all(
           personCounts.slice(0, 5).map(async ({ person }) => {
-            const personData = await db.getFirstAsync<PersonType>(
+            const personData = await db.getFirstAsync<SelectionType>(
               `SELECT * FROM people WHERE id = ${person}`
             );
             return personData;
           })
         )
-      ).filter((person): person is PersonType => person !== null);
+      ).filter((person): person is SelectionType => person !== null);
 
       setCommonPeople(topPeople);
-      console.log(topPeople);
+      // console.log(topPeople);
     } catch (e) {
       console.error("Error getting common people:", e);
     }
@@ -191,18 +155,18 @@ const profiles = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.container}>
-          {/* Dots */}
-          <DotNavigation
-            items={emotions}
-            selected={selectedEmotion}
-            level={level}
-            selectEmotion={handleSelectEmotion}
-          />
+        {/* Dots */}
+        <DotNavigation
+          items={emotions}
+          selected={selectedEmotion}
+          level={level}
+          selectEmotion={handleSelectEmotion}
+        />
+        <ScrollView style={{}}>
           {/* Emotions */}
           <FlatList
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingTop: height * 0.08 }}
+            contentContainerStyle={{}}
             horizontal
             pagingEnabled
             data={emotions}
@@ -212,7 +176,59 @@ const profiles = () => {
             viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
             onViewableItemsChanged={handleViewableItemsChanged}
           />
-        </View>
+          {/* Analytics */}
+          <View style={{ gap: 12, paddingBottom: 50 }}>
+            {/* This would take a lot of word processing */}
+            {/* <View style={styles.section}>
+            <Text style={styles.title}>Most common cause</Text>
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.title}>Most common need</Text>
+          </View> */}
+            {/* Time saturation */}
+            <View style={styles.section}>
+              <Text style={styles.title}>
+                When you feel most{" "}
+                {/* {uncapitalise(emotions[selectedEmotion].name)} */}
+              </Text>
+            </View>
+            {/* People */}
+            <View style={styles.section}>
+              <Text style={styles.title}>
+                {/* People you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
+                with
+              </Text>
+              <FlatList
+                data={commonPeople}
+                contentContainerStyle={{
+                  gap: 10,
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                }}
+                scrollEnabled={false}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      backgroundColor: item.color,
+                      padding: 10,
+                      borderRadius: 20,
+                    }}
+                  >
+                    <Text>{item.name}</Text>
+                  </View>
+                )}
+                keyExtractor={keyExtractor}
+              />
+            </View>
+            {/* Places */}
+            <View style={styles.section}>
+              <Text style={styles.title}>
+                {/* Places you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
+                at
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
@@ -257,5 +273,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
+    paddingVertical: 12,
   },
 });

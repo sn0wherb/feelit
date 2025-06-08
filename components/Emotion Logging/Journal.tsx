@@ -19,8 +19,10 @@ interface Props {
   passDiaryData: (field: "root" | "need" | "extra", data: string) => void;
   diaryData: DiaryType | undefined;
   onButtonPress: () => void;
-  selectedPeople: PersonType[];
-  onUpdateSelectedPeople: (people: PersonType[]) => void;
+  selectedPeople: SelectionType[];
+  selectedPlaces: SelectionType[];
+  onUpdateSelectedPeople: (people: SelectionType[]) => void;
+  onUpdateSelectedPlaces: (places: SelectionType[]) => void;
   initialFieldState?: boolean;
   editMode?: boolean;
 }
@@ -31,17 +33,13 @@ const Journal = ({
   diaryData,
   onButtonPress,
   selectedPeople,
+  selectedPlaces,
   onUpdateSelectedPeople,
+  onUpdateSelectedPlaces,
   initialFieldState = false,
   editMode = false,
 }: Props) => {
   const bottomPadding = 50;
-  const [isJournalFieldOpen, setIsJournalFieldOpen] = useState(false);
-
-  // Functions
-  const handleOpenJournalField = () => {
-    setIsJournalFieldOpen(true);
-  };
 
   return (
     <View style={{ height: height * 0.87, width: width }}>
@@ -85,10 +83,18 @@ const Journal = ({
           {/* People */}
           <JournalField
             title={"Who are you with?"}
-            type={"selection"}
+            type={"person"}
             currentEmotion={currentEmotion}
-            selectedPeople={selectedPeople}
-            onUpdateSelectedPeople={onUpdateSelectedPeople}
+            selectedData={selectedPeople}
+            onUpdateSelectedData={onUpdateSelectedPeople}
+          />
+          {/* Places */}
+          <JournalField
+            title={"Where are you?"}
+            type={"place"}
+            currentEmotion={currentEmotion}
+            selectedData={selectedPlaces}
+            onUpdateSelectedData={onUpdateSelectedPlaces}
           />
           {/* Diary */}
           <JournalField

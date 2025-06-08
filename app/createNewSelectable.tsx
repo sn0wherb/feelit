@@ -8,11 +8,7 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import {
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/Emotion Logging/Header";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -23,9 +19,10 @@ import { uncapitalise } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
-const createPerson = () => {
+const createNewSelectable = () => {
   const router = useRouter();
   const db = useSQLiteContext();
+  const { type } = useLocalSearchParams();
 
   // New emotion states
   const [title, setTitle] = useState("");
@@ -37,12 +34,14 @@ const createPerson = () => {
     router.back();
   };
 
-  const createPerson = async () => {
+  const createSelectable = async () => {
     try {
-      await db.runAsync(`INSERT INTO people (name, color) VALUES (?,?)`, [
-        title,
-        newColor,
-      ]);
+      await db.runAsync(
+        `INSERT INTO ${
+          type === "person" ? "people" : "places"
+        } (name, color) VALUES (?,?)`,
+        [title, newColor]
+      );
       setSaved(true);
     } catch (e) {
       console.error(e);
@@ -69,7 +68,7 @@ const createPerson = () => {
             level={0}
             handleGoBack={handleGoBack}
             custom={true}
-            type="person"
+            type={type as "person" | "place" | "emotion"}
           />
           {/* Form */}
           <View style={styles.form}>
@@ -136,7 +135,7 @@ const createPerson = () => {
             </ColorPicker>
             {/* Save button */}
             <TouchableOpacity
-              onPress={createPerson}
+              onPress={createSelectable}
               style={{
                 flexDirection: "row",
                 gap: 16,
@@ -159,7 +158,7 @@ const createPerson = () => {
   );
 };
 
-export default createPerson;
+export default createNewSelectable;
 
 const styles = StyleSheet.create({
   container: {

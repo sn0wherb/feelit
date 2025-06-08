@@ -20,35 +20,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Octicons from "@expo/vector-icons/Octicons";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
-
-type StrokeType = [string[], string, number];
-
-type SvgDataType = {
-  id: number;
-  path: string;
-  color: string;
-  size: number;
-};
-
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
-type EmotionType = {
-  id: number;
-  name: string;
-  parent: string | null;
-  color: string;
-  level: number;
-  isCustom: number;
-};
-
 interface Props {
   logId?: number;
   emotion?: string;

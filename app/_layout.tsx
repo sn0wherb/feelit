@@ -13,6 +13,8 @@ export default function Layout() {
       await db.execAsync(queries["createHiddenEmotionsTable"]);
       await db.execAsync(queries["createPeopleTable"]);
       await db.execAsync(queries["createEmotionLogPeopleTable"]);
+      await db.execAsync(queries["createPlacesTable"]);
+      await db.execAsync(queries["createEmotionLogPlacesTable"]);
     } catch (e) {
       console.error(e);
     }

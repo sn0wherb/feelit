@@ -19,9 +19,9 @@ interface Props {
   value?: string;
   onChangeText?: (text: string) => void;
   currentEmotion: EmotionType;
-  type?: "selection" | "text";
-  selectedPeople?: PersonType[];
-  onUpdateSelectedPeople?: (people: PersonType[]) => void;
+  type?: "place" | "person" | "text";
+  selectedData?: SelectionType[];
+  onUpdateSelectedData?: (data: SelectionType[]) => void;
   initialFieldState?: boolean;
 }
 
@@ -32,38 +32,43 @@ const JournalField = ({
   value,
   currentEmotion,
   type = "text",
-  selectedPeople = [],
-  onUpdateSelectedPeople,
+  selectedData = [],
+  onUpdateSelectedData,
   onChangeText,
   initialFieldState = false,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(initialFieldState);
-  const [isPersonModalOpen, setIsPersonModalOpen] = useState(false);
+  const [isSelectableModalOpen, setIsSelectableModalOpen] = useState(false);
   const db = useSQLiteContext();
-  const [people, setPeople] = useState<PersonType[]>([]);
+  const [data, setData] = useState<SelectionType[]>([]);
 
   // Functions
-  const getPeople = async () => {
-    const people = await db.getAllAsync<PersonType>("SELECT * FROM people");
-    setPeople([
-      ...people,
-      { id: 0, name: "Add new person", color: "white", selected: false },
+  const getData = async () => {
+    const data = await db.getAllAsync<SelectionType>(
+      `SELECT * FROM ${type === "person" ? "people" : "places"}`
+    );
+    setData([
+      ...data,
+      { id: 0, name: `Add new ${type}`, color: "white", selected: false },
     ]);
   };
 
-  const createPerson = () => {
-    router.push("/createPerson");
+  const createNewSelectable = () => {
+    router.push({
+      pathname: "/createNewSelectable",
+      params: { type: type === "person" ? "people" : "places" },
+    });
   };
 
-  const renderPerson = ({
+  const renderSelectable = ({
     item,
     index,
   }: {
-    item: PersonType;
+    item: SelectionType;
     index: number;
   }) => {
     // Add new person
-    if (index === people.length - 1) {
+    if (index === data.length - 1) {
       return (
         <View style={{ paddingVertical: 4 }}>
           <TouchableOpacity
@@ -76,11 +81,11 @@ const JournalField = ({
               gap: 10,
             }}
             onPress={() => {
-              createPerson();
+              createNewSelectable();
             }}
           >
             <AntDesign name="plus" size={18} color={"black"} />
-            <Text style={{ fontSize: 16 }}>Add person</Text>
+            <Text style={{ fontSize: 16 }}>Add {type}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -89,7 +94,7 @@ const JournalField = ({
     // Existing person
     return (
       <View style={{ paddingVertical: 4 }}>
-        {selectedPeople.some((person) => person.id === item.id) && (
+        {selectedData.some((selectable) => selectable.id === item.id) && (
           <View
             style={{
               position: "absolute",
@@ -121,12 +126,12 @@ const JournalField = ({
               : "transparent",
           }}
           onPress={() => {
-            if (selectedPeople.some((person) => person.id === item.id)) {
-              onUpdateSelectedPeople?.(
-                selectedPeople.filter((person) => person.id !== item.id)
+            if (selectedData.some((selectable) => selectable.id === item.id)) {
+              onUpdateSelectedData?.(
+                selectedData.filter((selectable) => selectable.id !== item.id)
               );
             } else {
-              onUpdateSelectedPeople?.([...selectedPeople, item]);
+              onUpdateSelectedData?.([...selectedData, item]);
             }
           }}
         >
@@ -136,11 +141,11 @@ const JournalField = ({
     );
   };
 
-  const renderSelectedPerson = ({
+  const renderSelectedSelectable = ({
     item,
     index,
   }: {
-    item: PersonType;
+    item: SelectionType;
     index: number;
   }) => {
     return (
@@ -164,11 +169,11 @@ const JournalField = ({
 
   useFocusEffect(
     useCallback(() => {
-      getPeople();
+      getData();
     }, [])
   );
 
-  if (isPersonModalOpen) {
+  if (isSelectableModalOpen) {
     return (
       <View
         style={{
@@ -184,7 +189,7 @@ const JournalField = ({
         }}
       >
         <TouchableOpacity
-          onPress={() => setIsPersonModalOpen(false)}
+          onPress={() => setIsSelectableModalOpen(false)}
           style={{
             position: "absolute",
             zIndex: 2,
@@ -223,13 +228,15 @@ const JournalField = ({
               gap: 10,
             }}
             scrollEnabled={false}
-            data={people}
-            renderItem={renderPerson}
+            data={data}
+            renderItem={renderSelectable}
           />
         </View>
       </View>
     );
   }
+
+  console.log(selectedData);
 
   return (
     <View
@@ -313,11 +320,11 @@ const JournalField = ({
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          {selectedPeople.length > 0 && (
+          {selectedData.length > 0 && (
             <FlatList
               scrollEnabled={false}
-              data={selectedPeople}
-              renderItem={renderSelectedPerson}
+              data={selectedData}
+              renderItem={renderSelectedSelectable}
               contentContainerStyle={{
                 flexDirection: "row",
                 justifyContent: "center",
@@ -334,8 +341,7 @@ const JournalField = ({
               padding: 10,
             }}
             onPress={() => {
-              setIsPersonModalOpen(true);
-              // router.push("/personSelectionModal");
+              setIsSelectableModalOpen(true);
             }}
           >
             <AntDesign name="plus" size={18} color={"black"} />

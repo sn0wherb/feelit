@@ -46,12 +46,14 @@ export default function logModal() {
     need: String(logData.need),
     extra: String(logData.extra),
   });
-  const [newPeople, setNewPeople] = useState<PersonType[]>([]);
+  const [newPeople, setNewPeople] = useState<SelectionType[]>([]);
+  const [newPlaces, setNewPlaces] = useState<SelectionType[]>([]);
 
   const [isOptionsDropdownVisible, setIsOptionsDropdownVisible] =
     useState(false);
 
-  const [logPeople, setLogPeople] = useState<PersonType[]>([]);
+  const [logPeople, setLogPeople] = useState<SelectionType[]>([]);
+  const [logPlaces, setLogPlaces] = useState<SelectionType[]>([]);
   const [originalPaths, setOriginalPaths] = useState<StrokeType[]>([
     [["M0,0"], "black", 1],
   ]);
@@ -84,7 +86,7 @@ export default function logModal() {
   };
 
   const getLogPeople = async () => {
-    const people = await db.getAllAsync<PersonType>(
+    const people = await db.getAllAsync<SelectionType>(
       "SELECT * FROM people WHERE id IN (SELECT person_id FROM emotion_log_people WHERE log_id = ?)",
       [Number(logData.id)]
     );
@@ -92,7 +94,16 @@ export default function logModal() {
     setNewPeople(people);
   };
 
-  const renderPerson = ({ item }: { item: PersonType }) => {
+  const getLogPlaces = async () => {
+    const places = await db.getAllAsync<SelectionType>(
+      "SELECT * FROM places WHERE id IN (SELECT place_id FROM emotion_log_places WHERE log_id = ?)",
+      [Number(logData.id)]
+    );
+    setLogPlaces(places);
+    setNewPlaces(places);
+  };
+
+  const renderSelectable = ({ item }: { item: SelectionType }) => {
     return (
       <View
         style={{ backgroundColor: item.color, padding: 10, borderRadius: 20 }}
@@ -100,10 +111,6 @@ export default function logModal() {
         <Text>{item.name}</Text>
       </View>
     );
-  };
-
-  const exitEditing = () => {
-    setIsEditingEnabled(false);
   };
 
   const updateDiaryData = (field: "root" | "need" | "extra", data: string) => {
@@ -119,7 +126,9 @@ export default function logModal() {
       newPeople.some((person) => !logPeople.some((p) => p.id == person.id)) ||
       newPeople.length !== logPeople.length ||
       paths.length !== originalPaths.length ||
-      paths[paths.length - 1] !== originalPaths[originalPaths.length - 1]
+      paths[paths.length - 1] !== originalPaths[originalPaths.length - 1] ||
+      newPlaces.some((place) => !logPlaces.some((p) => p.id == place.id)) ||
+      newPlaces.length !== logPlaces.length
     ) {
       Alert.alert("Discard changes?", "Your changes won't be saved.", [
         {
@@ -178,21 +187,21 @@ export default function logModal() {
       }
 
       // Update paths if they've changed
-      if (
-        paths.length !== originalPaths.length ||
-        paths[paths.length - 1] !== originalPaths[originalPaths.length - 1]
-      ) {
-        const pathsQuery = `DELETE FROM bodydrawing_svg_paths WHERE id = ${Number(
+      if (paths[paths.length - 1] !== originalPaths[originalPaths.length - 1]) {
+        const query = generateSvgEntry(Number(logData.id));
+        query && (await db.runAsync(query));
+      }
+
+      // Update places if they've changed
+      if (newPlaces.some((place) => !logPlaces.some((p) => p.id == place.id))) {
+        const placesQuery = `DELETE FROM emotion_log_places WHERE log_id = ${Number(
           logData.id
         )};`;
-        pathsQuery && (await db.runAsync(pathsQuery));
-        const pathsQuery2 = `INSERT INTO bodydrawing_svg_paths (id, path, color, size) VALUES ${paths
-          .map(
-            (path) =>
-              `(${Number(logData.id)}, ${path[0]}, ${path[1]}, ${path[2]})`
-          )
+        placesQuery && (await db.runAsync(placesQuery));
+        const placesQuery2 = `INSERT INTO emotion_log_places (log_id, place_id) VALUES ${newPlaces
+          .map((place) => `(${Number(logData.id)}, ${place.id})`)
           .join(", ")};`;
-        pathsQuery && (await db.runAsync(pathsQuery));
+        placesQuery2 && (await db.runAsync(placesQuery2));
       }
     } catch (e) {
       console.error(e);
@@ -207,6 +216,26 @@ export default function logModal() {
     router.setParams(logData);
 
     setIsEditingEnabled(false);
+  };
+
+  const generateSvgEntry = (id: number) => {
+    let query = `INSERT INTO bodydrawing_svg_paths (id, path, color, size) VALUES `;
+    if (paths && paths.length > 1) {
+      paths.shift();
+      paths.forEach((value, index) => {
+        const path = value[0].join("/");
+
+        if (index == paths.length - 1) {
+          query += `(${id}, '${path}', '${value[1]}', ${value[2]});`;
+        } else {
+          query += `(${id}, '${path}', '${value[1]}', ${value[2]}), `;
+        }
+        console.log(query);
+      });
+      return query;
+    } else {
+      return false;
+    }
   };
 
   const getSvgData = async () => {
@@ -233,8 +262,11 @@ export default function logModal() {
 
   useEffect(() => {
     getLogPeople();
+    getLogPlaces();
     getSvgData();
   }, []);
+
+  console.log(newPlaces, newPeople);
 
   return (
     <View style={{ backgroundColor: "beige", height: height, width: width }}>
@@ -390,7 +422,9 @@ export default function logModal() {
                 });
               }}
               selectedPeople={newPeople}
+              selectedPlaces={newPlaces}
               onUpdateSelectedPeople={setNewPeople}
+              onUpdateSelectedPlaces={setNewPlaces}
             />
             <BodyDrawing
               onButtonPress={() => {
@@ -401,7 +435,9 @@ export default function logModal() {
                 });
               }}
               initialPaths={originalPaths}
-              passPathsToParent={setPaths}
+              passPathsToParent={(paths) => {
+                setPaths(paths);
+              }}
               initialColor={String(logData.color)}
               editMode={true}
             />
@@ -503,7 +539,42 @@ export default function logModal() {
                     <FlatList
                       scrollEnabled={false}
                       data={logPeople}
-                      renderItem={renderPerson}
+                      renderItem={renderSelectable}
+                      contentContainerStyle={{
+                        marginVertical: 6,
+                        gap: 10,
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    />
+                  </View>
+                )}
+                {/* Places */}
+                {logPlaces.length > 0 && (
+                  <View style={styles.emotionDetail}>
+                    <View
+                      style={[
+                        styles.emotionDetailTitleBackground,
+                        { backgroundColor: String(logData.color) },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.emotionDetailTitle,
+                          {
+                            backgroundColor: "rgba(0, 0, 0, 0.25)",
+                          },
+                        ]}
+                      >
+                        Where was I?
+                      </Text>
+                    </View>
+                    <FlatList
+                      scrollEnabled={false}
+                      data={logPlaces}
+                      renderItem={renderSelectable}
                       contentContainerStyle={{
                         marginVertical: 6,
                         gap: 10,

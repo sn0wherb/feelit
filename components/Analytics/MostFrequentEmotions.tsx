@@ -76,6 +76,7 @@ const MostFrequentEmotions = () => {
         timeFrameSQL = `created_at LIKE '%'`;
         break;
     }
+
     try {
       const data = await db.getAllAsync<{
         emotion: string;

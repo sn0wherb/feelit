@@ -17,13 +17,18 @@ export const uncapitalise = (string: string) => {
   return string.charAt(0).toLowerCase() + string.slice(1);
 };
 
-export const getLocalTime = (dateTime: string) => {
+export const getLocalTime = (
+  dateTime: string,
+  timeframe: "time" | "date" = "time"
+) => {
   const gmtTime = new Date(dateTime);
   const localTimeZoneOffset = new Date().getTimezoneOffset();
   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
-  const time = gmtTime.toLocaleTimeString().slice(0, 5);
-
-  return time;
+  if (timeframe === "time") {
+    return gmtTime.toLocaleTimeString().slice(0, 5);
+  } else {
+    return gmtTime.toLocaleDateString().slice(0, 10);
+  }
 };
 
 export const openLogModal = (log: LogType, date: string, time: string) => {

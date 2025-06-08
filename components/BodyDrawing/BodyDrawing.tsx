@@ -34,11 +34,14 @@ const BodyDrawing = ({
   passPathsToParent,
   onButtonPress,
   initialColor,
-  initialPaths,
+  initialPaths = [[["M0,0"], "black", 1]],
   editMode = false,
 }: Props) => {
   // Svg states
-  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
+  const [paths, setPaths] = useState<StrokeType[]>([
+    [["M0,0"], "black", 1],
+    ...initialPaths,
+  ]);
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [currentColor, setCurrentColor] = useState<string>(initialColor);
   const [currentSize, setCurrentSize] = useState<number>(5);
@@ -108,13 +111,6 @@ const BodyDrawing = ({
   useEffect(() => {
     passPathsToParent(paths);
   }, [paths]);
-
-  useEffect(() => {
-    if (initialPaths && initialPaths.length > 1) {
-      initialPaths.unshift(...paths);
-      setPaths(initialPaths);
-    }
-  }, []);
 
   return (
     <View style={styles.container}>

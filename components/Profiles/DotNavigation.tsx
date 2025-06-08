@@ -40,8 +40,8 @@ const DotNavigation = ({ items, selected, level, selectEmotion }: Props) => {
   };
 
   const toggleOpenEmotionSelection = () => {
-    setIsEmotionSelectionVisible(!isEmotionSelectionVisible);
-    getChildrenEmotions(items[selected]);
+    // setIsEmotionSelectionVisible(!isEmotionSelectionVisible);
+    // getChildrenEmotions(items[selected]);
   };
 
   const getCustomChildrenEmotions = async (emotion: EmotionType) => {
@@ -68,6 +68,7 @@ const DotNavigation = ({ items, selected, level, selectEmotion }: Props) => {
 
     if (level === 1) {
       const secondLvl: EmotionType[] = Object.values(
+        // @ts-expect-error
         stockEmotionData[2][emotion.name]
       );
       secondLvl.forEach((secondLvlEmotion) => {
@@ -75,6 +76,7 @@ const DotNavigation = ({ items, selected, level, selectEmotion }: Props) => {
       });
     } else {
       const thirdLvl: EmotionType[] = Object.values(
+        // @ts-expect-error
         stockEmotionData[3][emotion.name]
       );
       thirdLvl.forEach((thirdLvlEmotion) => {
@@ -157,7 +159,7 @@ const DotNavigation = ({ items, selected, level, selectEmotion }: Props) => {
   };
 
   return (
-    <View style={{ position: "absolute", zIndex: 1, top: height * 0.02 }}>
+    <View style={{ position: "absolute", zIndex: 1, top: height * 0.04 }}>
       <FlatList
         scrollEnabled={false}
         horizontal

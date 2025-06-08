@@ -9,6 +9,7 @@ import React, { useEffect, useState, memo } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
 import { MeshGradientView } from "expo-mesh-gradient";
+import { getLocalTime } from "@/assets/functions";
 
 interface Props {
   digit: number;
@@ -61,15 +62,21 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
     i = colors.length === 3 ? logsOfToday.length : i;
   }
 
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  const today = getLocalTime(new Date().toISOString(), "date");
+  const fullDateString = getLocalTime(fullDate.toISOString(), "date");
 
   // Render item
   switch (logsOfToday.length) {
     case 0:
       return (
         <TouchableOpacity
-          style={[styles[bounds], { borderWidth: today.getTime() === fullDate.getTime() ? 3 : 0, borderColor: '#555' }]}
+          style={[
+            styles[bounds],
+            {
+              borderWidth: today === fullDateString ? 3 : 0,
+              borderColor: "rgb(222, 122, 102)",
+            },
+          ]}
           onPress={() => passOpenDay(logsOfToday, digit)}
         >
           <Text style={styles.dayWithoutLogs}>{digit}</Text>
@@ -82,7 +89,8 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
             styles[bounds],
             {
               backgroundColor: logsOfToday[0].color,
-              borderWidth: today.getTime() === fullDate.getTime() ? 3 : 0, borderColor: '#555' 
+              borderWidth: today === fullDateString ? 3 : 0,
+              borderColor: "rgb(222, 122, 102)",
             },
           ]}
           onPress={() => passOpenDay(logsOfToday, digit)}
@@ -100,7 +108,14 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
         </LinearGradient>
       ) : (
         <TouchableOpacity
-          style={[styles[bounds], { backgroundColor: colors[0],  borderWidth: today.getTime() === fullDate.getTime() ? 3 : 0, borderColor: '#555'  }]}
+          style={[
+            styles[bounds],
+            {
+              backgroundColor: colors[0],
+              borderWidth: today === fullDateString ? 3 : 0,
+              borderColor: "rgb(222, 122, 102)",
+            },
+          ]}
           onPress={() => passOpenDay(logsOfToday, digit)}
         >
           <Text style={styles.dayWithLogs}>{digit}</Text>

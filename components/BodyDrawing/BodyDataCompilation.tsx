@@ -23,13 +23,6 @@ import { useFocusEffect } from "expo-router";
 
 type GridType = [[number, string]][];
 
-type SvgDataType = {
-  id: number;
-  path: string;
-  color: string;
-  size: number;
-};
-
 interface Props {
   logId?: number;
   emotion?: EmotionType;
@@ -323,7 +316,7 @@ const BodyDataCompilation = ({
     );
   };
 
-  const pad = 12;
+  const pad = 50;
 
   return (
     <View>
@@ -334,17 +327,19 @@ const BodyDataCompilation = ({
           imageStyle={{
             tintColor: "black",
             resizeMode: "contain",
-            paddingBottom: pad,
+            paddingTop: pad,
           }}
         >
-          <Svg>
-            {/* previous strokes */}
-            {showRawData && paths.map(renderRawData)}
-            {/* grid lines */}
-            {showGridLines && gridVisualized.map(renderGridLines)}
-            {/* Compiled data */}
-            {grid.map(renderData)}
-          </Svg>
+          <View style={{ marginTop: pad }}>
+            <Svg>
+              {/* previous strokes */}
+              {showRawData && paths.map(renderRawData)}
+              {/* grid lines */}
+              {showGridLines && gridVisualized.map(renderGridLines)}
+              {/* Compiled data */}
+              {grid.map(renderData)}
+            </Svg>
+          </View>
         </ImageBackground>
       </View>
     </View>

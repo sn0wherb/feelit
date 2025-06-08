@@ -28,7 +28,7 @@ type SvgDataType = {
   size: number;
 };
 
-type PersonType = {
+type SelectionType = {
   id: number;
   name: string;
   color: string;
