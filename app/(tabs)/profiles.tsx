@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,6 +35,13 @@ type LogType = {
 
 const { width, height } = Dimensions.get("window");
 
+type AnalyticsType = {
+  emotion: EmotionType;
+  frequency: number;
+  people: SelectionType[];
+  places: SelectionType[];
+};
+
 const profiles = () => {
   const db = useSQLiteContext();
   const router = useRouter();
@@ -44,11 +52,21 @@ const profiles = () => {
   const [level, setLevel] = useState(1);
   const [logData, setLogData] = useState<LogType[]>([]);
   const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
+  const [commonPlaces, setCommonPlaces] = useState<SelectionType[]>([]);
+
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsType[]>([]);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
 
   const {
     stockEmotionData,
   } = require("@/assets/data/emotions/stockEmotionData");
   const bodyHeight = 0.74;
+
+  // Flow:
+  // 1. Get all base emotions
+  // 2. Pass each emotion to BodyDataCompilation
+  // 3. BodyDataCompilation returns all log data under each base emotion
+  // 4. From this data we create analyticsData
 
   // Functions
   const getAllBaseEmotions = async () => {
@@ -61,6 +79,7 @@ const profiles = () => {
         allEmotions.push(emotion);
       });
       setEmotions(allEmotions);
+      console.log(allEmotions);
     } catch (e) {
       console.error(e);
     }
@@ -74,10 +93,29 @@ const profiles = () => {
   const handleSetLogData = (data: LogType[]) => {
     setLogData(data);
     getCommonPeople(data);
+    // getTopSelectableData(data, "place");
   };
 
-  // @ts-expect-error
-  const renderBodies = ({ item, index }) => {
+  const renderBodies = ({
+    item,
+    index,
+  }: {
+    item: EmotionType;
+    index: number;
+  }) => {
+    let analytics = {
+      emotion: item,
+      frequency: 0,
+      people: commonPeople,
+      places: commonPlaces,
+    };
+
+    useEffect(() => {
+      setAnalyticsData([...analyticsData, analytics]);
+    }, []);
+
+    // setData(analytics);
+
     return (
       <View style={{ width: width }}>
         {/* Body */}
@@ -90,9 +128,19 @@ const profiles = () => {
     );
   };
 
+  const setData = (data: AnalyticsType) => {
+    setAnalyticsData([...analyticsData, data]);
+  };
+
   useEffect(() => {
     getAllBaseEmotions();
   }, []);
+
+  // useEffect(() => {
+  //   if (analyticsData.length === emotions.length) {
+  //     setIsAnalyticsLoading(false);
+  //   }
+  // }, [analyticsData]);
 
   const bodyRef = useRef<FlatList>(null);
 
@@ -147,10 +195,74 @@ const profiles = () => {
 
       setCommonPeople(topPeople);
       // console.log(topPeople);
+      // console.log(topPeople);
     } catch (e) {
       console.error("Error getting common people:", e);
     }
   };
+
+  // const getTopSelectableData = async (
+  //   data: LogType[],
+  //   type: "person" | "place"
+  // ) => {
+  //   try {
+  //     // Create an array to store person counts
+  //     const selectableCounts: { selectable: number; count: number }[] = [];
+
+  //     // For each log in logData
+  //     for (const log of data) {
+  //       // Get associated people from emotion_log_people table
+  //       const associatedSelectables = await db.getAllAsync<{
+  //         selectable_id: number;
+  //       }>(`SELECT person_id FROM emotion_log_people WHERE log_id = ${log.id}`);
+
+  //       console.log(associatedSelectables);
+
+  //       // For each associated person
+  //       for (const { selectable_id } of associatedSelectables) {
+  //         // Find if this person already exists in our counts array
+  //         const existingSelectable = selectableCounts.find(
+  //           (s) => s.selectable === selectable_id
+  //         );
+
+  //         if (existingSelectable) {
+  //           // If person exists, increment their count
+  //           existingSelectable.count++;
+  //         } else {
+  //           // If person doesn't exist, add them with count 1
+  //           selectableCounts.push({ selectable: selectable_id, count: 1 });
+  //         }
+  //       }
+  //     }
+
+  //     // Sort by count in descending order
+  //     selectableCounts.sort((a, b) => b.count - a.count);
+
+  //     // Get the actual person data for the top results
+  //     const topSelectables = (
+  //       await Promise.all(
+  //         selectableCounts.slice(0, 5).map(async ({ selectable }) => {
+  //           const selectableData = await db.getFirstAsync<SelectionType>(
+  //             `SELECT * FROM people WHERE id = ${selectable}`
+  //           );
+  //           return selectableData;
+  //         })
+  //       )
+  //     ).filter(
+  //       (selectable): selectable is SelectionType => selectable !== null
+  //     );
+
+  //     // type === "person"
+  //     //   ? setCommonPeople(topSelectables)
+  //     //   : setCommonPlaces(topSelectables);
+  //     // console.log(topPeople);
+  //   } catch (e) {
+  //     console.error(
+  //       `Error getting common ${type === "person" ? "people" : "places"}:`,
+  //       e
+  //     );
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -185,48 +297,54 @@ const profiles = () => {
           <View style={styles.section}>
             <Text style={styles.title}>Most common need</Text>
           </View> */}
-            {/* Time saturation */}
-            <View style={styles.section}>
-              <Text style={styles.title}>
-                When you feel most{" "}
-                {/* {uncapitalise(emotions[selectedEmotion].name)} */}
-              </Text>
-            </View>
-            {/* People */}
-            <View style={styles.section}>
-              <Text style={styles.title}>
-                {/* People you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
-                with
-              </Text>
-              <FlatList
-                data={commonPeople}
-                contentContainerStyle={{
-                  gap: 10,
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-                scrollEnabled={false}
-                renderItem={({ item }) => (
-                  <View
-                    style={{
-                      backgroundColor: item.color,
-                      padding: 10,
-                      borderRadius: 20,
+            {isAnalyticsLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <View>
+                {/* Time saturation */}
+                <View style={styles.section}>
+                  <Text style={styles.title}>
+                    When you feel most{" "}
+                    {uncapitalise(analyticsData[selectedEmotion].emotion.name)}
+                  </Text>
+                </View>
+                {/* People */}
+                <View style={styles.section}>
+                  <Text style={styles.title}>
+                    {/* People you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
+                    with
+                  </Text>
+                  <FlatList
+                    data={commonPeople}
+                    contentContainerStyle={{
+                      gap: 10,
+                      flexDirection: "row",
+                      flexWrap: "wrap",
                     }}
-                  >
-                    <Text>{item.name}</Text>
-                  </View>
-                )}
-                keyExtractor={keyExtractor}
-              />
-            </View>
-            {/* Places */}
-            <View style={styles.section}>
-              <Text style={styles.title}>
-                {/* Places you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
-                at
-              </Text>
-            </View>
+                    scrollEnabled={false}
+                    renderItem={({ item }) => (
+                      <View
+                        style={{
+                          backgroundColor: item.color,
+                          padding: 10,
+                          borderRadius: 20,
+                        }}
+                      >
+                        <Text>{item.name}</Text>
+                      </View>
+                    )}
+                    keyExtractor={keyExtractor}
+                  />
+                </View>
+                {/* Places */}
+                <View style={styles.section}>
+                  <Text style={styles.title}>
+                    {/* Places you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
+                    at
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
