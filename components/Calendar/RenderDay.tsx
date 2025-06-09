@@ -8,7 +8,6 @@ import {
 import React, { useEffect, useState, memo } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
-import { MeshGradientView } from "expo-mesh-gradient";
 import { getLocalTime } from "@/assets/functions";
 
 interface Props {
@@ -141,7 +140,6 @@ const styles = StyleSheet.create({
     height: width * 0.12,
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
     margin: 2,
     backgroundColor: "rgba(0,0,0,0.04)",
     borderRadius: 20,
@@ -151,7 +149,6 @@ const styles = StyleSheet.create({
     height: width * 0.12,
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
     margin: 2,
     backgroundColor: "rgba(0,0,0,0.1)",
     borderRadius: 20,

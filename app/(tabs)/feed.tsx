@@ -16,7 +16,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect, useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import logModal from "../logModal";
-import { openLogModal, prettifyDate } from "@/assets/functions";
+import { getLocalTime, openLogModal, prettifyDate } from "@/assets/functions";
 
 type FormattedLogDataType = {
   date: string;
@@ -74,14 +74,15 @@ const feed = () => {
     setLogDataByDate(sortedData);
   };
 
-  const getLocalTime = (dateTime: string) => {
-    const gmtTime = new Date(dateTime);
-    const localTimeZoneOffset = new Date().getTimezoneOffset();
-    gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
-    const time = gmtTime.toLocaleTimeString().slice(0, 5);
+  // Originally local function
+  // const getLocalTime = (dateTime: string) => {
+  //   const gmtTime = new Date(dateTime);
+  //   const localTimeZoneOffset = new Date().getTimezoneOffset();
+  //   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
+  //   const time = gmtTime.toLocaleTimeString().slice(0, 5);
 
-    return time;
-  };
+  //   return time;
+  // };
 
   // Re-fetch log data whenever tab is focused
   useFocusEffect(

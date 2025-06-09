@@ -19,13 +19,17 @@ export const uncapitalise = (string: string) => {
 
 export const getLocalTime = (
   dateTime: string,
-  timeframe: "time" | "date" = "time"
+  timeframe: "time" | "date" | "both" = "time"
 ) => {
   const gmtTime = new Date(dateTime);
   const localTimeZoneOffset = new Date().getTimezoneOffset();
   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
   if (timeframe === "time") {
     return gmtTime.toLocaleTimeString().slice(0, 5);
+  } else if (timeframe === "both") {
+    return `${gmtTime
+      .toLocaleDateString()
+      .slice(5, 9)} ${gmtTime.toLocaleTimeString()}`;
   } else {
     return gmtTime.toLocaleDateString().slice(0, 10);
   }

@@ -230,7 +230,6 @@ export default function logModal() {
         } else {
           query += `(${id}, '${path}', '${value[1]}', ${value[2]}), `;
         }
-        console.log(query);
       });
       return query;
     } else {
@@ -265,8 +264,6 @@ export default function logModal() {
     getLogPlaces();
     getSvgData();
   }, []);
-
-  console.log(newPlaces, newPeople);
 
   return (
     <View style={{ backgroundColor: "beige", height: height, width: width }}>

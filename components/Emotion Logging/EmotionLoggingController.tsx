@@ -42,8 +42,10 @@ interface Props {
   passToggleEditing: (state: boolean) => void;
   refresh: () => void;
   onToggleHideEmotion: (name: string) => void;
-  selectedPeople: PersonType[];
-  onUpdateSelectedPeople: (people: PersonType[]) => void;
+  selectedPeople: SelectionType[];
+  onUpdateSelectedPeople: (people: SelectionType[]) => void;
+  selectedPlaces: SelectionType[];
+  onUpdateSelectedPlaces: (people: SelectionType[]) => void;
 }
 
 const { width, height } = Dimensions.get("window");
@@ -64,6 +66,8 @@ const EmotionLoggingController = ({
   onToggleHideEmotion,
   selectedPeople = [],
   onUpdateSelectedPeople,
+  selectedPlaces = [],
+  onUpdateSelectedPlaces,
 }: Props) => {
   const params = useGlobalSearchParams<{ level: string }>();
 
@@ -114,6 +118,8 @@ const EmotionLoggingController = ({
             onButtonPress={handleCreateLog}
             selectedPeople={selectedPeople}
             onUpdateSelectedPeople={onUpdateSelectedPeople}
+            selectedPlaces={selectedPlaces}
+            onUpdateSelectedPlaces={onUpdateSelectedPlaces}
           />
         </View>
       );

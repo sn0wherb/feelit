@@ -43,8 +43,6 @@ const profiles = () => {
   const [level, setLevel] = useState(1);
   const [logData, setLogData] = useState<LogType[]>([]);
   const [emotionData, setEmotionData] = useState<EmotionType>();
-  const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
-  const [commonPlaces, setCommonPlaces] = useState<SelectionType[]>([]);
 
   const [analyticsData, setAnalyticsData] = useState<AnalyticsType[]>([]);
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
@@ -78,16 +76,6 @@ const profiles = () => {
   const handleSelectEmotion = (emotion: EmotionType, level: number) => {
     // setSelectedEmotion(emotion);
     // setLevel(level);
-  };
-
-  const handleSetLogData = (data: LogType[], emotion: EmotionType) => {
-    console.log("direct: ", emotion);
-    setLogData(data);
-    setEmotionData(emotion);
-    getCommonPeople(data);
-    // console.log(getCommonPeople(data));
-    // createAnalytics(data, emotion);
-    // getTopSelectableData(data, "place");
   };
 
   // console.log(analyticsData);
@@ -141,7 +129,7 @@ const profiles = () => {
   }) => {
     return (
       <View style={{ width: width }}>
-        <ProfileSlide emotion={item} isAnalyticsLoading={isAnalyticsLoading} />
+        <ProfileSlide emotion={item} />
       </View>
     );
   };
@@ -150,97 +138,11 @@ const profiles = () => {
     setAnalyticsData([...analyticsData, data]);
   };
 
-  useEffect(() => {
-    getAllBaseEmotions();
-  }, []);
-
-  useEffect(() => {
-    console.log(emotionData);
-    // const analytics: AnalyticsType = {
-    //   emotion: emotionData || emotions[selectedEmotion],
-    //   frequency: 0,
-    //   people: commonPeople,
-    //   places: commonPlaces,
-    // };
-
-    // setAnalyticsData([analytics]);
-
-    // if (analyticsData[selectedEmotion]) {
-    //   // If analytics data for this emotion already exists, update it
-    //   setAnalyticsData((prev) => {
-    //     const newData = [...prev];
-    //     newData[selectedEmotion] = analytics;
-    //     return newData;
-    //   });
-    // } else {
-    //   setAnalyticsData([...analyticsData, analytics]);
-    // }
-  }, [emotionData]);
-
-  // useEffect(() => {
-  //   if (analyticsData.length === emotions.length) {
-  //     setIsAnalyticsLoading(false);
-  //   }
-  // }, [analyticsData]);
-
   const bodyRef = useRef<FlatList>(null);
 
   // @ts-expect-error
   const handleViewableItemsChanged = ({ viewableItems }) => {
     setSelectedEmotion(viewableItems[0].index);
-  };
-
-  const getCommonPeople = async (data: LogType[]) => {
-    try {
-      // Create an array to store person counts
-      const personCounts: { person: number; count: number }[] = [];
-
-      // For each log in logData
-      for (const log of data) {
-        // Get associated people from emotion_log_people table
-        const associatedPeople = await db.getAllAsync<{ person_id: number }>(
-          `SELECT person_id FROM emotion_log_people WHERE log_id = ${log.id}`
-        );
-
-        // console.log(associatedPeople);
-
-        // For each associated person
-        for (const { person_id } of associatedPeople) {
-          // Find if this person already exists in our counts array
-          const existingPerson = personCounts.find(
-            (p) => p.person === person_id
-          );
-
-          if (existingPerson) {
-            // If person exists, increment their count
-            existingPerson.count++;
-          } else {
-            // If person doesn't exist, add them with count 1
-            personCounts.push({ person: person_id, count: 1 });
-          }
-        }
-      }
-
-      // Sort by count in descending order
-      personCounts.sort((a, b) => b.count - a.count);
-
-      // Get the actual person data for the top results
-      const topPeople = (
-        await Promise.all(
-          personCounts.slice(0, 5).map(async ({ person }) => {
-            const personData = await db.getFirstAsync<SelectionType>(
-              `SELECT * FROM people WHERE id = ${person}`
-            );
-            return personData;
-          })
-        )
-      ).filter((person): person is SelectionType => person !== null);
-
-      // return topPeople;
-      setCommonPeople(topPeople);
-    } catch (e) {
-      console.error("Error getting common people:", e);
-    }
   };
 
   // const getTopSelectableData = async (
@@ -306,6 +208,37 @@ const profiles = () => {
   //   }
   // };
 
+  useEffect(() => {
+    getAllBaseEmotions();
+  }, []);
+
+  useEffect(() => {
+    // console.log(emotionData);
+    // const analytics: AnalyticsType = {
+    //   emotion: emotionData || emotions[selectedEmotion],
+    //   frequency: 0,
+    //   people: commonPeople,
+    //   places: commonPlaces,
+    // };
+    // setAnalyticsData([analytics]);
+    // if (analyticsData[selectedEmotion]) {
+    //   // If analytics data for this emotion already exists, update it
+    //   setAnalyticsData((prev) => {
+    //     const newData = [...prev];
+    //     newData[selectedEmotion] = analytics;
+    //     return newData;
+    //   });
+    // } else {
+    //   setAnalyticsData([...analyticsData, analytics]);
+    // }
+  }, [emotionData]);
+
+  // useEffect(() => {
+  //   if (analyticsData.length === emotions.length) {
+  //     setIsAnalyticsLoading(false);
+  //   }
+  // }, [analyticsData]);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.container}>
@@ -366,12 +299,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  section: {
-    padding: 12,
-  },
-  title: {
-    fontSize: 18,
-    paddingVertical: 12,
   },
 });

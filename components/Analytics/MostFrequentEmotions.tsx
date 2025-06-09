@@ -129,19 +129,37 @@ const MostFrequentEmotions = () => {
 
   // @ts-expect-error
   const renderMostFrequentEmotions = ({ item, index }) => {
-    let size, color, placementColor;
+    let size,
+      color,
+      backgroundColor,
+      borderColor,
+      medalSize,
+      outlineColor,
+      outlineSize;
     switch (index) {
       case 0:
         color = "gold";
-        size = 40;
+        backgroundColor = "#f5d94f";
+        borderColor = "#e3b22f";
+        (medalSize = width * 0.144), (size = 40);
+        outlineColor = "#8a7848";
+        outlineSize = 2.2;
         break;
       case 1:
         color = "silver";
-        size = 34;
+        backgroundColor = "#d5d5d5";
+        borderColor = "#8d8d8d";
+        (medalSize = width * 0.124), (size = 34);
+        outlineColor = "#636363";
+        outlineSize = 2;
         break;
       case 2:
         color = "#CD7F32";
-        size = 28;
+        backgroundColor = "#daa36e";
+        borderColor = "#bd7c3e";
+        (medalSize = width * 0.104), (size = 28);
+        outlineColor = "#79512a";
+        outlineSize = 1.4;
         break;
       default:
         color = "";
@@ -153,7 +171,15 @@ const MostFrequentEmotions = () => {
         fontSize: size,
         fontWeight: "bold",
         color: color,
+        backgroundColor: backgroundColor,
+        borderColor: borderColor,
+        borderWidth: 3,
+        borderRadius: 50,
         textAlign: "center",
+        // Outline
+        textShadowColor: "#000",
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: outlineSize,
       },
     });
 
@@ -183,7 +209,7 @@ const MostFrequentEmotions = () => {
           >
             <View
               style={{
-                width: width * 0.08,
+                width: medalSize,
                 justifyContent: "center",
               }}
             >

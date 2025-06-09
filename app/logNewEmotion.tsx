@@ -32,7 +32,8 @@ export default function logNewEmotion() {
   const [diaryData, setDiaryData] = useState<DiaryType | undefined>(undefined);
   const [refresh, setRefresh] = useState(0);
   const [isEditingEnabled, setIsEditingEnabled] = useState(false);
-  const [selectedPeople, setSelectedPeople] = useState<PersonType[]>([]);
+  const [selectedPeople, setSelectedPeople] = useState<SelectionType[]>([]);
+  const [selectedPlaces, setSelectedPlaces] = useState<SelectionType[]>([]);
 
   // CONSTANTS
   const {
@@ -53,13 +54,13 @@ export default function logNewEmotion() {
 
   useFocusEffect(
     useCallback(() => {
-      getData();
+      getAllEmotions();
     }, [level, refresh])
   );
 
   // FUNCTIONS
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
-  const getData = async () => {
+  const getAllEmotions = async () => {
     const hiddenEmotions: string[] = await getHiddenEmotions();
     let stockData: EmotionType[] = [];
     let customData: EmotionType[] = [];
@@ -92,6 +93,8 @@ export default function logNewEmotion() {
         ? (value.hidden = true)
         : (value.hidden = false);
     });
+
+    console.log(stockData);
 
     setData(stockData);
   };
@@ -156,8 +159,12 @@ export default function logNewEmotion() {
     setEmotionStack([...emotionStack, item]);
   };
 
-  const handleUpdateSelectedPeople = (people: PersonType[]) => {
+  const handleUpdateSelectedPeople = (people: SelectionType[]) => {
     setSelectedPeople(people);
+  };
+
+  const handleUpdateSelectedPlaces = (places: SelectionType[]) => {
+    setSelectedPlaces(places);
   };
 
   const handleCreateLog = async () => {
@@ -188,6 +195,15 @@ export default function logNewEmotion() {
           .map((person) => `(${logId}, ${person.id})`)
           .join(", ")};`;
         await db.runAsync(peopleQuery);
+      }
+
+      // Save selected places
+      if (selectedPlaces.length > 0) {
+        const logId = Number(thisLogId?.id);
+        const placesQuery = `INSERT INTO emotion_log_places (log_id, place_id) VALUES ${selectedPlaces
+          .map((place) => `(${logId}, ${place.id})`)
+          .join(", ")};`;
+        await db.runAsync(placesQuery);
       }
 
       setLevel(level + 1);
@@ -278,10 +294,12 @@ export default function logNewEmotion() {
               passDiaryData={updateDiaryData}
               isEditingEnabled={isEditingEnabled}
               passToggleEditing={handleToggleEditing}
-              refresh={getData}
+              refresh={getAllEmotions}
               onToggleHideEmotion={handleToggleHideEmotion}
               selectedPeople={selectedPeople}
               onUpdateSelectedPeople={handleUpdateSelectedPeople}
+              selectedPlaces={selectedPlaces}
+              onUpdateSelectedPlaces={handleUpdateSelectedPlaces}
             />
             <Controls
               level={level}

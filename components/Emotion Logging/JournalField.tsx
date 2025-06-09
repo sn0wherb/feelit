@@ -162,6 +162,7 @@ const JournalField = ({
     );
   };
 
+  // Closing a journal field
   const handleTerminateField = () => {
     setIsOpen(false);
     onChangeText?.("");
@@ -235,8 +236,6 @@ const JournalField = ({
       </View>
     );
   }
-
-  console.log(selectedData);
 
   return (
     <View

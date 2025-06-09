@@ -65,14 +65,10 @@ const BodyDataCompilation = ({
 
   const getAllData = async () => {
     const children = await getChildrenEmotions(emotion);
-    let logQuery = "";
+    let logQuery = `emotion = '${emotion.name}' `;
     if (children) {
       children?.forEach((value, index) => {
-        if (index == children.length - 1) {
-          logQuery += `emotion = '${value}'`;
-        } else {
-          logQuery += `emotion = '${value}' OR `;
-        }
+        logQuery += `OR emotion = '${value}'`;
       });
     } else {
       logQuery = `emotion = '${emotion.name}'`;
@@ -85,10 +81,11 @@ const BodyDataCompilation = ({
       );
 
       if (data.length < 1) {
+        setLogData([]);
         return;
       }
 
-      setLogData(data, emotion);
+      setLogData(data);
 
       // Create query for getting all body drawing svgs from these logs
       let logIdQuery = "id = ";
@@ -118,29 +115,38 @@ const BodyDataCompilation = ({
     }
   };
 
-  const getCustomChildrenEmotions = async (emotion: EmotionType) => {
+  const getCustomChildrenEmotions = async (parent: EmotionType) => {
     try {
       const data = await db.getAllAsync<EmotionType>(
-        `SELECT * FROM emotions WHERE parent = '${emotion.name}'`
+        `SELECT * FROM user_created_emotions WHERE parent = '${parent.name}'`
       );
-      if (data.length > 0) {
-        data.forEach((value) => {
-          return getCustomChildrenEmotions(value);
-        });
+      // Base case
+      if (!data || data.length < 1) {
+        return [];
       }
+
+      // Recursively get children for each emotion found
+      const allChildren: EmotionType[] = [...data];
+      for (const emotion of data) {
+        const children = await getCustomChildrenEmotions(emotion);
+        allChildren.push(...children);
+      }
+      return allChildren;
     } catch (e) {
       console.error(e);
+      return [];
     }
   };
 
-  const getChildrenEmotions = (emotion: EmotionType) => {
-    if (emotion.isCustom) {
-      return getCustomChildrenEmotions(emotion);
+  const getChildrenEmotions = async (parent: EmotionType) => {
+    if (parent.isCustom) {
+      return getCustomChildrenEmotions(parent);
     }
 
     let children: string[] = [];
+    // Stock emotions
     const secondLvl: EmotionType[] = Object.values(
-      stockEmotionData[2][emotion.name]
+      stockEmotionData[2][parent.name]
     );
     secondLvl.forEach((secondLvlEmotion) => {
       children.push(secondLvlEmotion.name);
@@ -151,6 +157,13 @@ const BodyDataCompilation = ({
         children.push(thirdLvlEmotion.name);
       });
     });
+
+    // Custom emotions
+    const customEmotions = await getCustomChildrenEmotions(parent);
+    customEmotions.forEach((emotion) => {
+      children.push(emotion.name);
+    });
+
     return children;
   };
 
