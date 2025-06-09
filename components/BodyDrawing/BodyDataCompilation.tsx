@@ -27,14 +27,22 @@ interface Props {
   logId?: number;
   emotion?: EmotionType;
   size?: number;
-  setLogData: (data: LogType[]) => void;
+  setLogData: (data: LogType[], emotion?: EmotionType) => void;
 }
 
 const { height, width } = Dimensions.get("window");
 
 const BodyDataCompilation = ({
   logId,
-  emotion,
+  emotion = {
+    id: -1,
+    color: "#fff",
+    level: 1,
+    parent: null,
+    name: "undefined",
+    isCustom: 0,
+    hidden: false,
+  },
   size = 0.76,
   setLogData,
 }: Props) => {
@@ -56,7 +64,6 @@ const BodyDataCompilation = ({
   const db = useSQLiteContext();
 
   const getAllData = async () => {
-    // @ts-expect-error
     const children = await getChildrenEmotions(emotion);
     let logQuery = "";
     if (children) {
@@ -68,7 +75,7 @@ const BodyDataCompilation = ({
         }
       });
     } else {
-      logQuery = `emotion = '${emotion?.name}'`;
+      logQuery = `emotion = '${emotion.name}'`;
     }
 
     // Get all logs under this base emotion and its child emotions
@@ -81,7 +88,7 @@ const BodyDataCompilation = ({
         return;
       }
 
-      setLogData(data);
+      setLogData(data, emotion);
 
       // Create query for getting all body drawing svgs from these logs
       let logIdQuery = "id = ";

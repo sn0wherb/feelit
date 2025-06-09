@@ -22,16 +22,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import DotNavigation from "@/components/Profiles/DotNavigation";
 import BodyDataCompilation from "@/components/BodyDrawing/BodyDataCompilation";
-
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
+import ProfileSlide from "@/components/BodyDrawing/ProfileSlide";
 
 const { width, height } = Dimensions.get("window");
 
@@ -51,6 +42,7 @@ const profiles = () => {
     useState(false);
   const [level, setLevel] = useState(1);
   const [logData, setLogData] = useState<LogType[]>([]);
+  const [emotionData, setEmotionData] = useState<EmotionType>();
   const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
   const [commonPlaces, setCommonPlaces] = useState<SelectionType[]>([]);
 
@@ -60,7 +52,6 @@ const profiles = () => {
   const {
     stockEmotionData,
   } = require("@/assets/data/emotions/stockEmotionData");
-  const bodyHeight = 0.74;
 
   // Flow:
   // 1. Get all base emotions
@@ -79,7 +70,6 @@ const profiles = () => {
         allEmotions.push(emotion);
       });
       setEmotions(allEmotions);
-      console.log(allEmotions);
     } catch (e) {
       console.error(e);
     }
@@ -90,40 +80,68 @@ const profiles = () => {
     // setLevel(level);
   };
 
-  const handleSetLogData = (data: LogType[]) => {
+  const handleSetLogData = (data: LogType[], emotion: EmotionType) => {
+    console.log("direct: ", emotion);
     setLogData(data);
+    setEmotionData(emotion);
     getCommonPeople(data);
+    // console.log(getCommonPeople(data));
+    // createAnalytics(data, emotion);
     // getTopSelectableData(data, "place");
   };
 
-  const renderBodies = ({
+  // console.log(analyticsData);
+
+  // const createAnalytics = async (data: LogType[], emotion: EmotionType) => {
+  //   let analytics: AnalyticsType = {
+  //     emotion: emotion,
+  //     frequency: 0,
+  //     people: commonPeople,
+  //     places: commonPlaces,
+  //   };
+
+  //   // @ts-expect-error
+  //   analytics.people = await getCommonPeople(data);
+  //   console.log(1);
+
+  //   // const analytics: AnalyticsType[] = emotions.map((emotion) => {
+  //   //   // Filter logs for the current emotion
+  //   //   const emotionLogs = data.filter((log) => log.emotion === emotion.name);
+
+  //   //   // Calculate frequency
+  //   //   const frequency = emotionLogs.length;
+
+  //   //   // Get common people
+  //   //   const people = getCommonPeople(data); // This should be calculated based on emotionLogs
+
+  //   //   // Get common places (not implemented yet)
+  //   //   const places: SelectionType[] = []; // Placeholder for now
+
+  //   //   return {
+  //   //     emotion,
+  //   //     frequency,
+  //   //     people,
+  //   //     places,
+  //   //   };
+  //   // });
+
+  //   setAnalyticsData([...analyticsData, analytics]);
+  //   console.log(analyticsData);
+  //   // analytics.map((item) => {
+  //   //   console.log(item);
+  //   // });
+  // };
+
+  const renderProfileSlide = ({
     item,
     index,
   }: {
     item: EmotionType;
     index: number;
   }) => {
-    let analytics = {
-      emotion: item,
-      frequency: 0,
-      people: commonPeople,
-      places: commonPlaces,
-    };
-
-    useEffect(() => {
-      setAnalyticsData([...analyticsData, analytics]);
-    }, []);
-
-    // setData(analytics);
-
     return (
       <View style={{ width: width }}>
-        {/* Body */}
-        <BodyDataCompilation
-          size={bodyHeight}
-          emotion={item}
-          setLogData={handleSetLogData}
-        />
+        <ProfileSlide emotion={item} isAnalyticsLoading={isAnalyticsLoading} />
       </View>
     );
   };
@@ -135,6 +153,29 @@ const profiles = () => {
   useEffect(() => {
     getAllBaseEmotions();
   }, []);
+
+  useEffect(() => {
+    console.log(emotionData);
+    // const analytics: AnalyticsType = {
+    //   emotion: emotionData || emotions[selectedEmotion],
+    //   frequency: 0,
+    //   people: commonPeople,
+    //   places: commonPlaces,
+    // };
+
+    // setAnalyticsData([analytics]);
+
+    // if (analyticsData[selectedEmotion]) {
+    //   // If analytics data for this emotion already exists, update it
+    //   setAnalyticsData((prev) => {
+    //     const newData = [...prev];
+    //     newData[selectedEmotion] = analytics;
+    //     return newData;
+    //   });
+    // } else {
+    //   setAnalyticsData([...analyticsData, analytics]);
+    // }
+  }, [emotionData]);
 
   // useEffect(() => {
   //   if (analyticsData.length === emotions.length) {
@@ -160,6 +201,8 @@ const profiles = () => {
         const associatedPeople = await db.getAllAsync<{ person_id: number }>(
           `SELECT person_id FROM emotion_log_people WHERE log_id = ${log.id}`
         );
+
+        // console.log(associatedPeople);
 
         // For each associated person
         for (const { person_id } of associatedPeople) {
@@ -193,9 +236,8 @@ const profiles = () => {
         )
       ).filter((person): person is SelectionType => person !== null);
 
+      // return topPeople;
       setCommonPeople(topPeople);
-      // console.log(topPeople);
-      // console.log(topPeople);
     } catch (e) {
       console.error("Error getting common people:", e);
     }
@@ -274,79 +316,18 @@ const profiles = () => {
           level={level}
           selectEmotion={handleSelectEmotion}
         />
-        <ScrollView style={{}}>
-          {/* Emotions */}
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{}}
-            horizontal
-            pagingEnabled
-            data={emotions}
-            renderItem={renderBodies}
-            keyExtractor={keyExtractor}
-            ref={bodyRef}
-            viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-            onViewableItemsChanged={handleViewableItemsChanged}
-          />
-          {/* Analytics */}
-          <View style={{ gap: 12, paddingBottom: 50 }}>
-            {/* This would take a lot of word processing */}
-            {/* <View style={styles.section}>
-            <Text style={styles.title}>Most common cause</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.title}>Most common need</Text>
-          </View> */}
-            {isAnalyticsLoading ? (
-              <ActivityIndicator />
-            ) : (
-              <View>
-                {/* Time saturation */}
-                <View style={styles.section}>
-                  <Text style={styles.title}>
-                    When you feel most{" "}
-                    {uncapitalise(analyticsData[selectedEmotion].emotion.name)}
-                  </Text>
-                </View>
-                {/* People */}
-                <View style={styles.section}>
-                  <Text style={styles.title}>
-                    {/* People you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
-                    with
-                  </Text>
-                  <FlatList
-                    data={commonPeople}
-                    contentContainerStyle={{
-                      gap: 10,
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                    }}
-                    scrollEnabled={false}
-                    renderItem={({ item }) => (
-                      <View
-                        style={{
-                          backgroundColor: item.color,
-                          padding: 10,
-                          borderRadius: 20,
-                        }}
-                      >
-                        <Text>{item.name}</Text>
-                      </View>
-                    )}
-                    keyExtractor={keyExtractor}
-                  />
-                </View>
-                {/* Places */}
-                <View style={styles.section}>
-                  <Text style={styles.title}>
-                    {/* Places you feel {uncapitalise(emotions[selectedEmotion].name)}{" "} */}
-                    at
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-        </ScrollView>
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{}}
+          horizontal
+          pagingEnabled
+          data={emotions}
+          renderItem={renderProfileSlide}
+          keyExtractor={keyExtractor}
+          ref={bodyRef}
+          viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+          onViewableItemsChanged={handleViewableItemsChanged}
+        />
       </SafeAreaView>
     </View>
   );
