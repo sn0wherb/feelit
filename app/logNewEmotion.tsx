@@ -94,8 +94,6 @@ export default function logNewEmotion() {
         : (value.hidden = false);
     });
 
-    console.log(stockData);
-
     setData(stockData);
   };
 

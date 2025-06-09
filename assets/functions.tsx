@@ -19,7 +19,8 @@ export const uncapitalise = (string: string) => {
 
 export const getLocalTime = (
   dateTime: string,
-  timeframe: "time" | "date" | "both" = "time"
+  timeframe: "time" | "date" | "both" = "time",
+  outputType: "string" | "date" = "string"
 ) => {
   const gmtTime = new Date(dateTime);
   const localTimeZoneOffset = new Date().getTimezoneOffset();
@@ -31,7 +32,9 @@ export const getLocalTime = (
       .toLocaleDateString()
       .slice(5, 9)} ${gmtTime.toLocaleTimeString()}`;
   } else {
-    return gmtTime.toLocaleDateString().slice(0, 10);
+    return outputType === "date"
+      ? gmtTime
+      : gmtTime.toLocaleDateString().slice(0, 10);
   }
 };
 

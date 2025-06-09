@@ -61,8 +61,13 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
     i = colors.length === 3 ? logsOfToday.length : i;
   }
 
-  const today = getLocalTime(new Date().toISOString(), "date");
-  const fullDateString = getLocalTime(fullDate.toISOString(), "date");
+  const today = getLocalTime(new Date(), "date");
+  const fullDateString = getLocalTime(fullDate, "date");
+
+  const isToday = today === fullDateString;
+  if (isToday) {
+    console.log(today, fullDateString);
+  }
 
   // Render item
   switch (logsOfToday.length) {
@@ -72,7 +77,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
           style={[
             styles[bounds],
             {
-              borderWidth: today === fullDateString ? 3 : 0,
+              borderWidth: isToday ? 3 : 0,
               borderColor: "rgb(222, 122, 102)",
             },
           ]}
@@ -88,7 +93,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
             styles[bounds],
             {
               backgroundColor: logsOfToday[0].color,
-              borderWidth: today === fullDateString ? 3 : 0,
+              borderWidth: isToday ? 3 : 0,
               borderColor: "rgb(222, 122, 102)",
             },
           ]}
@@ -111,7 +116,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
             styles[bounds],
             {
               backgroundColor: colors[0],
-              borderWidth: today === fullDateString ? 3 : 0,
+              borderWidth: isToday ? 3 : 0,
               borderColor: "rgb(222, 122, 102)",
             },
           ]}

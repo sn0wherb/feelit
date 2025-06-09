@@ -5,6 +5,7 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { getLocalTime, keyExtractor, uncapitalise } from "@/assets/functions";
 import BodyDataCompilation from "./BodyDataCompilation";
@@ -14,6 +15,8 @@ import { useSQLiteContext } from "expo-sqlite";
 interface Props {
   emotion: EmotionType;
 }
+
+const { width, height } = Dimensions.get("window");
 
 const ProfileSlide = ({ emotion }: Props) => {
   const bodyHeight = 0.74;
@@ -26,8 +29,12 @@ const ProfileSlide = ({ emotion }: Props) => {
   const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
   const [commonPlaces, setCommonPlaces] = useState<SelectionType[]>([]);
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
-  const [commonDates, setCommonDates] = useState<string[]>([]);
-  const [commonTimes, setCommonTimes] = useState<string[]>([]);
+  const [commonDates, setCommonDates] = useState<
+    { weekday: string; count: number }[]
+  >([]);
+  const [commonTimes, setCommonTimes] = useState<
+    { time: string; count: number }[]
+  >([]);
 
   //
   // FUNCTIONS
@@ -49,47 +56,62 @@ const ProfileSlide = ({ emotion }: Props) => {
 
     for (const log of data) {
       // console.log(log.created_at);
-      const localTimeZoneDate = getLocalTime(log.created_at, "date");
+      const localTimeZoneDate = getLocalTime(log.created_at, "date", "date");
       commonDates.push(localTimeZoneDate);
       const localTimeZoneTime = getLocalTime(log.created_at, "time");
-      commonTimes.push(localTimeZoneTime);
+      // @ts-expect-error
+      commonTimes.push(localTimeZoneTime.slice(0, 2));
     }
 
-    setCommonDates(commonDates);
-    setCommonTimes(commonTimes);
+    // Create an array to store time counts
+    const timeCounts: { time: string; count: number }[] = [];
 
-    // try {
-    //   // Create an array to store time counts
-    //   const timeCounts: { time: string; count: number }[] = [];
+    for (const time of commonTimes) {
+      // Find if this time already exists in our counts array
+      const existingTime = timeCounts.find((t) => t.time === time);
 
-    //   // For each log in logData
-    //   for (const log of data) {
-    //     // Get the created_at time (formatted as HH:MM)
-    //     const time = new Date(log.created_at).toLocaleTimeString([], {
-    //       hour: "2-digit",
-    //       minute: "2-digit",
-    //     });
+      if (existingTime) {
+        // If time exists, increment its count
+        existingTime.count++;
+      } else {
+        // If time doesn't exist, add it with count 1
+        timeCounts.push({ time, count: 1 });
+      }
+    }
 
-    //     // Find if this time already exists in our counts array
-    //     const existingTime = timeCounts.find((t) => t.time === time);
+    // Sort by time in ascending order
+    timeCounts.sort((a, b) => Number(a.time) - Number(b.time));
 
-    //     if (existingTime) {
-    //       // If time exists, increment its count
-    //       existingTime.count++;
-    //     } else {
-    //       // If time doesn't exist, add it with count 1
-    //       timeCounts.push({ time, count: 1 });
-    //     }
-    //   }
+    setCommonTimes(timeCounts);
 
-    //   // Sort by count in descending order
-    //   timeCounts.sort((a, b) => b.count - a.count);
+    const weekdayCounts: { weekday: string; count: number }[] = [
+      { weekday: "Mon", count: 0 },
+      { weekday: "Tue", count: 0 },
+      { weekday: "Wed", count: 0 },
+      { weekday: "Thur", count: 0 },
+      { weekday: "Fri", count: 0 },
+      { weekday: "Sat", count: 0 },
+      { weekday: "Sun", count: 0 },
+    ];
 
-    //   // Log the top 5 times
-    //   console.log("Top 5 common times:", timeCounts.slice(0, 5));
-    // } catch (e) {
-    //   console.error("Error getting common times:", e);
-    // }
+    for (const date of commonDates) {
+      const weekday = new Date(date).toLocaleDateString("default", {
+        weekday: "short",
+      });
+
+      // Find if this time already exists in our counts array
+      const existingWeekday = weekdayCounts.find((w) => w.weekday === weekday);
+
+      if (existingWeekday) {
+        // If time exists, increment its count
+        existingWeekday.count++;
+      } else {
+        // If time doesn't exist, add it with count 1
+        weekdayCounts.push({ weekday, count: 1 });
+      }
+    }
+
+    setCommonDates(weekdayCounts);
   };
 
   const getCommonPeople = async (data: LogType[]) => {
@@ -209,7 +231,7 @@ const ProfileSlide = ({ emotion }: Props) => {
 
   return (
     <View>
-      <ScrollView style={{}}>
+      <ScrollView>
         {/* Body */}
         <BodyDataCompilation
           size={bodyHeight}
@@ -235,25 +257,69 @@ const ProfileSlide = ({ emotion }: Props) => {
                   {/* Time saturation */}
                   <View style={styles.section}>
                     <Text style={styles.title}>
-                      When you feel most {uncapitalise(emotion.name)}:
+                      When you feel {uncapitalise(emotion.name)}
                     </Text>
-                    <View>
-                      <Text>Time</Text>
+                    {/* Time */}
+                    <View style={{ padding: 12 }}>
                       <FlatList
+                        contentContainerStyle={{
+                          flexDirection: "row",
+                          alignItems: "flex-end",
+                          justifyContent: "center",
+                          gap: 10,
+                        }}
                         data={commonTimes}
                         renderItem={({ item }) => {
-                          return <Text>{item}</Text>;
+                          return (
+                            <View style={{ alignItems: "center" }}>
+                              <View
+                                style={{
+                                  height: item.count * height * 0.02,
+                                  width: width * 0.04,
+                                  backgroundColor: emotion.color,
+                                  marginBottom: 6,
+                                  borderRadius: 4,
+                                }}
+                              />
+                              <Text>{item.time}</Text>
+                            </View>
+                          );
                         }}
                       />
                     </View>
-                    <View>
-                      <Text>Day</Text>
+                    {/* Date */}
+                    <View style={{ padding: 12 }}>
+                      <FlatList
+                        contentContainerStyle={{
+                          flexDirection: "row",
+                          alignItems: "flex-end",
+                          justifyContent: "center",
+                          gap: 14,
+                        }}
+                        data={commonDates}
+                        renderItem={({ item }) => {
+                          return (
+                            <View style={{ alignItems: "center" }}>
+                              <View
+                                style={{
+                                  height: item.count * height * 0.02,
+                                  width: width * 0.04,
+                                  backgroundColor: emotion.color,
+                                  marginBottom: 6,
+                                  borderRadius: 4,
+                                }}
+                              />
+                              <Text>{item.weekday}</Text>
+                            </View>
+                          );
+                        }}
+                      />
                     </View>
                   </View>
                   {/* People */}
                   <View style={styles.section}>
                     <Text style={styles.title}>
-                      People you usually feel {uncapitalise(emotion.name)} with:
+                      People you feel {uncapitalise(emotion.name)} with
                     </Text>
                     {commonPeople.length > 0 ? (
                       <FlatList
@@ -262,21 +328,20 @@ const ProfileSlide = ({ emotion }: Props) => {
                           gap: 10,
                           flexDirection: "row",
                           flexWrap: "wrap",
+                          justifyContent: "center",
                         }}
                         scrollEnabled={false}
                         renderItem={renderSelectable}
                         keyExtractor={keyExtractor}
                       />
                     ) : (
-                      <Text style={{ color: "#666", fontSize: 16 }}>
-                        No people added
-                      </Text>
+                      <Text style={styles.noDataText}>No people added</Text>
                     )}
                   </View>
                   {/* Places */}
                   <View style={styles.section}>
                     <Text style={styles.title}>
-                      Places you usually feel {uncapitalise(emotion.name)} at:
+                      Places you feel {uncapitalise(emotion.name)} at
                     </Text>
                     {commonPlaces.length > 0 ? (
                       <FlatList
@@ -285,21 +350,20 @@ const ProfileSlide = ({ emotion }: Props) => {
                           gap: 10,
                           flexDirection: "row",
                           flexWrap: "wrap",
+                          justifyContent: "center",
                         }}
                         scrollEnabled={false}
                         renderItem={renderSelectable}
                         keyExtractor={keyExtractor}
                       />
                     ) : (
-                      <Text style={{ color: "#666", fontSize: 16 }}>
-                        No places added
-                      </Text>
+                      <Text style={styles.noDataText}>No places added</Text>
                     )}
                   </View>
                 </View>
               ) : (
                 <View style={styles.section}>
-                  <Text style={styles.title}>
+                  <Text style={styles.noLogsText}>
                     No logs under {uncapitalise(emotion.name)}.
                   </Text>
                 </View>
@@ -316,10 +380,25 @@ export default ProfileSlide;
 
 const styles = StyleSheet.create({
   section: {
-    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 10,
+    paddingVertical: 20,
+    backgroundColor: "rgba(0,0,0,0.05)",
+    borderRadius: 10,
   },
   title: {
+    textAlign: "center",
     fontSize: 18,
-    paddingVertical: 12,
+    paddingBottom: 20,
+  },
+  noDataText: {
+    color: "#666",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  noLogsText: {
+    color: "#222",
+    fontSize: 18,
+    textAlign: "center",
   },
 });
