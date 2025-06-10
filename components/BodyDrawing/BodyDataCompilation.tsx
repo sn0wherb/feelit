@@ -346,7 +346,7 @@ const BodyDataCompilation = ({
     );
   };
 
-  const pad = 50;
+  const pad = 54;
 
   return (
     <View>

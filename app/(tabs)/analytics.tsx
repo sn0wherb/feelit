@@ -51,6 +51,7 @@ const analytics = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        pagingEnabled
         contentContainerStyle={{
           flexGrow: 1,
           paddingBottom: 100,
@@ -61,7 +62,7 @@ const analytics = () => {
           <Calendar />
         </View>
         {/* Top Emotions */}
-        <View style={{ padding: 20 }}>
+        <View style={{ padding: 20, height: height * 0.8 }}>
           <MostFrequentEmotions />
         </View>
       </ScrollView>

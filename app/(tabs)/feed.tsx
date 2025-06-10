@@ -194,7 +194,7 @@ const feed = () => {
                               openLogModal(
                                 item,
                                 logCollection.date,
-                                getLocalTime(item["created_at"])
+                                getLocalTime(item["created_at"]) as string
                               );
                             }}
                           >
@@ -215,11 +215,12 @@ const feed = () => {
                                 {item.emotion}
                               </Text>
                               <Text style={{ fontSize: 16 }}>
-                                {getLocalTime(item["created_at"])}
+                                {getLocalTime(item["created_at"]) as string}
                               </Text>
                             </View>
 
-                            {/* Details */}
+                            {/* Data */}
+                            {/* Cause */}
                             {item.root.length > 0 && (
                               <View style={{ marginTop: 20 }}>
                                 <Text
@@ -234,15 +235,14 @@ const feed = () => {
                                   Cause
                                 </Text>
                                 <Text
-                                  style={{
-                                    marginBottom: 6,
-                                    paddingHorizontal: 4,
-                                  }}
+                                  style={styles.emotionDetailData}
+                                  numberOfLines={3}
                                 >
                                   {item.root}
                                 </Text>
                               </View>
                             )}
+                            {/* Need */}
                             {item.need.length > 0 && (
                               <View style={{ marginTop: 8 }}>
                                 <Text
@@ -257,15 +257,14 @@ const feed = () => {
                                   Need
                                 </Text>
                                 <Text
-                                  style={{
-                                    marginBottom: 6,
-                                    paddingHorizontal: 4,
-                                  }}
+                                  style={styles.emotionDetailData}
+                                  numberOfLines={3}
                                 >
                                   {item.need}
                                 </Text>
                               </View>
                             )}
+                            {/* Diary */}
                             {item.extra.length > 0 && (
                               <View style={{ marginTop: 8 }}>
                                 <Text
@@ -280,10 +279,8 @@ const feed = () => {
                                   Diary
                                 </Text>
                                 <Text
-                                  style={{
-                                    marginBottom: 6,
-                                    paddingHorizontal: 4,
-                                  }}
+                                  style={styles.emotionDetailData}
+                                  numberOfLines={3}
                                 >
                                   {item.extra}
                                 </Text>
@@ -317,5 +314,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     paddingHorizontal: 4,
     paddingVertical: 2,
+  },
+  emotionDetailData: {
+    marginBottom: 6,
+    paddingHorizontal: 4,
   },
 });

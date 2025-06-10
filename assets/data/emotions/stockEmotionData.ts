@@ -1,5 +1,3 @@
-import i18n from "@/assets/i18n";
-
 const stockEmotionData = {
   1: [
     { name: "Happy", color: "#eec068", level: 1 },
@@ -220,7 +218,7 @@ const stockEmotionData = {
 };
 
 const stockEmotionDataLv = {
-1: [
+  1: [
     { name: "Happy", color: "#eec068", level: 1 },
     { name: "Sad", color: "#5b78ba", level: 1 },
     { name: "Disgusted", color: "#b27189", level: 1 },

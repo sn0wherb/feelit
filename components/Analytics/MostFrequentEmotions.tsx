@@ -8,8 +8,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSQLiteContext } from "expo-sqlite";
-import { uncapitalise } from "@/assets/functions";
-import { useTranslation } from "react-i18next";
+import { getLocalTime, uncapitalise } from "@/assets/functions";
 
 type TimeFrameType = "Day" | "Week" | "Month" | "Year" | "All-time";
 
@@ -18,7 +17,7 @@ const { height, width } = Dimensions.get("window");
 const MostFrequentEmotions = () => {
   const db = useSQLiteContext();
   const [selectedTimeFrameIndex, setSelectedTimeFrameIndex] =
-    useState<TimeFrameType>("Day");
+    useState<TimeFrameType>("Month");
   const timeFrames: TimeFrameType[] = [
     "Day",
     "Week",
@@ -39,17 +38,18 @@ const MostFrequentEmotions = () => {
 
   const getMostFrequentEmotions = async (timeFrame: TimeFrameType) => {
     let timeFrameSQL: string = "";
-    const today = new Date();
+    const today = getLocalTime(new Date(), "date", "date") as Date;
     switch (timeFrame) {
       case "Day":
         timeFrameSQL = `created_at LIKE '${today.toISOString().slice(0, 10)}%'`;
+        console.log(timeFrameSQL);
         break;
       case "Week":
         // Get number of current day
         const currentDayNumber = today.getDay();
-        // Subtract current day's number from current day's date - 1 to get first day of week. - 2 in order to get Monday, because JS Date object has Sunday set as first day of week
+        // Subtract current day's number from current day's date (js Date weekdays are 0-6, where 0 is Sunday, so we take 1 less day off to get Monday instead)
         const mondayOfThisWeek = new Date();
-        mondayOfThisWeek.setDate(today.getDate() - (currentDayNumber - 2));
+        mondayOfThisWeek.setDate(today.getDate() - (currentDayNumber - 1));
         // Create SQL query beginning
         const weekDay = new Date();
         timeFrameSQL = "created_at LIKE ";
@@ -94,7 +94,7 @@ const MostFrequentEmotions = () => {
         WHERE ${timeFrameSQL}
         GROUP BY emotion
         ORDER BY logCountByEmotion DESC
-        LIMIT 3`
+        LIMIT 6`
       );
       setMostFrequentEmotions(data);
     } catch (e) {
@@ -130,11 +130,13 @@ const MostFrequentEmotions = () => {
 
   // @ts-expect-error
   const renderMostFrequentEmotions = ({ item, index }) => {
-    let size,
+    // Create medals for top 3
+    let fontSize,
       color,
       backgroundColor,
       borderColor,
       medalSize,
+      borderWidth,
       outlineColor,
       outlineSize;
     switch (index) {
@@ -142,39 +144,46 @@ const MostFrequentEmotions = () => {
         color = "gold";
         backgroundColor = "#f5d94f";
         borderColor = "#e3b22f";
-        (medalSize = width * 0.144), (size = 40);
+        fontSize = 38;
+        medalSize = width * fontSize * 0.0038;
         outlineColor = "#8a7848";
         outlineSize = 2.2;
+        borderWidth = 5;
         break;
       case 1:
         color = "silver";
         backgroundColor = "#d5d5d5";
         borderColor = "#8d8d8d";
-        (medalSize = width * 0.124), (size = 34);
+        fontSize = 32;
+        medalSize = width * fontSize * 0.003715;
         outlineColor = "#636363";
         outlineSize = 2;
+        borderWidth = 3.4;
         break;
       case 2:
         color = "#CD7F32";
         backgroundColor = "#daa36e";
         borderColor = "#bd7c3e";
-        (medalSize = width * 0.104), (size = 28);
+        fontSize = 28;
+        medalSize = width * fontSize * 0.003714285714285714;
         outlineColor = "#79512a";
         outlineSize = 1.4;
+        borderWidth = 3;
         break;
       default:
         color = "";
-        size = 20;
+        fontSize = 20;
+        borderWidth = 0;
         break;
     }
     const placementStyle = StyleSheet.create({
       placement: {
-        fontSize: size,
+        fontSize,
         fontWeight: "bold",
         color: color,
         backgroundColor: backgroundColor,
         borderColor: borderColor,
-        borderWidth: 3,
+        borderWidth,
         borderRadius: 50,
         textAlign: "center",
         // Outline
@@ -212,9 +221,16 @@ const MostFrequentEmotions = () => {
               style={{
                 width: medalSize,
                 justifyContent: "center",
+                // Shadow
+                shadowColor: outlineColor,
+                shadowOffset: { width: 2, height: 2 },
+                shadowOpacity: 1,
+                shadowRadius: 2,
               }}
             >
-              <Text style={placementStyle.placement}>{index + 1}</Text>
+              {index < 3 && (
+                <Text style={placementStyle.placement}>{index + 1}</Text>
+              )}
             </View>
             <Text style={{ fontSize: 24 }}>{item.emotion}</Text>
           </View>
@@ -227,7 +243,7 @@ const MostFrequentEmotions = () => {
         >
           <Text
             style={{
-              fontSize: size,
+              fontSize,
               fontWeight: "bold",
               color: item.color,
               textAlign: "center",

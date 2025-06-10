@@ -29,11 +29,13 @@ const ProfileSlide = ({ emotion }: Props) => {
   const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
   const [commonPlaces, setCommonPlaces] = useState<SelectionType[]>([]);
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
-  const [commonDates, setCommonDates] = useState<
-    { weekday: string; count: number }[]
-  >([]);
+  const [commonWeekdaysMax, setCommonWeekdaysMax] = useState(0);
+  const [commonTimesMax, setCommonTimesMax] = useState(0);
   const [commonTimes, setCommonTimes] = useState<
-    { time: number; count: number }[]
+    { item: number; count: number }[]
+  >([]);
+  const [commonWeekdays, setCommonWeekdays] = useState<
+    { item: string; count: number }[]
   >([]);
 
   //
@@ -43,84 +45,95 @@ const ProfileSlide = ({ emotion }: Props) => {
     setLogData(data);
     // if there's no logs, there's no people or places to get
     if (data.length > 0) {
-      getCommonDatesAndTimes(data);
+      getCommonWeekdaysAndTimes(data);
       getCommonPeople(data);
       getCommonPlaces(data);
     }
     setIsAnalyticsLoading(false);
   };
 
-  const getCommonDatesAndTimes = async (data: LogType[]) => {
-    const commonDates = [];
+  const getCommonWeekdaysAndTimes = async (data: LogType[]) => {
+    const commonWeekdays = [];
     const commonTimes = [];
 
     for (const log of data) {
-      // console.log(log.created_at);
       const localTimeZoneDate = getLocalTime(log.created_at, "date", "date");
-      commonDates.push(localTimeZoneDate);
-      const localTimeZoneTime = getLocalTime(log.created_at, "time");
-      // @ts-expect-error
+      commonWeekdays.push(localTimeZoneDate);
+      const localTimeZoneTime = getLocalTime(log.created_at, "time") as string;
       commonTimes.push(Number(localTimeZoneTime.slice(0, 2)));
     }
 
     getCommonTimes(commonTimes);
-    // @ts-expect-error
-    getCommonDates(commonDates);
+    getCommonWeekdays(commonWeekdays as Date[]);
   };
 
   const getCommonTimes = async (commonTimes: number[]) => {
     // Create an array to store time counts
-    const timeCounts: { time: number; count: number }[] = [];
+    const timeCounts: { item: number; count: number }[] = [];
 
     for (const time of commonTimes) {
       // Find if this time already exists in our counts array
-      const existingTime = timeCounts.find((t) => t.time === time);
+      const existingTime = timeCounts.find((t) => t.item === time);
 
       if (existingTime) {
         // If time exists, increment its count
         existingTime.count++;
       } else {
         // If time doesn't exist, add it with count 1
-        timeCounts.push({ time, count: 1 });
+        timeCounts.push({ item: time, count: 1 });
       }
     }
 
     // Sort by time in ascending order
-    timeCounts.sort((a, b) => Number(a.time) - Number(b.time));
+    timeCounts.sort((a, b) => Number(a.item) - Number(b.item));
+
+    // Get max count for times
+    const maxCount = timeCounts.reduce(
+      (max, current) => Math.max(max, current.count),
+      0
+    );
 
     setCommonTimes(timeCounts);
+    setCommonTimesMax(maxCount);
     return timeCounts;
   };
 
-  const getCommonDates = async (commonDates: Date[]) => {
-    const weekdayCounts: { weekday: string; count: number }[] = [
-      { weekday: "Mon", count: 0 },
-      { weekday: "Tue", count: 0 },
-      { weekday: "Wed", count: 0 },
-      { weekday: "Thur", count: 0 },
-      { weekday: "Fri", count: 0 },
-      { weekday: "Sat", count: 0 },
-      { weekday: "Sun", count: 0 },
+  const getCommonWeekdays = async (commonWeekdays: Date[]) => {
+    const weekdayCounts: { item: string; count: number }[] = [
+      { item: "Mon", count: 0 },
+      { item: "Tue", count: 0 },
+      { item: "Wed", count: 0 },
+      { item: "Thur", count: 0 },
+      { item: "Fri", count: 0 },
+      { item: "Sat", count: 0 },
+      { item: "Sun", count: 0 },
     ];
 
-    for (const date of commonDates) {
-      const weekday = new Date(date).toLocaleDateString("default", {
+    for (const day of commonWeekdays) {
+      const weekday = new Date(day).toLocaleDateString("default", {
         weekday: "short",
       });
 
-      // Find if this time already exists in our counts array
-      const existingWeekday = weekdayCounts.find((w) => w.weekday === weekday);
+      // Find if this weekday already exists in our counts array
+      const existingWeekday = weekdayCounts.find((w) => w.item === weekday);
 
       if (existingWeekday) {
-        // If time exists, increment its count
+        // If weekday exists, increment its count
         existingWeekday.count++;
       } else {
-        // If time doesn't exist, add it with count 1
-        weekdayCounts.push({ weekday, count: 1 });
+        // If weekday doesn't exist, add it with count 1
+        weekdayCounts.push({ item: weekday, count: 1 });
       }
     }
 
-    setCommonDates(weekdayCounts);
+    // Get max count for times
+    const maxCount = weekdayCounts.reduce(
+      (max, current) => Math.max(max, current.count),
+      0
+    );
+
+    setCommonWeekdays(weekdayCounts);
+    setCommonWeekdaysMax(maxCount);
     return weekdayCounts;
   };
 
@@ -161,7 +174,7 @@ const ProfileSlide = ({ emotion }: Props) => {
       // Get the actual person data for the top results
       const topPeople = (
         await Promise.all(
-          personCounts.slice(0, 5).map(async ({ person }) => {
+          personCounts.slice(0, 3).map(async ({ person }) => {
             const personData = await db.getFirstAsync<SelectionType>(
               `SELECT * FROM people WHERE id = ${person}`
             );
@@ -212,7 +225,7 @@ const ProfileSlide = ({ emotion }: Props) => {
       // Get the actual place data for the top results
       const topPlaces = (
         await Promise.all(
-          placeCounts.slice(0, 5).map(async ({ place }) => {
+          placeCounts.slice(0, 3).map(async ({ place }) => {
             const placeData = await db.getFirstAsync<SelectionType>(
               `SELECT * FROM places WHERE id = ${place}`
             );
@@ -225,6 +238,39 @@ const ProfileSlide = ({ emotion }: Props) => {
     } catch (e) {
       console.error("Error getting common places:", e);
     }
+  };
+
+  const maxHeight = height * 0.08;
+  const renderChart = ({
+    item,
+  }: {
+    item: { item: number | string; count: number };
+  }) => {
+    const max =
+      typeof item.item == typeof "" ? commonWeekdaysMax : commonTimesMax;
+    // Highest value is always the value of maxHeight, all the others are displayed relative to this value
+    const barHeight = max > 0 ? (item.count / max) * maxHeight : 0;
+    const color = item.count == 0 ? "#666" : "#000";
+
+    return (
+      <View style={{ alignItems: "center" }}>
+        <View
+          style={{
+            height: barHeight,
+            width: width * 0.04,
+            backgroundColor: emotion.color,
+            marginBottom: 6,
+            borderRadius: 4,
+          }}
+        />
+        {/* Upon converting hour strings to numbers the 0 in front of AM times gets removed, here i'm adding it back */}
+        {typeof item.item === typeof 5 && String(item.item).length == 1 ? (
+          <Text>0{item.item}</Text>
+        ) : (
+          <Text style={{ color }}>{item.item}</Text>
+        )}
+      </View>
+    );
   };
 
   const renderSelectable = ({ item }: { item: SelectionType }) => (
@@ -241,7 +287,7 @@ const ProfileSlide = ({ emotion }: Props) => {
 
   return (
     <View>
-      <ScrollView>
+      <ScrollView pagingEnabled>
         {/* Body */}
         <BodyDataCompilation
           size={bodyHeight}
@@ -250,7 +296,7 @@ const ProfileSlide = ({ emotion }: Props) => {
         />
 
         {/* Analytics */}
-        <View style={{ gap: 12, paddingBottom: 50 }}>
+        <View>
           {/* This would take a lot of word processing */}
           {/* <View style={styles.section}>
             <Text style={styles.title}>Most common cause</Text>
@@ -269,35 +315,18 @@ const ProfileSlide = ({ emotion }: Props) => {
                     <Text style={styles.title}>
                       When you feel {uncapitalise(emotion.name)}
                     </Text>
-                    {/* Time */}
-                    <View style={{ padding: 12 }}>
-                      <FlatList
-                        contentContainerStyle={{
-                          flexDirection: "row",
-                          alignItems: "flex-end",
-                          justifyContent: "center",
-                          gap: 10,
-                        }}
-                        data={commonTimes}
-                        renderItem={({ item }) => {
-                          return (
-                            <View style={{ alignItems: "center" }}>
-                              <View
-                                style={{
-                                  height: item.count * height * 0.02,
-                                  width: width * 0.04,
-                                  backgroundColor: emotion.color,
-                                  marginBottom: 6,
-                                  borderRadius: 4,
-                                }}
-                              />
-                              <Text>{item.time}</Text>
-                            </View>
-                          );
-                        }}
-                      />
-                    </View>
-                    {/* Date */}
+                    {/* Times */}
+                    <FlatList
+                      contentContainerStyle={{
+                        flexDirection: "row",
+                        alignItems: "flex-end",
+                        justifyContent: "center",
+                        gap: 10,
+                      }}
+                      data={commonTimes}
+                      renderItem={renderChart}
+                    />
+                    {/* Weekdays */}
                     <View style={{ padding: 12 }}>
                       <FlatList
                         contentContainerStyle={{
@@ -306,23 +335,8 @@ const ProfileSlide = ({ emotion }: Props) => {
                           justifyContent: "center",
                           gap: 14,
                         }}
-                        data={commonDates}
-                        renderItem={({ item }) => {
-                          return (
-                            <View style={{ alignItems: "center" }}>
-                              <View
-                                style={{
-                                  height: item.count * height * 0.02,
-                                  width: width * 0.04,
-                                  backgroundColor: emotion.color,
-                                  marginBottom: 6,
-                                  borderRadius: 4,
-                                }}
-                              />
-                              <Text>{item.weekday}</Text>
-                            </View>
-                          );
-                        }}
+                        data={commonWeekdays}
+                        renderItem={renderChart}
                       />
                     </View>
                   </View>
@@ -391,7 +405,7 @@ export default ProfileSlide;
 const styles = StyleSheet.create({
   section: {
     marginHorizontal: 16,
-    marginVertical: 10,
+    marginVertical: 8,
     paddingVertical: 20,
     backgroundColor: "rgba(0,0,0,0.05)",
     borderRadius: 10,

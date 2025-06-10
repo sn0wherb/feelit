@@ -18,7 +18,7 @@ export const uncapitalise = (string: string) => {
 };
 
 export const getLocalTime = (
-  dateTime: string,
+  dateTime: string | Date,
   timeframe: "time" | "date" | "both" = "time",
   outputType: "string" | "date" = "string"
 ) => {
