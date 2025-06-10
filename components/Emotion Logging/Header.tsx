@@ -210,34 +210,18 @@ const Header = ({
       return (
         <View
           style={{
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             alignItems: "center",
             flexDirection: "row",
-            width: width,
             height: 60,
             marginTop: 10,
-            paddingHorizontal: 20,
           }}
         >
           <View
             style={{
-              paddingHorizontal: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              height: 46,
-              width: 46,
-              backgroundColor: "#e3d7b7",
-              borderRadius: 30,
-            }}
-          >
-            <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="close" size={26} color="black" />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginHorizontal: 14,
-              flex: 1,
+              marginRight: 34,
+              // paddingHorizontal: 23,
+              width: width * 0.7,
               height: 60,
               justifyContent: "center",
               alignItems: "center",
@@ -253,34 +237,18 @@ const Header = ({
       return (
         <View
           style={{
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             alignItems: "center",
             flexDirection: "row",
-            width: width,
             height: 60,
             marginTop: 10,
-            paddingHorizontal: 20,
           }}
         >
           <View
             style={{
-              paddingHorizontal: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              height: 46,
-              width: 46,
-              backgroundColor: "#e3d7b7",
-              borderRadius: 30,
-            }}
-          >
-            <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="arrowleft" size={26} color="black" />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginHorizontal: 14,
-              flex: 1,
+              marginRight: 34,
+              // paddingHorizontal: 23,
+              width: width * 0.7,
               height: 60,
               justifyContent: "center",
               alignItems: "center",
@@ -288,7 +256,7 @@ const Header = ({
               borderRadius: 30,
             }}
           >
-            <Text style={{ fontSize: 26 }}>Journal</Text>
+            <Text style={{ fontSize: 24 }}>Journal</Text>
           </View>
         </View>
       );

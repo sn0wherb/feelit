@@ -190,73 +190,44 @@ const Controls = ({
       return (
         <View
           style={{
-            justifyContent: "space-between",
+            // paddingHorizontal: 10,
+            justifyContent: "center",
             alignItems: "center",
-            flexDirection: "row",
-            width: width,
-            height: 60,
-            marginTop: 10,
-            paddingHorizontal: 20,
+            height: 46,
+            width: 46,
+            backgroundColor: "#e3d7b7",
+            borderRadius: 30,
+            position: "absolute",
+            zIndex: 1,
+            top: 17,
+            left: 17,
           }}
         >
-          <View
-            style={{
-              paddingHorizontal: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              height: 46,
-              width: 46,
-              backgroundColor: "#e3d7b7",
-              borderRadius: 30,
-            }}
-          >
-            <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="close" size={26} color="black" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={handleGoBack}>
+            <AntDesign name="close" size={26} color="black" />
+          </TouchableOpacity>
         </View>
       );
     default: // Journal
       return (
         <View
           style={{
-            justifyContent: "space-between",
+            // paddingHorizontal: 10,
+            justifyContent: "center",
             alignItems: "center",
-            flexDirection: "row",
-            width: width,
-            height: 60,
-            marginTop: 10,
-            paddingHorizontal: 20,
+            height: 46,
+            width: 46,
+            backgroundColor: "#e3d7b7",
+            borderRadius: 30,
+            position: "absolute",
+            zIndex: 1,
+            top: 17,
+            left: 17,
           }}
         >
-          <View
-            style={{
-              paddingHorizontal: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              height: 46,
-              width: 46,
-              backgroundColor: "#e3d7b7",
-              borderRadius: 30,
-            }}
-          >
-            <TouchableOpacity onPress={handleGoBack}>
-              <AntDesign name="arrowleft" size={26} color="black" />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginHorizontal: 14,
-              flex: 1,
-              height: 60,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: color,
-              borderRadius: 30,
-            }}
-          >
-            <Text style={{ fontSize: 26 }}>Journal</Text>
-          </View>
+          <TouchableOpacity onPress={handleGoBack}>
+            <AntDesign name="arrowleft" size={26} color="black" />
+          </TouchableOpacity>
         </View>
       );
   }

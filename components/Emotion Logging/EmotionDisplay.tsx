@@ -104,7 +104,6 @@ const EmotionDisplay = ({
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
-        borderColor: "red",
       }}
     >
       <ScrollView
@@ -116,6 +115,12 @@ const EmotionDisplay = ({
           onLongPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             toggleEditing(true);
+          }}
+          style={{
+            width: width,
+            minHeight: height * 0.84,
+            flex: 1,
+            alignItems: "center",
           }}
         >
           <FlatList
