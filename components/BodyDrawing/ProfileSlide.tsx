@@ -33,7 +33,7 @@ const ProfileSlide = ({ emotion }: Props) => {
     { weekday: string; count: number }[]
   >([]);
   const [commonTimes, setCommonTimes] = useState<
-    { time: string; count: number }[]
+    { time: number; count: number }[]
   >([]);
 
   //
@@ -60,11 +60,17 @@ const ProfileSlide = ({ emotion }: Props) => {
       commonDates.push(localTimeZoneDate);
       const localTimeZoneTime = getLocalTime(log.created_at, "time");
       // @ts-expect-error
-      commonTimes.push(localTimeZoneTime.slice(0, 2));
+      commonTimes.push(Number(localTimeZoneTime.slice(0, 2)));
     }
 
+    getCommonTimes(commonTimes);
+    // @ts-expect-error
+    getCommonDates(commonDates);
+  };
+
+  const getCommonTimes = async (commonTimes: number[]) => {
     // Create an array to store time counts
-    const timeCounts: { time: string; count: number }[] = [];
+    const timeCounts: { time: number; count: number }[] = [];
 
     for (const time of commonTimes) {
       // Find if this time already exists in our counts array
@@ -83,7 +89,10 @@ const ProfileSlide = ({ emotion }: Props) => {
     timeCounts.sort((a, b) => Number(a.time) - Number(b.time));
 
     setCommonTimes(timeCounts);
+    return timeCounts;
+  };
 
+  const getCommonDates = async (commonDates: Date[]) => {
     const weekdayCounts: { weekday: string; count: number }[] = [
       { weekday: "Mon", count: 0 },
       { weekday: "Tue", count: 0 },
@@ -112,6 +121,7 @@ const ProfileSlide = ({ emotion }: Props) => {
     }
 
     setCommonDates(weekdayCounts);
+    return weekdayCounts;
   };
 
   const getCommonPeople = async (data: LogType[]) => {

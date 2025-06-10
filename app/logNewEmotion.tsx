@@ -54,9 +54,12 @@ export default function logNewEmotion() {
 
   useFocusEffect(
     useCallback(() => {
+      console.log("called");
       getAllEmotions();
     }, [level, refresh])
   );
+
+  // console.log(data);
 
   // FUNCTIONS
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
@@ -67,16 +70,17 @@ export default function logNewEmotion() {
 
     if (level > 1 && currentEmotion) {
       // Get stock emotions
-      stockData = Object.values(
-        stockEmotionData[level][currentEmotion.name] || {}
-      );
+      if (!currentEmotion.isCustom) {
+        stockData = [...stockEmotionData[level][currentEmotion.name]];
+      }
+
       // Get user created emotions
       customData = await db.getAllAsync<EmotionType>(
         `SELECT * FROM user_created_emotions WHERE parent = ?`,
         [currentEmotion.name]
       );
     } else {
-      stockData = Object.values(stockEmotionData[level] || {});
+      stockData = [...stockEmotionData[level]];
       customData = await db.getAllAsync<EmotionType>(
         `SELECT * FROM user_created_emotions WHERE parent IS NULL`
       );
@@ -86,6 +90,9 @@ export default function logNewEmotion() {
     customData.forEach((value) => {
       stockData.push(value);
     });
+
+    // console.log("customData", customData);
+    // console.log("stockData", stockData);
 
     // Hide hidden emotions
     stockData.forEach((value) => {
@@ -155,6 +162,7 @@ export default function logNewEmotion() {
     }
     setLevel(level + 1);
     setEmotionStack([...emotionStack, item]);
+    // console.log([...emotionStack, item]);
   };
 
   const handleUpdateSelectedPeople = (people: SelectionType[]) => {

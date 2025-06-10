@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { StatusBar, Platform } from "react-native";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
+import "@/assets/i18n";
 
 export default function Layout() {
   const { queries } = require("../assets/SQL/queries.ts");

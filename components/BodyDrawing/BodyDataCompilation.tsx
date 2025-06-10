@@ -145,14 +145,24 @@ const BodyDataCompilation = ({
 
     let children: string[] = [];
     // Stock emotions
-    const secondLvl: EmotionType[] = Object.values(
-      stockEmotionData[2][parent.name]
-    );
+    // const secondLvl: EmotionType[] = Object.values(
+    //   stockEmotionData[2][parent.name]
+    // );
+    // secondLvl.forEach((secondLvlEmotion) => {
+    //   children.push(secondLvlEmotion.name);
+    //   const thirdLvl: EmotionType[] = Object.values(
+    //     stockEmotionData[3][secondLvlEmotion.name]
+    //   );
+    //   thirdLvl.forEach((thirdLvlEmotion) => {
+    //     children.push(thirdLvlEmotion.name);
+    //   });
+    // });
+    const secondLvl: EmotionType[] = [...stockEmotionData[2][parent.name]];
     secondLvl.forEach((secondLvlEmotion) => {
       children.push(secondLvlEmotion.name);
-      const thirdLvl: EmotionType[] = Object.values(
-        stockEmotionData[3][secondLvlEmotion.name]
-      );
+      const thirdLvl: EmotionType[] = [
+        ...stockEmotionData[3][secondLvlEmotion.name],
+      ];
       thirdLvl.forEach((thirdLvlEmotion) => {
         children.push(thirdLvlEmotion.name);
       });

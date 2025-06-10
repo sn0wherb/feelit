@@ -1,0 +1,17 @@
+{
+  "language": "Latviešu",
+  "tabs": {
+    "analytics": {
+      "mostFrequentEmotions": {
+        "title": "Manas top emocijas",
+        "timeFrames": {
+          "Day": "Diena",
+          "Week": "Nedēļa",
+          "Month": "Mēnesis",
+          "Year": "Gads",
+          "All-time": "Viss"
+        }
+      }
+    }
+  }
+}

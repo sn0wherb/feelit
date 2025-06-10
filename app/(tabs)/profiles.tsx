@@ -63,7 +63,7 @@ const profiles = () => {
       const data = await db.getAllAsync<EmotionType>(
         "SELECT * FROM user_created_emotions WHERE parent IS NULL"
       );
-      const allEmotions: EmotionType[] = Object.values(stockEmotionData[1]);
+      const allEmotions: EmotionType[] = [...stockEmotionData[1]];
       data.forEach((emotion) => {
         allEmotions.push(emotion);
       });

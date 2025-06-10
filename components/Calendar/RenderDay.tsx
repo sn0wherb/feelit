@@ -65,9 +65,6 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   const fullDateString = getLocalTime(fullDate, "date");
 
   const isToday = today === fullDateString;
-  if (isToday) {
-    console.log(today, fullDateString);
-  }
 
   // Render item
   switch (logsOfToday.length) {
@@ -106,7 +103,16 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
       return colors.length > 1 ? (
         // @ts-expect-error
         <LinearGradient colors={colors} style={styles.gradient}>
-          <TouchableOpacity onPress={() => passOpenDay(logsOfToday, digit)}>
+          <TouchableOpacity
+            onPress={() => passOpenDay(logsOfToday, digit)}
+            style={[
+              styles[bounds],
+              {
+                borderWidth: isToday ? 3 : 0,
+                borderColor: "rgb(222, 122, 102)",
+              },
+            ]}
+          >
             <Text style={styles.dayWithLogs}>{digit}</Text>
           </TouchableOpacity>
         </LinearGradient>

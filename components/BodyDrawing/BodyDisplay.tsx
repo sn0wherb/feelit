@@ -34,9 +34,6 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
     [svgData, setSvgData] = useState<SvgDataType[]>([]);
 
   const silhouetteImage = require("@/assets/images/silhouette_front.png");
-  const {
-    stockEmotionData,
-  } = require("@/assets/data/emotions/stockEmotionData");
 
   const db = useSQLiteContext();
 

@@ -17,6 +17,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import logModal from "../logModal";
 import { getLocalTime, openLogModal, prettifyDate } from "@/assets/functions";
+import { useTranslation } from "react-i18next";
 
 type FormattedLogDataType = {
   date: string;
@@ -34,6 +35,7 @@ const feed = () => {
 
   const db = useSQLiteContext();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const getLogs = async () => {
     try {

@@ -9,10 +9,15 @@ import {
 import React, { useEffect, useState } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { uncapitalise } from "@/assets/functions";
+import { useTranslation } from "react-i18next";
+import i18n from "@/assets/i18n";
+
+const language = i18n.language;
 
 type TimeFrameType = "Day" | "Week" | "Month" | "Year" | "All-time";
 
 const { height, width } = Dimensions.get("window");
+const { t } = useTranslation();
 
 const MostFrequentEmotions = () => {
   const db = useSQLiteContext();
@@ -121,7 +126,9 @@ const MostFrequentEmotions = () => {
             },
           ]}
         >
-          {item}
+          {language == "lv"
+            ? t(`tabs.analytics.mostFrequentEmotions.timeFrames.${item}`)
+            : item}
         </Text>
       </TouchableOpacity>
     );
@@ -252,7 +259,8 @@ const MostFrequentEmotions = () => {
           marginBottom: 14,
         }}
       >
-        My top emotions
+        {t("tabs.analytics.mostFrequentEmotions.title")}
+        {/* My top emotions */}
       </Text>
       {/* Timeframes */}
       <View style={{ paddingBottom: 20 }}>
