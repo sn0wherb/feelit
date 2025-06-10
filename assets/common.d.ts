@@ -8,10 +8,20 @@ declare type EmotionType = {
   hidden: boolean;
 };
 
-type LogType = {
+type InitialLogType = {
   id: number;
-  emotion: string;
-  color: string;
+  emotion_name: string | null;
+  emotion_id: number | null;
+  root: string;
+  need: string;
+  extra: string;
+  created_at: string;
+  isEdited: number;
+};
+
+type CompleteLogType = {
+  id: number;
+  emotion: EmotionType;
   root: string;
   need: string;
   extra: string;

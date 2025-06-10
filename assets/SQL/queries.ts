@@ -68,10 +68,10 @@ INSERT OR IGNORE INTO emotions (name, level, parent, color) VALUES ('Inspired', 
   CREATE TABLE IF NOT EXISTS user_created_emotions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, parent TEXT, color TEXT, level INTEGER, isCustom INTEGER DEFAULT 1);
   `,
   createLogTable: `
-  CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion TEXT, color TEXT, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP, isEdited INTEGER DEFAULT 0);
+  CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion_name TEXT, emotion_id INTEGER, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP, isEdited INTEGER DEFAULT 0, FOREIGN KEY(emotion_id) REFERENCES user_created_emotions(id));
   `,
   createLog: `
-  INSERT INTO emotion_logs (emotion, root, need, extra) VALUES (?,?,?,?);
+  INSERT INTO emotion_logs (emotion_name, emotion_id, root, need, extra) VALUES (?,?,?,?,?);
   `,
   createBodyDrawingSvgPathsTable: `
   CREATE TABLE IF NOT EXISTS bodydrawing_svg_paths (id INTEGER, path TEXT, color TEXT, size INTEGER, FOREIGN KEY(id) REFERENCES emotion_logs(id));

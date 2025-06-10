@@ -177,10 +177,10 @@ export default function logNewEmotion() {
     try {
       // Save log to sql db
       await db.runAsync(
-        "INSERT INTO emotion_logs (emotion, color, root, need, extra) VALUES (?,?,?,?,?);",
+        "INSERT INTO emotion_logs (emotion_name, emotion_id, root, need, extra) VALUES (?,?,?,?,?);",
         [
-          currentEmotion.name,
-          currentEmotion.color,
+          currentEmotion.isCustom ? null : currentEmotion.name,
+          currentEmotion.isCustom ? currentEmotion.id : null,
           diaryData?.root ? diaryData?.root : "",
           diaryData?.need ? diaryData?.need : "",
           diaryData?.extra ? diaryData?.extra : "",

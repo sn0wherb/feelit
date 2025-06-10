@@ -32,6 +32,9 @@ const feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState<LogType>();
   const [loading, setLoading] = useState(true);
+  const {
+    stockEmotionData,
+  } = require("./../assets/data/emotions/stockEmotionData.ts");
 
   const db = useSQLiteContext();
   const router = useRouter();
@@ -39,9 +42,19 @@ const feed = () => {
 
   const getLogs = async () => {
     try {
-      const data = await db.getAllAsync<LogType>(
+      const data = await db.getAllAsync<InitialLogType>(
         "SELECT * FROM emotion_logs WHERE created_at ORDER BY created_at DESC"
       );
+      let completeData: CompleteLogType[] = [];
+      data.forEach((log) => {
+        if (log.emotion_name) {
+          if (stockEmotionData[1][log.emotion_name]) {
+            completeData.push(stockEmotionData[1][log.emotion_name]);
+          }
+          Object.values(stockEmotionData[2]);
+        }
+      });
+
       setLogData(data);
       sortLogDataByDate(data);
     } catch (e) {
