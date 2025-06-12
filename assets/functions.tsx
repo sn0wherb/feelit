@@ -22,9 +22,11 @@ export const getLocalTime = (
   timeframe: "time" | "date" | "both" = "time",
   outputType: "string" | "date" = "string"
 ) => {
-  const gmtTime = new Date(dateTime);
+  const gmtTime =
+    typeof dateTime === typeof "" ? new Date(dateTime) : (dateTime as Date);
   const localTimeZoneOffset = new Date().getTimezoneOffset();
   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
+
   if (timeframe === "time") {
     return gmtTime.toLocaleTimeString().slice(0, 5);
   } else if (timeframe === "both") {

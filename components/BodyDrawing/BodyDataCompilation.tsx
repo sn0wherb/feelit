@@ -51,6 +51,7 @@ const BodyDataCompilation = ({
   const [svgData, setSvgData] = useState<SvgDataType[]>([]);
   const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
   const [grid, setGrid] = useState<GridType[]>([]);
+  const [maxPointValue, setMaxPointValue] = useState(0);
 
   // Display options
   const showRawData = false;
@@ -106,7 +107,7 @@ const BodyDataCompilation = ({
           strokeData.push([svgArray, value.color, value.size]);
         });
         setPaths(strokeData);
-        compileBodyDisplayData(strokeData);
+        populateGrid(strokeData);
       } catch (e) {
         console.error(e);
       }
@@ -186,10 +187,9 @@ const BodyDataCompilation = ({
   //
   // SET GRID SECTION AMOUNT HERE
   //
-  const gridSections = 20;
+  const gridSections = 30;
   const dataOpacity = 0.4;
 
-  const strokeMultiplier = gridSections / 10;
   const gridIncrementX = width / gridSections;
   const gridIncrementY = (height * size) / gridSections;
 
@@ -201,7 +201,8 @@ const BodyDataCompilation = ({
     //  ],
     //  [
     //    [0, "black"], [0, "black"]
-    //  ]
+    //  ],
+    //  ...
     // ]
     let grid: GridType[] = [];
 
@@ -217,7 +218,7 @@ const BodyDataCompilation = ({
     return grid;
   };
 
-  const compileBodyDisplayData = (data: StrokeType[]) => {
+  const populateGrid = (data: StrokeType[]) => {
     const gridData = createGrid(gridSections);
 
     // Gridlines
@@ -229,7 +230,7 @@ const BodyDataCompilation = ({
 
     const regExAll = /\d{1,}/g; // Regex that matches the digits in svg stroke strings
 
-    // Locate stroke in gridData
+    // Locate stroke in gridData using binary search
     const locate = (
       point: number,
       axis: "x" | "y",
@@ -255,6 +256,8 @@ const BodyDataCompilation = ({
       }
     };
 
+    let maxValue = 0;
+
     // Go through all paths
     for (let i = 0; i < data.length; i++) {
       // Go through all points in current path
@@ -274,24 +277,38 @@ const BodyDataCompilation = ({
             return value[1] === data[i][1];
           };
 
-          const thisColorIndex = gridData[x][y].findIndex(getColor);
+          const currentLocation = gridData[x][y];
 
+          const thisColorIndex = currentLocation.findIndex(getColor);
+
+          let addedPointValue;
           // If point of this color exists, increment count
           if (thisColorIndex > -1) {
-            gridData[x][y][thisColorIndex][0]++;
+            currentLocation[thisColorIndex][0]++;
+            addedPointValue = currentLocation[thisColorIndex][0];
           } else {
             // If point of this color does not exist, create it
-            gridData[x][y].push([1, data[i][1]]);
+            currentLocation.push([1, data[i][1]]);
+            addedPointValue = currentLocation[currentLocation.length - 1][0];
+          }
+
+          // If, after inserting into this location, it has the highest value of all locations, set maxValue to this value
+          if (addedPointValue > maxValue) {
+            maxValue = addedPointValue;
           }
           // console.log(gridData[x][y]);
         }
       }
     }
-    // console.log(gridData);
+
+    setMaxPointValue(maxValue);
     setGrid(gridData);
   };
 
+  console.log(maxPointValue);
+
   // Renderers
+  const maxRadius = 30;
   const renderData = (item: GridType, index: number) => {
     const x = index;
     return (
@@ -301,12 +318,15 @@ const BodyDataCompilation = ({
         return (
           // Points
           item.map((item, index) => {
+            const radius =
+              maxPointValue > 0 ? (item[0] / maxPointValue) * maxRadius : 0;
+
             return (
               <Circle
                 key={`grid-${index}`}
                 cx={x * gridIncrementX + gridIncrementX / 2}
                 cy={y * gridIncrementY + gridIncrementY / 2}
-                r={item[0] * strokeMultiplier}
+                r={radius}
                 fill={item[1]}
                 opacity={dataOpacity}
               />
@@ -376,7 +396,7 @@ const BodyDataCompilation = ({
   );
 };
 
-export default BodyDataCompilation;
+export default memo(BodyDataCompilation);
 
 const styles = StyleSheet.create({
   drawingBoard: {

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { getLocalTime, keyExtractor, uncapitalise } from "@/assets/functions";
 import BodyDataCompilation from "./BodyDataCompilation";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 
 interface Props {
@@ -84,16 +84,20 @@ const ProfileSlide = ({ emotion }: Props) => {
       }
     }
 
-    // Sort by time in ascending order
-    timeCounts.sort((a, b) => Number(a.item) - Number(b.item));
-
     // Get max count for times
     const maxCount = timeCounts.reduce(
       (max, current) => Math.max(max, current.count),
       0
     );
 
-    setCommonTimes(timeCounts);
+    // Get top 10 times in descending order
+    timeCounts.sort((a, b) => b.count - a.count);
+    const top10Times = timeCounts.slice(0, 10);
+
+    // Sort by time in ascending order
+    top10Times.sort((a, b) => Number(a.item) - Number(b.item));
+
+    setCommonTimes(top10Times);
     setCommonTimesMax(maxCount);
     return timeCounts;
   };
@@ -103,7 +107,7 @@ const ProfileSlide = ({ emotion }: Props) => {
       { item: "Mon", count: 0 },
       { item: "Tue", count: 0 },
       { item: "Wed", count: 0 },
-      { item: "Thur", count: 0 },
+      { item: "Thu", count: 0 },
       { item: "Fri", count: 0 },
       { item: "Sat", count: 0 },
       { item: "Sun", count: 0 },
@@ -240,15 +244,17 @@ const ProfileSlide = ({ emotion }: Props) => {
     }
   };
 
+  // Shared function for rendering top weekdays and top times
   const maxHeight = height * 0.08;
   const renderChart = ({
     item,
   }: {
     item: { item: number | string; count: number };
   }) => {
+    // Get the appropriate max value
     const max =
       typeof item.item == typeof "" ? commonWeekdaysMax : commonTimesMax;
-    // Highest value is always the value of maxHeight, all the others are displayed relative to this value
+    // Highest value is always the value of maxHeight, all the others are calculated and displayed relative to this value
     const barHeight = max > 0 ? (item.count / max) * maxHeight : 0;
     const color = item.count == 0 ? "#666" : "#000";
 
@@ -400,7 +406,7 @@ const ProfileSlide = ({ emotion }: Props) => {
   );
 };
 
-export default ProfileSlide;
+export default memo(ProfileSlide);
 
 const styles = StyleSheet.create({
   section: {

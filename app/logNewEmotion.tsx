@@ -216,7 +216,7 @@ export default function logNewEmotion() {
       setTimeout(() => {
         setLevel(1);
         router.replace("/(tabs)/feed");
-      }, 1000);
+      }, 600);
     } catch (e) {
       console.error(e);
     }

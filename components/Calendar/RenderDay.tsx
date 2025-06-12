@@ -61,7 +61,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
     i = colors.length === 3 ? logsOfToday.length : i;
   }
 
-  const today = getLocalTime(new Date(), "date");
+  const today = new Date().toLocaleDateString();
   const fullDateString = getLocalTime(fullDate, "date");
 
   const isToday = today === fullDateString;
