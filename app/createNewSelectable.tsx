@@ -18,16 +18,23 @@ import SuccessScreen from "@/components/SuccessScreen";
 const { width, height } = Dimensions.get("window");
 
 const createNewSelectable = () => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const router = useRouter();
   const db = useSQLiteContext();
   const { type } = useLocalSearchParams();
 
-  // New emotion states
+  // ---------------------
+  // STATES
+  // ---------------------
   const [title, setTitle] = useState("");
   const [saved, setSaved] = useState(false);
   const [newColor, setNewColor] = useState("#FFF");
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const handleGoBack = () => {
     router.back();
   };
@@ -52,6 +59,9 @@ const createNewSelectable = () => {
     }, 1000);
   }
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View style={styles.container}>
       {saved ? (

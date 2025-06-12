@@ -9,6 +9,9 @@ interface Props {
 }
 
 const RenderEmotion = ({ name, color, onClick, hidden }: Props) => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const styles = StyleSheet.create({
     emotion: {
       height: 134,
@@ -30,6 +33,9 @@ const RenderEmotion = ({ name, color, onClick, hidden }: Props) => {
     },
   });
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       <TouchableOpacity

@@ -22,12 +22,21 @@ type FormattedLogDataType = {
 const { height, width } = Dimensions.get("window");
 
 const feed = () => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
+  const db = useSQLiteContext();
+
+  // ---------------------
+  // STATES
+  // ---------------------
   const [logData, setLogData] = useState<LogType[]>([]);
   const [logDataByDate, setLogDataByDate] = useState<FormattedLogDataType[]>();
   const [loading, setLoading] = useState(true);
 
-  const db = useSQLiteContext();
-
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getLogs = async () => {
     try {
       const data = await db.getAllAsync<LogType>(
@@ -43,8 +52,6 @@ const feed = () => {
   };
 
   const sortLogDataByDate = (data: LogType[]) => {
-    const today = new Date();
-
     let sortedIndex = 0;
     let sortedData: FormattedLogDataType[] = [];
 
@@ -67,13 +74,18 @@ const feed = () => {
     setLogDataByDate(sortedData);
   };
 
-  // Re-fetch log data whenever tab is focused
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useFocusEffect(
     useCallback(() => {
       getLogs();
     }, [])
   );
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   if (loading) {
     return (
       <View

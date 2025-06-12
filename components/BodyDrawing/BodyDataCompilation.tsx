@@ -30,16 +30,9 @@ const BodyDataCompilation = ({
   displayMargin = 1,
   setLogData,
 }: Props) => {
-  // Svg states
-  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
-  const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
-  const [grid, setGrid] = useState<GridType[]>([]);
-  const [maxPointValue, setMaxPointValue] = useState(0);
-
-  // Display options
-  const showRawData = false;
-  const showGridLines = false;
-
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const silhouetteImage = require("@/assets/images/silhouette_front.png");
   const {
     stockEmotionData,
@@ -47,6 +40,19 @@ const BodyDataCompilation = ({
 
   const db = useSQLiteContext();
 
+  const pad = 0;
+
+  // ---------------------
+  // STATES
+  // ---------------------
+  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
+  const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
+  const [grid, setGrid] = useState<GridType[]>([]);
+  const [maxPointValue, setMaxPointValue] = useState(0);
+
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getAllData = async () => {
     const children = await getChildrenEmotions(emotion);
     let logQuery = `emotion = '${emotion.name}' `;
@@ -149,15 +155,9 @@ const BodyDataCompilation = ({
     return children;
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      getAllData();
-    }, [])
-  );
-
-  //
-  // SET GRID SECTION AMOUNT HERE
-  //
+  // ---------------------
+  // SET GRID SECTION COUNT AND DATA OPACITY HERE
+  // ---------------------
   const gridSections = 30;
   const dataOpacity = 0.4;
 
@@ -275,8 +275,6 @@ const BodyDataCompilation = ({
     setGrid(gridData);
   };
 
-  console.log(maxPointValue);
-
   // Renderers
   const maxRadius = 30;
   const renderData = (item: GridType, index: number) => {
@@ -338,8 +336,18 @@ const BodyDataCompilation = ({
     );
   };
 
-  const pad = 0;
+  // ---------------------
+  // EFFECTS
+  // ---------------------
+  useFocusEffect(
+    useCallback(() => {
+      getAllData();
+    }, [])
+  );
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       {/* Drawing */}
@@ -354,10 +362,6 @@ const BodyDataCompilation = ({
         >
           <View style={{ marginTop: pad }}>
             <Svg>
-              {/* previous strokes */}
-              {showRawData && paths.map(renderRawData)}
-              {/* grid lines */}
-              {showGridLines && gridVisualized.map(renderGridLines)}
               {/* Compiled data */}
               {grid.map(renderData)}
             </Svg>

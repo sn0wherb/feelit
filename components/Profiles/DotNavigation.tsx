@@ -9,7 +9,9 @@ interface Props {
 const { width, height } = Dimensions.get("window");
 
 const DotNavigation = ({ items, selected }: Props) => {
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const renderDots = ({
     item,
     index,
@@ -56,6 +58,9 @@ const DotNavigation = ({ items, selected }: Props) => {
     }
   };
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View style={{ position: "absolute", zIndex: 1, top: height * 0.04 }}>
       <FlatList

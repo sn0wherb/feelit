@@ -14,10 +14,25 @@ interface Props {
 const { width } = Dimensions.get("window");
 
 const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const db = useSQLiteContext();
+
+  const today = new Date().toLocaleDateString();
+  const fullDateString = getLocalTime(fullDate, "date");
+  const isToday = today === fullDateString;
+
+  const colors: string[] = [];
+
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   const [logsOfToday, setLogsOfToday] = useState<LogType[]>([]);
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getLogsOfToday = async (date: Date) => {
     const dateString = date.toISOString().slice(0, 10);
     try {
@@ -33,12 +48,14 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
     }
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     getLogsOfToday(fullDate);
   }, []);
 
-  // Get colors
-  const colors: string[] = [];
+  // Get colors from emotions in logs
   for (let i = 0; i < logsOfToday.length; i++) {
     // Colors don't repeat
     !colors.includes(logsOfToday[i].color) && colors.push(logsOfToday[i].color);
@@ -46,12 +63,9 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
     i = colors.length === 3 ? logsOfToday.length : i;
   }
 
-  const today = new Date().toLocaleDateString();
-  const fullDateString = getLocalTime(fullDate, "date");
-
-  const isToday = today === fullDateString;
-
-  // Render item
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   switch (logsOfToday.length) {
     case 0:
       return (

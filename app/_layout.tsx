@@ -3,8 +3,14 @@ import { StatusBar } from "react-native";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
 
 export default function Layout() {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const { queries } = require("../assets/SQL/queries.ts");
 
+  // ---------------------
+  // FCUNCTIONS
+  // ---------------------
   const createTablesIfNeeded = async (db: SQLiteDatabase) => {
     try {
       await db.execAsync(queries["createLogTable"]);

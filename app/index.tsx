@@ -2,6 +2,9 @@ import React from "react";
 import { Redirect } from "expo-router";
 
 const index = () => {
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return <Redirect href="/(tabs)/feed" />;
 };
 

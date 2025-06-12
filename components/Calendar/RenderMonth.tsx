@@ -11,6 +11,9 @@ interface Props {
 const { width, height } = Dimensions.get("window");
 
 const RenderMonth = ({ data, passOpenDay }: Props) => {
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   // @ts-expect-error
   const renderDay = ({ item, index }) => {
     // Get the date digit
@@ -42,6 +45,9 @@ const RenderMonth = ({ data, passOpenDay }: Props) => {
     );
   };
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     // Days
     <FlatList

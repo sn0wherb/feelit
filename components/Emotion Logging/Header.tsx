@@ -29,7 +29,9 @@ const Header = ({
   custom = false,
   type = "emotion",
 }: Props) => {
-  // Create person header
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   if (type === "person") {
     return (
       <View

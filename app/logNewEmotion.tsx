@@ -17,7 +17,9 @@ import { sortDiaryData } from "@/assets/functions";
 const { width, height } = Dimensions.get("window");
 
 export default function logNewEmotion() {
+  // ---------------------
   // STATES
+  // ---------------------
   const [level, setLevel] = useState<number>(1);
   const [emotionStack, setEmotionStack] = useState<EmotionType[]>([]);
   const [data, setData] = useState<EmotionType[]>([]);
@@ -30,7 +32,9 @@ export default function logNewEmotion() {
   const [selectedPeople, setSelectedPeople] = useState<SelectionType[]>([]);
   const [selectedPlaces, setSelectedPlaces] = useState<SelectionType[]>([]);
 
-  // CONSTANTS
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const {
     stockEmotionData,
   } = require("./../assets/data/emotions/stockEmotionData.ts");
@@ -39,21 +43,9 @@ export default function logNewEmotion() {
   const currentEmotion = emotionStack[emotionStack.length - 1];
   const [hiddenEmotions, setHiddenEmotions] = useState<string[]>([]);
 
-  // EFFECTS
-  useEffect(() => {
-    if (level === 1) {
-      setEmotionStack([]);
-    }
-  }, [level]);
-
-  useFocusEffect(
-    useCallback(() => {
-      console.log("called");
-      getAllEmotions();
-    }, [level, refresh])
-  );
-
+  // ---------------------
   // FUNCTIONS
+  // ---------------------
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
   const getAllEmotions = async () => {
     const hiddenEmotions: string[] = await getHiddenEmotions();
@@ -256,6 +248,25 @@ export default function logNewEmotion() {
     setRefresh((refresh) => refresh + 1);
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
+  useEffect(() => {
+    if (level === 1) {
+      setEmotionStack([]);
+    }
+  }, [level]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("called");
+      getAllEmotions();
+    }, [level, refresh])
+  );
+
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View style={[styles.container, { backgroundColor: "beige" }]}>
       <SafeAreaView style={styles.container}>

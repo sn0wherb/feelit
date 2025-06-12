@@ -36,12 +36,21 @@ const JournalField = ({
   onChangeText,
   initialFieldState = false,
 }: Props) => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
+  const db = useSQLiteContext();
+
+  // ---------------------
+  // STATES
+  // ---------------------
   const [isOpen, setIsOpen] = useState(initialFieldState);
   const [isSelectableModalOpen, setIsSelectableModalOpen] = useState(false);
-  const db = useSQLiteContext();
   const [data, setData] = useState<SelectionType[]>([]);
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getData = async () => {
     const data = await db.getAllAsync<SelectionType>(
       `SELECT * FROM ${type === "person" ? "people" : "places"}`
@@ -161,12 +170,18 @@ const JournalField = ({
     onChangeText?.("");
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useFocusEffect(
     useCallback(() => {
       getData();
     }, [])
   );
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   if (isSelectableModalOpen) {
     return (
       <View

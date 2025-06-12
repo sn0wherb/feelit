@@ -13,12 +13,21 @@ import Feather from "@expo/vector-icons/Feather";
 const { width, height } = Dimensions.get("window");
 
 const settings = () => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const router = useRouter();
 
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const openPanel = (title: "adminPanel" | "language" | "theme" | "about") => {
     router.push(`/settings/${title}`);
   };
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>

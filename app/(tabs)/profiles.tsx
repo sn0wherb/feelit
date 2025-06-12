@@ -9,15 +9,28 @@ import ProfileSlide from "@/components/BodyDrawing/ProfileSlide";
 const { width, height } = Dimensions.get("window");
 
 const profiles = () => {
-  const db = useSQLiteContext();
-  const [emotions, setEmotions] = useState<EmotionType[]>([]);
-  const [selectedEmotion, setSelectedEmotion] = useState(0);
-
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const {
     stockEmotionData,
   } = require("@/assets/data/emotions/stockEmotionData");
 
-  // Functions
+  // ---------------------
+  // STATES
+  // ---------------------
+  const db = useSQLiteContext();
+  const [emotions, setEmotions] = useState<EmotionType[]>([]);
+  const [selectedEmotion, setSelectedEmotion] = useState(0);
+
+  // ---------------------
+  // REFS
+  // ---------------------
+  const bodyRef = useRef<FlatList>(null);
+
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getAllBaseEmotions = async () => {
     try {
       const data = await db.getAllAsync<EmotionType>(
@@ -41,17 +54,21 @@ const profiles = () => {
     );
   };
 
-  const bodyRef = useRef<FlatList>(null);
-
   // @ts-expect-error
   const handleViewableItemsChanged = ({ viewableItems }) => {
     setSelectedEmotion(viewableItems[0].index);
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     getAllBaseEmotions();
   }, []);
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.container}>

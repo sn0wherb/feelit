@@ -42,7 +42,9 @@ const EmotionLoggingController = ({
   selectedPlaces = [],
   onUpdateSelectedPlaces,
 }: Props) => {
-  // Emotion selection
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   switch (level) {
     case 1: // Fallthrough
     case 2: // Fallthrough

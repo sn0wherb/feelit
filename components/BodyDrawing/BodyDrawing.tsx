@@ -33,6 +33,10 @@ const BodyDrawing = ({
   initialPaths = [[["M0,0"], "black", 1]],
   editMode = false,
 }: Props) => {
+  // ---------------------
+  // STATES
+  // ---------------------
+
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([
     [["M0,0"], "black", 1],
@@ -48,7 +52,9 @@ const BodyDrawing = ({
 
   const silhouetteImage = require("@/assets/images/silhouette_front.png");
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const onTouchMove = (event: GestureResponderEvent) => {
     const newPath: string[] = [...currentPath];
     const locationX: number = event.nativeEvent.locationX,
@@ -103,11 +109,16 @@ const BodyDrawing = ({
     }
   };
 
-  // Effects
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     passPathsToParent(paths);
   }, [paths]);
 
+  // ---------------------
+  // COMPONENTS
+  // ---------------------
   return (
     <View>
       {/* Drawing */}

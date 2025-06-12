@@ -38,6 +38,9 @@ const EmotionDisplay = ({
   passHandleClickEmotion,
   onToggleHideEmotion,
 }: Props) => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const router = useRouter();
   const db = useSQLiteContext();
 
@@ -58,7 +61,9 @@ const EmotionDisplay = ({
     },
   ];
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const newCustomEmotion = () => {
     const params = currentEmotion
       ? { level: level, name: currentEmotion.name, color: currentEmotion.color }
@@ -97,10 +102,12 @@ const EmotionDisplay = ({
     );
   };
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View
       style={{
-        // flex: 1,
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",

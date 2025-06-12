@@ -1,13 +1,18 @@
 import { Tabs, useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { View } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import * as Updates from "expo-updates";
 
 export default function TabLayout() {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const router = useRouter();
+
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <Tabs
       screenOptions={{

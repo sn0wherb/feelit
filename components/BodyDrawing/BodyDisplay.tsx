@@ -12,12 +12,21 @@ interface Props {
 const { height } = Dimensions.get("window");
 
 const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
-  // Svg states
-  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const silhouetteImage = require("@/assets/images/silhouette_front.png");
 
   const db = useSQLiteContext();
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
+  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
+
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getData = async () => {
     try {
       const data = await db.getAllAsync<SvgDataType>(
@@ -37,12 +46,18 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
     }
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useFocusEffect(
     useCallback(() => {
       getData();
     }, [])
   );
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       {/* Drawing */}

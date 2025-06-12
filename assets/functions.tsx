@@ -1,18 +1,14 @@
 import { useRouter } from "expo-router";
 
+// ---------------------
+// CONSTS
+// ---------------------
 const router = useRouter();
 const today = new Date();
 
-type LogType = {
-  id: number;
-  emotion: string;
-  color: string;
-  root: string;
-  need: string;
-  extra: string;
-  created_at: string;
-};
-
+// ---------------------
+// FUNCTIONS
+// ---------------------
 export const uncapitalise = (string: string) => {
   return string.charAt(0).toLowerCase() + string.slice(1);
 };

@@ -19,6 +19,9 @@ import { uncapitalise } from "@/assets/functions";
 const { width, height } = Dimensions.get("window");
 
 const newCustomEmotion = () => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const router = useRouter();
   const db = useSQLiteContext();
 
@@ -28,12 +31,16 @@ const newCustomEmotion = () => {
   const parent = data.name ? String(data.name) : null;
   const color = data.color ? String(data.color) : undefined;
 
-  // New emotion states
+  // ---------------------
+  // STATES
+  // ---------------------
   const [newColor, setNewColor] = color ? useState(color) : useState("#fff");
   const [title, setTitle] = useState("");
   const [saved, setSaved] = useState(false);
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const handleGoBack = () => {
     router.back();
   };
@@ -56,6 +63,9 @@ const newCustomEmotion = () => {
     }, 1600);
   }
 
+  // ---------------------
+  // COMPONENTS
+  // ---------------------
   return (
     <View style={styles.container}>
       {saved ? (

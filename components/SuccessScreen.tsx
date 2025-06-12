@@ -3,6 +3,9 @@ import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const SuccessScreen = () => {
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View
       style={{

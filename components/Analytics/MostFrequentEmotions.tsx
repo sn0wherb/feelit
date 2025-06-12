@@ -15,9 +15,10 @@ type TimeFrameType = "Day" | "Week" | "Month" | "Year" | "All-time";
 const { width } = Dimensions.get("window");
 
 const MostFrequentEmotions = () => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const db = useSQLiteContext();
-  const [selectedTimeFrameIndex, setSelectedTimeFrameIndex] =
-    useState<TimeFrameType>("Month");
   const timeFrames: TimeFrameType[] = [
     "Day",
     "Week",
@@ -25,6 +26,12 @@ const MostFrequentEmotions = () => {
     "Year",
     "All-time",
   ];
+
+  // ---------------------
+  // EFFECTS
+  // ---------------------
+  const [selectedTimeFrameIndex, setSelectedTimeFrameIndex] =
+    useState<TimeFrameType>("Month");
   const [mostFrequentEmotions, setMostFrequentEmotions] = useState<
     {
       emotion: string;
@@ -34,8 +41,9 @@ const MostFrequentEmotions = () => {
     }[]
   >([]);
 
-  // Functions
-
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const getMostFrequentEmotions = async (timeFrame: TimeFrameType) => {
     let timeFrameSQL: string = "";
     const today = getLocalTime(new Date(), "date", "date") as Date;
@@ -266,10 +274,16 @@ const MostFrequentEmotions = () => {
     );
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     getMostFrequentEmotions(selectedTimeFrameIndex);
   }, [selectedTimeFrameIndex]);
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       <Text

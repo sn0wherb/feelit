@@ -13,14 +13,9 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 const { width, height } = Dimensions.get("window");
 
 const Calendar = () => {
-  // States
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
-  const [display, setDisplay] = useState<"Day" | "Month" | null>("Month");
-  const [displayData, setDisplayData] = useState<LogType[]>();
-
-  // Consts
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const months = [
     "January",
     "February",
@@ -36,7 +31,18 @@ const Calendar = () => {
     "December",
   ];
 
-  // Functions
+  // ---------------------
+  // STATES
+  // ---------------------
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+  const [display, setDisplay] = useState<"Day" | "Month" | null>("Month");
+  const [displayData, setDisplayData] = useState<LogType[]>();
+
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const handleOpenDay = (logs: LogType[], digit: number) => {
     setDisplay("Day");
     setDisplayData(logs);
@@ -66,6 +72,9 @@ const Calendar = () => {
     }
   };
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       <View style={styles.calendar}>

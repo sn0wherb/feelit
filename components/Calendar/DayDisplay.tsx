@@ -20,11 +20,20 @@ interface Props {
 const { width, height } = Dimensions.get("window");
 
 const DayDisplay = ({ data, onReturn }: Props) => {
-  // States
+  // ---------------------
+  // STATES
+  // ---------------------
   const [logsByHour, setLogsByHour] = useState<LogByHourType>({});
   const [startIndex, setStartIndex] = useState<number | null>(null);
+
+  // ---------------------
+  // VARIABLES
+  // ---------------------
   let hours: string[] = [];
 
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const populateHours = () => {
     for (let i = 0; i < 25; i++) {
       if (i < 10) {
@@ -141,9 +150,16 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     );
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     sortLogsByHours();
   }, []);
+
+  // ---------------------
+  // COMPONENT
+  // ---------------------
 
   // No logs on this day
   if (!data || !data[0]) {

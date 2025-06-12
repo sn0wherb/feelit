@@ -26,16 +26,24 @@ const MonthDisplay = ({
   selectedYear,
   updateSelectedYear,
 }: Props) => {
-  // States
-  const [threeMonths, setThreeMonths] = useState<YearType>([[]]);
-
-  // Consts
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const weekdays = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
 
-  // Refs
+  // ---------------------
+  // STATES
+  // ---------------------
+  const [threeMonths, setThreeMonths] = useState<YearType>([[]]);
+
+  // ---------------------
+  // REFS
+  // ---------------------
   const monthFlatListRef = useRef<FlatList>(null);
 
-  // Functions
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const keyExtractor = (item: Date[]) => "key-" + item[10].toString();
 
   const createThreeMonths = (
@@ -181,6 +189,9 @@ const MonthDisplay = ({
     thisYear != selectedYear && updateSelectedYear(thisYear);
   };
 
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     setThreeMonths(createThreeMonths(selectedYear, selectedMonth));
   }, []);
@@ -189,6 +200,9 @@ const MonthDisplay = ({
     monthFlatListRef.current?.forceUpdate();
   }, [threeMonths]);
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       {/* Weekdays */}

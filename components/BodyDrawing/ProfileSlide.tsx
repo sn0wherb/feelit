@@ -19,12 +19,17 @@ interface Props {
 const { width, height } = Dimensions.get("window");
 
 const ProfileSlide = ({ emotion }: Props) => {
-  const bodyHeight = 0.74;
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const db = useSQLiteContext();
 
-  //
-  // STATES
-  //
+  const bodyHeight = 0.74;
+  const displayMargin = 16;
+
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   const [logData, setLogData] = useState<LogType[]>([]);
   const [commonPeople, setCommonPeople] = useState<SelectionType[]>([]);
   const [commonPlaces, setCommonPlaces] = useState<SelectionType[]>([]);
@@ -38,9 +43,9 @@ const ProfileSlide = ({ emotion }: Props) => {
     { item: string; count: number }[]
   >([]);
 
-  //
+  // ---------------------
   // FUNCTIONS
-  //
+  // ---------------------
   const handleSetLogData = (data: LogType[]) => {
     setLogData(data);
     // if there's no logs, there's no people or places to get
@@ -290,8 +295,9 @@ const ProfileSlide = ({ emotion }: Props) => {
     </View>
   );
 
-  const displayMargin = 16;
-
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View>
       <ScrollView pagingEnabled>

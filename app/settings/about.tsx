@@ -12,8 +12,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 const { width, height } = Dimensions.get("window");
 
 const about = () => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const router = useRouter();
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>

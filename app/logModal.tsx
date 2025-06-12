@@ -25,6 +25,10 @@ import { sortDiaryData } from "@/assets/functions";
 const { width, height } = Dimensions.get("window");
 
 export default function logModal() {
+  // ---------------------
+  // CONSTS
+  // ---------------------
+
   // ----------------------------
   // localSearchParams structure:
   // params["date"] = date;
@@ -39,6 +43,10 @@ export default function logModal() {
   const logData = useLocalSearchParams();
   const db = useSQLiteContext();
   const router = useRouter();
+
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   const [isEditingEnabled, setIsEditingEnabled] = useState(false);
   const [diaryData, setDiaryData] = useState<DiaryType>({
     root: String(logData.root),
@@ -58,7 +66,14 @@ export default function logModal() {
   ]);
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
 
-  // Functions
+  // ---------------------
+  // REFS
+  // ---------------------
+  const editingScreenRef = useRef<ScrollView>(null);
+
+  // ---------------------
+  // FUNCTIONS
+  // ---------------------
   const deleteLog = () => {
     Alert.alert("Delete log?", "This log will be permanently deleted.", [
       {
@@ -256,14 +271,18 @@ export default function logModal() {
     }
   };
 
-  const editingScreenRef = useRef<ScrollView>(null);
-
+  // ---------------------
+  // EFFECTS
+  // ---------------------
   useEffect(() => {
     getLogPeople();
     getLogPlaces();
     getSvgData();
   }, []);
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View style={{ backgroundColor: "beige", height: height, width: width }}>
       <View style={{ flex: 1 }}>

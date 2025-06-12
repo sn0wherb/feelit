@@ -37,8 +37,14 @@ const Journal = ({
   initialFieldState = false,
   editMode = false,
 }: Props) => {
+  // ---------------------
+  // CONSTS
+  // ---------------------
   const bottomPadding = 50;
 
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <View style={{ height: height * 0.87, width: width }}>
       <ScrollView

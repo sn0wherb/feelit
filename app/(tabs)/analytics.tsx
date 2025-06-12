@@ -6,6 +6,9 @@ import MostFrequentEmotions from "@/components/Analytics/MostFrequentEmotions";
 const { height, width } = Dimensions.get("window");
 
 const analytics = () => {
+  // ---------------------
+  // COMPONENT
+  // ---------------------
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
