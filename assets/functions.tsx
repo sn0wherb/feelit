@@ -128,6 +128,10 @@ export const sortDiaryData = (
         extra: newData,
       };
     default:
-      break;
+      return {
+        root: existingData?.root,
+        need: existingData?.need,
+        extra: existingData?.extra,
+      };
   }
 };

@@ -45,7 +45,6 @@ const BodyDataCompilation = ({
   // ---------------------
   // STATES
   // ---------------------
-  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
   const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
   const [grid, setGrid] = useState<GridType[]>([]);
   const [maxPointValue, setMaxPointValue] = useState(0);
@@ -95,7 +94,6 @@ const BodyDataCompilation = ({
           const svgArray = value.path.split("/");
           strokeData.push([svgArray, value.color, value.size]);
         });
-        setPaths(strokeData);
         populateGrid(strokeData);
       } catch (e) {
         console.error(e);
@@ -182,6 +180,7 @@ const BodyDataCompilation = ({
       grid.push([]);
       // Columns
       for (let j = 0; j < columns; j++) {
+        // I believe this use of ts-expect-error is justified
         // @ts-expect-error
         grid[i].push([]);
       }

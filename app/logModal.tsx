@@ -128,7 +128,6 @@ export default function logModal() {
   };
 
   const updateDiaryData = (field: "root" | "need" | "extra", data: string) => {
-    // @ts-expect-error
     setDiaryData(sortDiaryData(field, data, diaryData));
   };
 
@@ -255,8 +254,7 @@ export default function logModal() {
     try {
       const data = await db.getAllAsync<SvgDataType>(
         "SELECT * FROM bodydrawing_svg_paths WHERE id = ?",
-        // @ts-expect-error
-        [logData.id]
+        [logData.id as string]
       );
       let strokeData: StrokeType[] = [];
       data.forEach((value) => {

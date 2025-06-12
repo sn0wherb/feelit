@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ViewToken,
 } from "react-native";
 import React, { memo, useEffect, useRef, useState } from "react";
 import RenderMonth from "./RenderMonth";
@@ -137,8 +138,7 @@ const MonthDisplay = ({
     }
   };
 
-  //@ts-expect-error
-  const renderMonth = ({ item }) => {
+  const renderMonth = ({ item }: { item: Date[] }) => {
     return <RenderMonth data={item} passOpenDay={passHandleOpenDay} />;
   };
 
@@ -155,15 +155,17 @@ const MonthDisplay = ({
       oldMonths.unshift(newMonths[0]);
       oldMonths.pop();
     } else {
-      // @ts-expect-error
-      oldMonths.push(newMonths[2]);
+      oldMonths.push(newMonths[newMonths.length - 1]);
       oldMonths.shift();
     }
     setThreeMonths(oldMonths);
   };
 
-  // @ts-expect-error
-  const handleCurrentMonthChange = ({ viewableItems }) => {
+  const handleCurrentMonthChange = ({
+    viewableItems,
+  }: {
+    viewableItems: ViewToken[];
+  }) => {
     // In case data hasn't rendered yet, don't try to read undefined values
     if (!viewableItems[0] || viewableItems[0].item.length < 1) {
       return;

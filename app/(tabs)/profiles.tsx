@@ -1,4 +1,10 @@
-import { Dimensions, FlatList, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  View,
+  ViewToken,
+} from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
@@ -54,9 +60,12 @@ const profiles = () => {
     );
   };
 
-  // @ts-expect-error
-  const handleViewableItemsChanged = ({ viewableItems }) => {
-    setSelectedEmotion(viewableItems[0].index);
+  const handleViewableItemsChanged = ({
+    viewableItems,
+  }: {
+    viewableItems: ViewToken[];
+  }) => {
+    viewableItems[0].index && setSelectedEmotion(viewableItems[0].index);
   };
 
   // ---------------------

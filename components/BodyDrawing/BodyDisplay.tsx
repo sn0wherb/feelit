@@ -4,7 +4,7 @@ import { Svg, Path } from "react-native-svg";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 interface Props {
-  logId?: number;
+  logId: number;
   emotion?: string;
   size?: number;
 }
@@ -31,7 +31,6 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
     try {
       const data = await db.getAllAsync<SvgDataType>(
         "SELECT * FROM bodydrawing_svg_paths WHERE id = ?",
-        // @ts-expect-error
         [logId]
       );
       let strokeData: StrokeType[] = [];

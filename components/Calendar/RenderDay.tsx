@@ -1,4 +1,10 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  ColorValue,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState, memo } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
@@ -23,7 +29,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   const fullDateString = getLocalTime(fullDate, "date");
   const isToday = today === fullDateString;
 
-  const colors: string[] = [];
+  const colors: ColorValue[] = [];
 
   // ---------------------
   // EFFECTS
@@ -100,6 +106,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
       );
     default:
       return colors.length > 1 ? (
+        // I believe this use of ts-expect-error is justified
         // @ts-expect-error
         <LinearGradient colors={colors} style={styles.gradient}>
           <TouchableOpacity

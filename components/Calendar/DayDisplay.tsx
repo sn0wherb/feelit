@@ -23,7 +23,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
   // ---------------------
   // STATES
   // ---------------------
-  const [logsByHour, setLogsByHour] = useState<LogByHourType>({});
+  const [logsByHour, setLogsByHour] = useState<LogByHourType>([]);
   const [startIndex, setStartIndex] = useState<number | null>(null);
 
   // ---------------------
@@ -47,7 +47,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
   populateHours();
 
   const sortLogsByHours = () => {
-    const logsByHour = {};
+    const logsByHour: LogByHourType = [];
     if (!data) {
       return;
     }
@@ -62,12 +62,9 @@ const DayDisplay = ({ data, onReturn }: Props) => {
         earliest = time;
       }
 
-      // @ts-expect-error
       logsByHour[time]
-        ? // @ts-expect-error
-          logsByHour[time].push(log)
-        : // @ts-expect-error
-          (logsByHour[time] = [log]);
+        ? logsByHour[time].push(log)
+        : (logsByHour[time] = [log]);
     });
     earliest > 0 ? setStartIndex(earliest - 1) : setStartIndex(earliest);
     setLogsByHour(logsByHour);
@@ -91,8 +88,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     );
   };
 
-  // @ts-expect-error
-  const renderHours = ({ item, index }) => {
+  const renderHours = ({ item, index }: { item: string; index: number }) => {
     return (
       <View
         style={{
@@ -119,8 +115,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     );
   };
 
-  // @ts-expect-error
-  const renderLogsByHour = ({ item }) => {
+  const renderLogsByHour = ({ item }: { item: LogType }) => {
     return (
       <TouchableOpacity
         style={{

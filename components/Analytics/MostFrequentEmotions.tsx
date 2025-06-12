@@ -110,8 +110,7 @@ const MostFrequentEmotions = () => {
     }
   };
 
-  // @ts-expect-error
-  const renderTimeFrames = ({ item }) => {
+  const renderTimeFrames = ({ item }: { item: TimeFrameType }) => {
     return (
       <TouchableOpacity
         activeOpacity={0.8}

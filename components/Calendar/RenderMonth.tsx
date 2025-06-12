@@ -14,8 +14,7 @@ const RenderMonth = ({ data, passOpenDay }: Props) => {
   // ---------------------
   // FUNCTIONS
   // ---------------------
-  // @ts-expect-error
-  const renderDay = ({ item, index }) => {
+  const renderDay = ({ item, index }: { item: Date; index: number }) => {
     // Get the date digit
     const dateDigit: number = Number(
       item.toLocaleDateString("default", {
