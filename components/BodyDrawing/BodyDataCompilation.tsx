@@ -1,23 +1,6 @@
-import {
-  Button,
-  Dimensions,
-  GestureResponderEvent,
-  Image,
-  ImageBackground,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, ImageBackground, StyleSheet, View } from "react-native";
 import React, { memo, useCallback, useState } from "react";
 import { Svg, Path, Circle } from "react-native-svg";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Slider from "@react-native-assets/slider";
-import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Octicons from "@expo/vector-icons/Octicons";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 
@@ -27,13 +10,13 @@ interface Props {
   logId?: number;
   emotion?: EmotionType;
   size?: number;
+  displayMargin?: number;
   setLogData: (data: LogType[], emotion?: EmotionType) => void;
 }
 
 const { height, width } = Dimensions.get("window");
 
 const BodyDataCompilation = ({
-  logId,
   emotion = {
     id: -1,
     color: "#fff",
@@ -44,11 +27,11 @@ const BodyDataCompilation = ({
     hidden: false,
   },
   size = 0.76,
+  displayMargin = 1,
   setLogData,
 }: Props) => {
   // Svg states
   const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
-  const [svgData, setSvgData] = useState<SvgDataType[]>([]);
   const [gridVisualized, setGridVisualized] = useState<number[][]>([]);
   const [grid, setGrid] = useState<GridType[]>([]);
   const [maxPointValue, setMaxPointValue] = useState(0);
@@ -146,18 +129,6 @@ const BodyDataCompilation = ({
 
     let children: string[] = [];
     // Stock emotions
-    // const secondLvl: EmotionType[] = Object.values(
-    //   stockEmotionData[2][parent.name]
-    // );
-    // secondLvl.forEach((secondLvlEmotion) => {
-    //   children.push(secondLvlEmotion.name);
-    //   const thirdLvl: EmotionType[] = Object.values(
-    //     stockEmotionData[3][secondLvlEmotion.name]
-    //   );
-    //   thirdLvl.forEach((thirdLvlEmotion) => {
-    //     children.push(thirdLvlEmotion.name);
-    //   });
-    // });
     const secondLvl: EmotionType[] = [...stockEmotionData[2][parent.name]];
     secondLvl.forEach((secondLvlEmotion) => {
       children.push(secondLvlEmotion.name);
@@ -296,7 +267,6 @@ const BodyDataCompilation = ({
           if (addedPointValue > maxValue) {
             maxValue = addedPointValue;
           }
-          // console.log(gridData[x][y]);
         }
       }
     }
@@ -324,7 +294,10 @@ const BodyDataCompilation = ({
             return (
               <Circle
                 key={`grid-${index}`}
-                cx={x * gridIncrementX + gridIncrementX / 2}
+                // I seriously have no idea why this needs to be divided by 10 but it works lmfao
+                cx={
+                  (x - displayMargin / 10) * gridIncrementX + gridIncrementX / 2
+                }
                 cy={y * gridIncrementY + gridIncrementY / 2}
                 r={radius}
                 fill={item[1]}
@@ -343,7 +316,6 @@ const BodyDataCompilation = ({
         key={`paths-${index}`}
         d={item[0].join("")}
         stroke={item[1]}
-        // opacity={0.7}
         fill="transparent"
         strokeWidth={item[2]}
         strokeLinecap="round"
@@ -366,7 +338,7 @@ const BodyDataCompilation = ({
     );
   };
 
-  const pad = 54;
+  const pad = 0;
 
   return (
     <View>

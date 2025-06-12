@@ -22,8 +22,9 @@ export const getLocalTime = (
   timeframe: "time" | "date" | "both" = "time",
   outputType: "string" | "date" = "string"
 ) => {
-  const gmtTime =
-    typeof dateTime === typeof "" ? new Date(dateTime) : (dateTime as Date);
+  // const gmtTime =
+  //   typeof dateTime === typeof "" ? new Date(dateTime) : (dateTime as Date);
+  const gmtTime = new Date(dateTime);
   const localTimeZoneOffset = new Date().getTimezoneOffset();
   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
 

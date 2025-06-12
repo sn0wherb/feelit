@@ -1,10 +1,4 @@
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState, memo } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,12 +11,11 @@ interface Props {
   passOpenDay: (logs: LogType[], digit: number) => void;
 }
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   const db = useSQLiteContext();
   const [logsOfToday, setLogsOfToday] = useState<LogType[]>([]);
-  const [color, setColor] = useState<String | null>(null);
 
   // Functions
   const getLogsOfToday = async (date: Date) => {
@@ -37,14 +30,6 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
       setLogsOfToday(data);
     } catch (e) {
       console.error(e);
-    }
-  };
-
-  const createBackgroundFromLogColors = (data: LogType[]) => {
-    if (data.length < 1) {
-      return;
-    } else {
-      setColor(data[0].color);
     }
   };
 

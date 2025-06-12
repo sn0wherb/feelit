@@ -1,7 +1,6 @@
 import { Stack } from "expo-router";
-import { StatusBar, Platform } from "react-native";
+import { StatusBar } from "react-native";
 import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
-// import "@/assets/i18n";
 
 export default function Layout() {
   const { queries } = require("../assets/SQL/queries.ts");
@@ -30,7 +29,6 @@ export default function Layout() {
           options={{
             animation: "fade_from_bottom",
             gestureEnabled: false,
-            // gestureDirection: "vertical",
           }}
         />
         <Stack.Screen name="logModal" />

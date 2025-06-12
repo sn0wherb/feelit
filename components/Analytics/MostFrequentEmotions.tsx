@@ -12,7 +12,7 @@ import { getLocalTime, uncapitalise } from "@/assets/functions";
 
 type TimeFrameType = "Day" | "Week" | "Month" | "Year" | "All-time";
 
-const { height, width } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const MostFrequentEmotions = () => {
   const db = useSQLiteContext();
@@ -128,8 +128,18 @@ const MostFrequentEmotions = () => {
     );
   };
 
-  // @ts-expect-error
-  const renderMostFrequentEmotions = ({ item, index }) => {
+  const renderMostFrequentEmotions = ({
+    item,
+    index,
+  }: {
+    item: {
+      emotion: string;
+      logCountByEmotion: number;
+      color: string;
+      created_at: string;
+    };
+    index: number;
+  }) => {
     // Create medals for top 3
     let fontSize,
       color,
@@ -312,7 +322,6 @@ export default MostFrequentEmotions;
 const styles = StyleSheet.create({
   timeFrameSelectButton: {},
   timeFrameButtonText: {
-    // textDecorationLine: "underline",
     fontSize: 20,
   },
   noEmotionsInThisTimeframe: {

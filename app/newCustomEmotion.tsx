@@ -1,5 +1,4 @@
 import {
-  Button,
   Dimensions,
   StyleSheet,
   Text,
@@ -8,11 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import {
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/Emotion Logging/Header";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -173,7 +168,6 @@ const styles = StyleSheet.create({
     backgroundColor: "beige",
   },
   fieldTitle: {
-    // textAlign: "center",
     fontSize: 24,
     marginBottom: 6,
   },

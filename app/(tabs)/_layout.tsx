@@ -2,8 +2,7 @@ import { Tabs, useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { TouchableHighlight, View } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { View } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import * as Updates from "expo-updates";
 
@@ -101,7 +100,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          href: null,
           title: "Settings",
           tabBarIcon: ({ color }) => (
             <AntDesign
@@ -110,33 +108,6 @@ export default function TabLayout() {
               style={{ height: 28, marginTop: 10 }}
               color={color}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="refresh"
-        listeners={{
-          tabPress: (event) => {
-            Updates.reloadAsync();
-            event.preventDefault();
-          },
-        }}
-        options={{
-          title: "refresh",
-          tabBarIcon: ({ color }) => (
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: 6,
-                height: 50,
-                width: 50,
-                borderRadius: 50,
-                backgroundColor: "#e1be8e",
-              }}
-            >
-              <FontAwesome name="refresh" size={24} color={color} />
-            </View>
           ),
         }}
       />

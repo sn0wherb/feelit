@@ -1,5 +1,4 @@
 import {
-  Button,
   Dimensions,
   StyleSheet,
   Text,
@@ -9,8 +8,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { getLocalTime, openLogModal, prettifyDate } from "@/assets/functions";
 
 type LogByHourType = { [hour: number]: LogType[] };
@@ -50,7 +47,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     let earliest = 24;
 
     data.forEach((log) => {
-      const time = Number(getLocalTime(log.created_at).slice(0, 2));
+      const time = Number((getLocalTime(log.created_at) as string).slice(0, 2));
 
       if (time < earliest) {
         earliest = time;
@@ -82,16 +79,6 @@ const DayDisplay = ({ data, onReturn }: Props) => {
           renderItem={renderLogsByHour}
         />
       </View>
-      /* <View
-              style={{
-                width: 0.02,
-                height: 0.4,
-                borderColor: "#aaa",
-                borderWidth: width * 0.002,
-                backgroundColor: "#aaa",
-                flexGrow: 1,
-              }}
-            ></View> */
     );
   };
 
@@ -115,7 +102,6 @@ const DayDisplay = ({ data, onReturn }: Props) => {
               height: 0.4,
               borderColor: "rgba(0,0,0,0.1)",
               borderWidth: width * 0.004,
-              // backgroundColor: "#aaa",
               flexGrow: 1,
             }}
           />
@@ -129,8 +115,6 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     return (
       <TouchableOpacity
         style={{
-          // position: "absolute",
-          // zIndex: 1,
           height: width * 0.22,
           width: width * 0.24,
           marginVertical: 6,
@@ -148,7 +132,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
           openLogModal(
             item,
             prettifyDate(item.created_at),
-            getLocalTime(item.created_at)
+            getLocalTime(item.created_at) as string
           )
         }
       >
@@ -183,7 +167,6 @@ const DayDisplay = ({ data, onReturn }: Props) => {
       style={{
         width: width,
         height: height * 0.5,
-        // paddingHorizontal: width * 0.04,
       }}
     >
       {/* Hours in day */}

@@ -1,9 +1,8 @@
-import { uncapitalise } from "@/assets/functions";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { router, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -141,13 +140,7 @@ const JournalField = ({
     );
   };
 
-  const renderSelectedSelectable = ({
-    item,
-    index,
-  }: {
-    item: SelectionType;
-    index: number;
-  }) => {
+  const renderSelectedSelectable = ({ item }: { item: SelectionType }) => {
     return (
       <View
         style={{
@@ -241,7 +234,6 @@ const JournalField = ({
     <View
       style={{
         width: width,
-        // flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
@@ -349,104 +341,6 @@ const JournalField = ({
       )}
     </View>
   );
-
-  if (!isOpen) {
-    if (type === "text") {
-      return (
-        <View
-          style={{
-            width: width,
-            // flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 20,
-            gap: 20,
-          }}
-        >
-          <View>
-            <Text style={{ fontSize: 18 }}>{title}</Text>
-          </View>
-          <TouchableOpacity
-            style={{
-              borderRadius: 100,
-              backgroundColor: "rgba(0,0,0,0.1)",
-              height: height * 0.08,
-              width: height * 0.08,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => setIsOpen(true)}
-          >
-            <AntDesign name="plus" size={28} color={"black"} />
-          </TouchableOpacity>
-        </View>
-      );
-    } else {
-      return (
-        <View
-          style={{ width: width, padding: 20, gap: 10, alignItems: "center" }}
-        >
-          <Text style={{ fontSize: 18 }}>{title}</Text>
-          <View style={{ paddingVertical: 8 }}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "rgba(0,0,0,0.1)",
-                padding: 10,
-                borderRadius: 20,
-              }}
-              onPress={() => {
-                setIsOpen(true);
-              }}
-            >
-              <AntDesign name="plus" size={18} color={"black"} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
-  }
-
-  if (type === "text") {
-    // Text field
-    return (
-      <View
-        style={{ width: width, padding: 20, gap: 10, alignItems: "center" }}
-      >
-        <Text style={{ fontSize: 18 }}>{title}</Text>
-        <TextInput
-          multiline={true}
-          numberOfLines={10}
-          placeholder={"Type here..."}
-          placeholderTextColor="#555"
-          //   onChangeText={(value) => {
-          //     passDiaryData("root", value);
-          //   }}
-          style={{
-            width: 320,
-            minHeight: 60,
-            height: "auto",
-            padding: 10,
-            marginTop: 6,
-            fontSize: 16,
-            borderRadius: 10,
-            backgroundColor: String(currentEmotion.color),
-            // Shadow
-            shadowColor: String(currentEmotion.color),
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.8,
-            shadowRadius: 8,
-          }}
-        />
-      </View>
-    );
-  } else {
-    // Selection field
-    return (
-      <View>
-        <Text>Person Selection Field</Text>
-      </View>
-    );
-  }
 };
 
 export default JournalField;

@@ -1,23 +1,6 @@
-import {
-  Button,
-  Dimensions,
-  GestureResponderEvent,
-  Image,
-  ImageBackground,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, ImageBackground, StyleSheet, View } from "react-native";
 import React, { useCallback, useState } from "react";
 import { Svg, Path } from "react-native-svg";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Slider from "@react-native-assets/slider";
-import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Octicons from "@expo/vector-icons/Octicons";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 interface Props {
@@ -26,13 +9,11 @@ interface Props {
   size?: number;
 }
 
-const { height, width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
   // Svg states
-  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]),
-    [svgData, setSvgData] = useState<SvgDataType[]>([]);
-
+  const [paths, setPaths] = useState<StrokeType[]>([[["M0,0"], "black", 1]]);
   const silhouetteImage = require("@/assets/images/silhouette_front.png");
 
   const db = useSQLiteContext();
@@ -78,7 +59,6 @@ const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
                   key={`paths-${index}`}
                   d={item[0].join("")}
                   stroke={item[1]}
-                  // opacity={0.7}
                   fill="transparent"
                   strokeWidth={item[2]}
                   strokeLinecap="round"

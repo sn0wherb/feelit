@@ -1,10 +1,7 @@
 import {
-  Button,
   Dimensions,
   GestureResponderEvent,
-  Image,
   ImageBackground,
-  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,7 +15,6 @@ import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Octicons from "@expo/vector-icons/Octicons";
-import { isColor } from "react-native-reanimated";
 
 interface Props {
   onButtonPress?: () => void;
@@ -113,7 +109,7 @@ const BodyDrawing = ({
   }, [paths]);
 
   return (
-    <View style={styles.container}>
+    <View>
       {/* Drawing */}
       <View
         style={styles.drawingBoard}
@@ -179,9 +175,6 @@ const BodyDrawing = ({
                 onValueChange={(value) => {
                   setCurrentSize(value);
                 }}
-                // onSlidingComplete={(value) => {
-                //   setCurrentSize(value);
-                // }}
               />
               <Octicons name="dot-fill" size={currentSize * 4} color="black" />
               <TouchableOpacity
@@ -237,7 +230,6 @@ const BodyDrawing = ({
                 }}
                 style={{ height: height * 0.05 }}
               >
-                {/* <AntDesign name="close" size={30} color="black" /> */}
                 <AntDesign
                   name="close"
                   size={30}
@@ -323,11 +315,6 @@ const BodyDrawing = ({
 export default BodyDrawing;
 
 const styles = StyleSheet.create({
-  container: {
-    // borderWidth: 2,
-    // flex: 1,
-    // backgroundColor: "white",
-  },
   drawingOptionModal: {
     flex: 1,
     justifyContent: "center",
@@ -342,10 +329,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#dcdcc5",
   },
   drawingBoard: {
-    // borderWidth: 5,
-    // borderColor: "rgba(0,0,0,0.1)",
-    // borderRadius: 10,
-    // margin: 10,
     height: height * 0.76,
     width: width,
     marginBottom: 6,

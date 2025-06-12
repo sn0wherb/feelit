@@ -10,17 +10,14 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Entypo from "@expo/vector-icons/Entypo";
 import BodyDrawing from "@/components/BodyDrawing/BodyDrawing";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
 import BodyDisplay from "@/components/BodyDrawing/BodyDisplay";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSQLiteContext } from "expo-sqlite";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
-import BodyDataCompilation from "@/components/BodyDrawing/BodyDataCompilation";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Journal from "@/components/Emotion Logging/Journal";
 import { sortDiaryData } from "@/assets/functions";
@@ -28,6 +25,7 @@ import { sortDiaryData } from "@/assets/functions";
 const { width, height } = Dimensions.get("window");
 
 export default function logModal() {
+  // ----------------------------
   // localSearchParams structure:
   // params["date"] = date;
   // params["time"] = time;
@@ -37,6 +35,7 @@ export default function logModal() {
   // params["need"] = need;
   // params["extra"] = extra;
   // params["id"] = id;
+  // ----------------------------
   const logData = useLocalSearchParams();
   const db = useSQLiteContext();
   const router = useRouter();
@@ -631,8 +630,6 @@ export default function logModal() {
   );
 }
 
-// export default logModal;
-
 const styles = StyleSheet.create({
   emotionDetailTitleBackground: {
     borderRadius: 30,
@@ -674,7 +671,6 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 20,
     width: width * 0.36,
-    // borderColor: "rgba(0,0,0,0.3)",
     borderBottomWidth: 2,
     borderLeftWidth: 2,
     borderRightWidth: 2,

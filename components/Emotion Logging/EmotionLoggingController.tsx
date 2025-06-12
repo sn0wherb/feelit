@@ -1,30 +1,5 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  ActivityIndicator,
-  FlatList,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  Touchable,
-  Pressable,
-  Alert,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import Emotion from "../RenderEmotion";
-import axios from "axios";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { Dimensions } from "react-native";
+import { View, StyleSheet } from "react-native";
 import BodyDrawing from "../BodyDrawing/BodyDrawing";
-import { useGlobalSearchParams, useRouter } from "expo-router";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useSQLiteContext } from "expo-sqlite";
-import { uncapitalise } from "@/assets/functions";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Feather from "@expo/vector-icons/Feather";
-import RenderEmotion from "../RenderEmotion";
 import EmotionDisplay from "./EmotionDisplay";
 import Journal from "./Journal";
 
@@ -48,8 +23,6 @@ interface Props {
   onUpdateSelectedPlaces: (people: SelectionType[]) => void;
 }
 
-const { width, height } = Dimensions.get("window");
-
 const EmotionLoggingController = ({
   level,
   data,
@@ -69,11 +42,6 @@ const EmotionLoggingController = ({
   selectedPlaces = [],
   onUpdateSelectedPlaces,
 }: Props) => {
-  const params = useGlobalSearchParams<{ level: string }>();
-
-  // States
-  const [bottomPadding, setBottomPadding] = useState(50);
-
   // Emotion selection
   switch (level) {
     case 1: // Fallthrough
@@ -126,30 +94,6 @@ const EmotionLoggingController = ({
   }
 };
 
-const styles = StyleSheet.create({
-  emotionContainer: {
-    flex: 1,
-    width: 170,
-    height: 70,
-    gap: 10,
-  },
-  start: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  startText: {
-    fontSize: 20,
-  },
-  button: {
-    marginTop: 50,
-    backgroundColor: "lightgreen",
-    width: 70,
-    height: 70,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-  },
-});
+const styles = StyleSheet.create({});
 
 export default EmotionLoggingController;

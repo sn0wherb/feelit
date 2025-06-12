@@ -1,6 +1,6 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import React, { useCallback } from "react";
-import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 const newCustomEmotionInit = () => {
   const router = useRouter();
@@ -11,16 +11,7 @@ const newCustomEmotionInit = () => {
     }, [])
   );
 
-  // const redirect = () => {
-  //   return <Redirect href={'/logNewEmotion'}/>
-  //   // router.push("/logNewEmotion");
-  // }
-
-  return (
-    <View style={{ flex: 1, backgroundColor: "beige" }}>
-      {/* <Redirect href={"/(tabs)/overview"} /> */}
-    </View>
-  );
+  return <View style={{ flex: 1, backgroundColor: "beige" }} />;
 };
 
 export default newCustomEmotionInit;

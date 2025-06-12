@@ -187,7 +187,6 @@ const ProfileSlide = ({ emotion }: Props) => {
         )
       ).filter((person): person is SelectionType => person !== null);
 
-      // return topPeople;
       setCommonPeople(topPeople);
     } catch (e) {
       console.error("Error getting common people:", e);
@@ -291,25 +290,31 @@ const ProfileSlide = ({ emotion }: Props) => {
     </View>
   );
 
+  const displayMargin = 16;
+
   return (
     <View>
       <ScrollView pagingEnabled>
         {/* Body */}
-        <BodyDataCompilation
-          size={bodyHeight}
-          emotion={emotion}
-          setLogData={handleSetLogData}
-        />
+        <View
+          style={{
+            borderWidth: 5,
+            borderColor: emotion.color,
+            borderRadius: 10,
+            marginTop: 60,
+            marginHorizontal: displayMargin,
+          }}
+        >
+          <BodyDataCompilation
+            size={bodyHeight}
+            emotion={emotion}
+            displayMargin={displayMargin}
+            setLogData={handleSetLogData}
+          />
+        </View>
 
         {/* Analytics */}
         <View>
-          {/* This would take a lot of word processing */}
-          {/* <View style={styles.section}>
-            <Text style={styles.title}>Most common cause</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.title}>Most common need</Text>
-          </View> */}
           {isAnalyticsLoading ? (
             <ActivityIndicator />
           ) : (

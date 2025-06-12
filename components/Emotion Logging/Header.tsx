@@ -7,9 +7,6 @@ import {
 } from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Redirect, useRouter } from "expo-router";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import Feather from "@expo/vector-icons/Feather";
 
 interface Props {
   level: number;
@@ -21,7 +18,7 @@ interface Props {
   type?: "person" | "place" | "emotion";
 }
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const Header = ({
   level,
@@ -32,8 +29,6 @@ const Header = ({
   custom = false,
   type = "emotion",
 }: Props) => {
-  const router = useRouter();
-
   // Create person header
   if (type === "person") {
     return (
@@ -220,7 +215,6 @@ const Header = ({
           <View
             style={{
               marginRight: 34,
-              // paddingHorizontal: 23,
               width: width * 0.7,
               height: 60,
               justifyContent: "center",
@@ -247,7 +241,6 @@ const Header = ({
           <View
             style={{
               marginRight: 34,
-              // paddingHorizontal: 23,
               width: width * 0.7,
               height: 60,
               justifyContent: "center",

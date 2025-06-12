@@ -1,4 +1,4 @@
-declare type EmotionType = {
+type EmotionType = {
   id: number;
   name: string;
   parent: string | null;

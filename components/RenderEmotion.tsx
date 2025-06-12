@@ -1,13 +1,5 @@
 import React, { ReactNode } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  GestureResponderEvent,
-  TouchableOpacity,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 interface Props {
   name: string | ReactNode;
@@ -51,6 +43,6 @@ const RenderEmotion = ({ name, color, onClick, hidden }: Props) => {
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 export default RenderEmotion;

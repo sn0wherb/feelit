@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import React, { memo, useEffect, useRef, useState } from "react";
 import RenderMonth from "./RenderMonth";
-// import { keyExtractor } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -37,7 +36,7 @@ const MonthDisplay = ({
   const monthFlatListRef = useRef<FlatList>(null);
 
   // Functions
-  const keyExtractor = (item: Date[]) => 'key-' + item[10].toString();
+  const keyExtractor = (item: Date[]) => "key-" + item[10].toString();
 
   const createThreeMonths = (
     yearNumber: number,
@@ -68,8 +67,6 @@ const MonthDisplay = ({
 
   const createMonth = (yearNumber: number, monthNumber: number) => {
     let month: Date[] = [];
-
-    // console.log(months[monthNumber]);
 
     // Get number of days in current month
     const dayCountOfMonth: number = getDayCountOfMonth(monthNumber);
@@ -102,7 +99,6 @@ const MonthDisplay = ({
         const lastWeekdayOfMonth = day.getDay();
         if (lastWeekdayOfMonth > 0) {
           const fillerDays = 7 - lastWeekdayOfMonth;
-          // console.log("filler: " + fillerDays);
           for (let k = 0; k < fillerDays; k++) {
             const nextMonthDay = new Date(day);
             nextMonthDay.setDate(day.getDate() + k);
@@ -256,7 +252,6 @@ const styles = StyleSheet.create({
   weekday: {
     width: width * 0.12,
     height: width * 0.06,
-    // borderWidth: 2,
     alignItems: "center",
     margin: 2,
   },

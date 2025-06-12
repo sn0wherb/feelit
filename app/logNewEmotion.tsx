@@ -3,17 +3,12 @@ import {
   Dimensions,
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
 import { useSQLiteContext } from "expo-sqlite";
-import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/Emotion Logging/Header";
-import EmotionDisplay from "@/components/Emotion Logging/EmotionLoggingController";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import SuccessScreen from "@/components/SuccessScreen";
 import Controls from "@/components/Emotion Logging/Controls";
 import EmotionLoggingController from "@/components/Emotion Logging/EmotionLoggingController";
@@ -39,7 +34,6 @@ export default function logNewEmotion() {
   const {
     stockEmotionData,
   } = require("./../assets/data/emotions/stockEmotionData.ts");
-  const { queries } = require("./../assets/SQL/queries.ts");
   const db = useSQLiteContext();
   const router = useRouter();
   const currentEmotion = emotionStack[emotionStack.length - 1];
@@ -58,8 +52,6 @@ export default function logNewEmotion() {
       getAllEmotions();
     }, [level, refresh])
   );
-
-  // console.log(data);
 
   // FUNCTIONS
   // Fetch all emotions in the current level, if level is higher than 1 then fetch all emotions in current level with current parent
@@ -90,9 +82,6 @@ export default function logNewEmotion() {
     customData.forEach((value) => {
       stockData.push(value);
     });
-
-    // console.log("customData", customData);
-    // console.log("stockData", stockData);
 
     // Hide hidden emotions
     stockData.forEach((value) => {
@@ -162,7 +151,6 @@ export default function logNewEmotion() {
     }
     setLevel(level + 1);
     setEmotionStack([...emotionStack, item]);
-    // console.log([...emotionStack, item]);
   };
 
   const handleUpdateSelectedPeople = (people: SelectionType[]) => {

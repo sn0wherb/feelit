@@ -1,5 +1,4 @@
 import {
-  Button,
   Dimensions,
   StyleSheet,
   Text,
@@ -15,7 +14,6 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 import { useSQLiteContext } from "expo-sqlite";
 import SuccessScreen from "@/components/SuccessScreen";
-import { uncapitalise } from "@/assets/functions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -167,7 +165,6 @@ const styles = StyleSheet.create({
     backgroundColor: "beige",
   },
   fieldTitle: {
-    // textAlign: "center",
     fontSize: 24,
     marginBottom: 6,
   },

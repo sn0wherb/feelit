@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Redirect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -28,8 +28,6 @@ const Controls = ({
   level,
   handleGoBack,
   handleSave,
-  color,
-  name,
   isEditingEnabled,
   toggleEditing,
   custom = false,
@@ -190,7 +188,6 @@ const Controls = ({
       return (
         <View
           style={{
-            // paddingHorizontal: 10,
             justifyContent: "center",
             alignItems: "center",
             height: 46,
@@ -212,7 +209,6 @@ const Controls = ({
       return (
         <View
           style={{
-            // paddingHorizontal: 10,
             justifyContent: "center",
             alignItems: "center",
             height: 46,

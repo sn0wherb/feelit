@@ -1,11 +1,9 @@
 import { uncapitalise } from "@/assets/functions";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useState } from "react";
 import {
   Dimensions,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -115,9 +113,6 @@ const Journal = ({
             position: "absolute",
             bottom: 20,
             right: 20,
-            // flexDirection: "row",
-            // justifyContent: "center",
-            // paddingBottom: 20,
           }}
         >
           <TouchableOpacity
@@ -143,9 +138,6 @@ const Journal = ({
             position: "absolute",
             bottom: 20,
             right: 20,
-            // flexDirection: "row",
-            // justifyContent: "center",
-            // paddingBottom: 20,
           }}
         >
           <TouchableOpacity

@@ -2,20 +2,16 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Modal,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
-import { useFocusEffect, useRouter } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import logModal from "../logModal";
+import { useFocusEffect } from "expo-router";
 import { getLocalTime, openLogModal, prettifyDate } from "@/assets/functions";
 
 type FormattedLogDataType = {
@@ -28,12 +24,9 @@ const { height, width } = Dimensions.get("window");
 const feed = () => {
   const [logData, setLogData] = useState<LogType[]>([]);
   const [logDataByDate, setLogDataByDate] = useState<FormattedLogDataType[]>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalData, setModalData] = useState<LogType>();
   const [loading, setLoading] = useState(true);
 
   const db = useSQLiteContext();
-  const router = useRouter();
 
   const getLogs = async () => {
     try {
@@ -73,16 +66,6 @@ const feed = () => {
     });
     setLogDataByDate(sortedData);
   };
-
-  // Originally local function
-  // const getLocalTime = (dateTime: string) => {
-  //   const gmtTime = new Date(dateTime);
-  //   const localTimeZoneOffset = new Date().getTimezoneOffset();
-  //   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
-  //   const time = gmtTime.toLocaleTimeString().slice(0, 5);
-
-  //   return time;
-  // };
 
   // Re-fetch log data whenever tab is focused
   useFocusEffect(

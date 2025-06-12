@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View, FlatList } from "react-native";
+import { Dimensions, StyleSheet, FlatList } from "react-native";
 import React, { memo } from "react";
 import RenderDay from "./RenderDay";
 import { keyExtractor } from "@/assets/functions";
@@ -68,8 +68,5 @@ const styles = StyleSheet.create({
     width: width,
     alignItems: "center",
     justifyContent: "center",
-    // padding: width * 0.02,
-    // flex: 1,
-    // borderWidth: 2,
   },
 });

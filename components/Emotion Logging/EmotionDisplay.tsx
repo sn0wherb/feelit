@@ -125,8 +125,6 @@ const EmotionDisplay = ({
         >
           <FlatList
             contentContainerStyle={{
-              // alignItems: "center",
-              // justifyContent: "center",
               flex: 1,
               paddingTop: 10,
               paddingBottom: 10,
