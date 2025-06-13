@@ -42,7 +42,7 @@ export const openLogModal = (log: LogType, date: string, time: string) => {
   params["date"] = date;
   params["time"] = time;
   router.push({
-    pathname: "/logModal",
+    pathname: "/pages/logModal",
     params: params,
   });
 };

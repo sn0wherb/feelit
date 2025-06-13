@@ -31,13 +31,12 @@ export default function logNewEmotion() {
   const [isEditingEnabled, setIsEditingEnabled] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<SelectionType[]>([]);
   const [selectedPlaces, setSelectedPlaces] = useState<SelectionType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // ---------------------
   // CONSTS
   // ---------------------
-  const {
-    stockEmotionData,
-  } = require("./../assets/data/emotions/stockEmotionData.ts");
+  const { stockEmotionData } = require("@/assets/stockEmotionData");
   const db = useSQLiteContext();
   const router = useRouter();
   const currentEmotion = emotionStack[emotionStack.length - 1];
@@ -83,6 +82,7 @@ export default function logNewEmotion() {
     });
 
     setData(stockData);
+    setIsLoading(false);
   };
 
   const getHiddenEmotions = async () => {
@@ -287,25 +287,27 @@ export default function logNewEmotion() {
               isEditingEnabled={isEditingEnabled}
             />
 
-            <EmotionLoggingController
-              level={level}
-              data={data}
-              currentEmotion={currentEmotion}
-              passHandleClickEmotion={handleClickEmotion}
-              handleCreateLog={handleCreateLog}
-              bodyDrawingData={bodyDrawingData}
-              passBodyDrawingData={updateBodyDrawingData}
-              diaryData={diaryData}
-              passDiaryData={updateDiaryData}
-              isEditingEnabled={isEditingEnabled}
-              passToggleEditing={handleToggleEditing}
-              refresh={getAllEmotions}
-              onToggleHideEmotion={handleToggleHideEmotion}
-              selectedPeople={selectedPeople}
-              onUpdateSelectedPeople={handleUpdateSelectedPeople}
-              selectedPlaces={selectedPlaces}
-              onUpdateSelectedPlaces={handleUpdateSelectedPlaces}
-            />
+            {!isLoading && (
+              <EmotionLoggingController
+                level={level}
+                data={data}
+                currentEmotion={currentEmotion}
+                passHandleClickEmotion={handleClickEmotion}
+                handleCreateLog={handleCreateLog}
+                bodyDrawingData={bodyDrawingData}
+                passBodyDrawingData={updateBodyDrawingData}
+                diaryData={diaryData}
+                passDiaryData={updateDiaryData}
+                isEditingEnabled={isEditingEnabled}
+                passToggleEditing={handleToggleEditing}
+                refresh={getAllEmotions}
+                onToggleHideEmotion={handleToggleHideEmotion}
+                selectedPeople={selectedPeople}
+                onUpdateSelectedPeople={handleUpdateSelectedPeople}
+                selectedPlaces={selectedPlaces}
+                onUpdateSelectedPlaces={handleUpdateSelectedPlaces}
+              />
+            )}
             <Controls
               level={level}
               handleGoBack={handleGoBack}

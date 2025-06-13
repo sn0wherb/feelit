@@ -21,7 +21,7 @@ const settings = () => {
   // ---------------------
   // FUNCTIONS
   // ---------------------
-  const openPanel = (title: "adminPanel" | "language" | "theme" | "about") => {
+  const openPanel = (title: "about") => {
     router.push(`/settings/${title}`);
   };
 

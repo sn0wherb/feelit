@@ -5,13 +5,12 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 interface Props {
   logId: number;
-  emotion?: string;
   size?: number;
 }
 
 const { height } = Dimensions.get("window");
 
-const BodyDisplay = ({ logId, emotion, size = 0.76 }: Props) => {
+const BodyDisplay = ({ logId, size = 0.76 }: Props) => {
   // ---------------------
   // CONSTS
   // ---------------------

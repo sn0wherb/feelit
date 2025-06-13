@@ -18,9 +18,7 @@ const profiles = () => {
   // ---------------------
   // CONSTS
   // ---------------------
-  const {
-    stockEmotionData,
-  } = require("@/assets/data/emotions/stockEmotionData");
+  const { stockEmotionData } = require("@/assets/stockEmotionData");
 
   // ---------------------
   // STATES

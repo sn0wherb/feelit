@@ -34,9 +34,7 @@ const BodyDataCompilation = ({
   // CONSTS
   // ---------------------
   const silhouetteImage = require("@/assets/images/silhouette_front.png");
-  const {
-    stockEmotionData,
-  } = require("@/assets/data/emotions/stockEmotionData");
+  const { stockEmotionData } = require("@/assets/stockEmotionData");
 
   const db = useSQLiteContext();
 
@@ -56,7 +54,7 @@ const BodyDataCompilation = ({
     const children = await getChildrenEmotions(emotion);
     let logQuery = `emotion = '${emotion.name}' `;
     if (children) {
-      children?.forEach((value, index) => {
+      children?.forEach((value) => {
         logQuery += `OR emotion = '${value}'`;
       });
     } else {

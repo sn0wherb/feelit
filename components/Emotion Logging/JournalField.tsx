@@ -63,7 +63,7 @@ const JournalField = ({
 
   const createNewSelectable = () => {
     router.push({
-      pathname: "/createNewSelectable",
+      pathname: "/pages/createNewSelectable",
       params: { type: type === "person" ? "people" : "places" },
     });
   };
