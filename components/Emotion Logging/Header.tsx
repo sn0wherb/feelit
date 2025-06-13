@@ -32,7 +32,7 @@ const Header = ({
   // ---------------------
   // COMPONENT
   // ---------------------
-  if (type === "person") {
+  if (type !== "emotion") {
     return (
       <View
         style={{
@@ -59,7 +59,7 @@ const Header = ({
             <AntDesign name="close" size={26} color="black" />
           </TouchableOpacity>
         </View>
-        <Text style={{ fontSize: 28, marginLeft: 16 }}>Add new person</Text>
+        <Text style={{ fontSize: 28, marginLeft: 16 }}>Add new {type}</Text>
       </View>
     );
   }

@@ -132,38 +132,24 @@ export default function logModal() {
   };
 
   const handleCancelChanges = () => {
-    if (
-      diaryData.root !== String(logData.root) ||
-      diaryData.need !== String(logData.need) ||
-      diaryData.extra !== String(logData.extra) ||
-      newPeople.some((person) => !logPeople.some((p) => p.id == person.id)) ||
-      newPeople.length !== logPeople.length ||
-      paths.length !== originalPaths.length ||
-      paths[paths.length - 1] !== originalPaths[originalPaths.length - 1] ||
-      newPlaces.some((place) => !logPlaces.some((p) => p.id == place.id)) ||
-      newPlaces.length !== logPlaces.length
-    ) {
-      Alert.alert("Discard changes?", "Your changes won't be saved.", [
-        {
-          text: "Discard",
-          style: "destructive",
-          onPress: () => {
-            setIsEditingEnabled(false);
-            setDiaryData({
-              root: String(logData.root),
-              need: String(logData.need),
-              extra: String(logData.extra),
-            });
-            setNewPeople(logPeople);
-          },
+    Alert.alert("Discard changes?", "Your changes won't be saved.", [
+      {
+        text: "Discard",
+        style: "destructive",
+        onPress: () => {
+          setIsEditingEnabled(false);
+          setDiaryData({
+            root: String(logData.root),
+            need: String(logData.need),
+            extra: String(logData.extra),
+          });
+          setNewPeople(logPeople);
         },
-        {
-          text: "Resume editing",
-        },
-      ]);
-    } else {
-      setIsEditingEnabled(false);
-    }
+      },
+      {
+        text: "Resume editing",
+      },
+    ]);
   };
 
   const handleSaveChanges = async () => {
@@ -413,7 +399,11 @@ export default function logModal() {
             }}
           >
             <Journal
-              initialFieldState={true}
+              initialFieldState={[
+                diaryData.root ? true : false,
+                diaryData.need ? true : false,
+                diaryData.extra ? true : false,
+              ]}
               currentEmotion={{
                 // Hack because i'm too lazy to redo the whole stock emotion system
                 id: 0,

@@ -21,7 +21,7 @@ interface Props {
   selectedPlaces: SelectionType[];
   onUpdateSelectedPeople: (people: SelectionType[]) => void;
   onUpdateSelectedPlaces: (places: SelectionType[]) => void;
-  initialFieldState?: boolean;
+  initialFieldState?: [boolean, boolean, boolean];
   editMode?: boolean;
 }
 
@@ -34,7 +34,7 @@ const Journal = ({
   selectedPlaces,
   onUpdateSelectedPeople,
   onUpdateSelectedPlaces,
-  initialFieldState = false,
+  initialFieldState = [false, false, false],
   editMode = false,
 }: Props) => {
   // ---------------------
@@ -66,7 +66,7 @@ const Journal = ({
         >
           {/* Root */}
           <JournalField
-            initialFieldState={initialFieldState}
+            initialFieldState={initialFieldState[0]}
             title={"Why do you feel " + uncapitalise(currentEmotion.name) + "?"}
             value={diaryData?.root}
             onChangeText={(value) => {
@@ -76,7 +76,7 @@ const Journal = ({
           />
           {/* Need */}
           <JournalField
-            initialFieldState={initialFieldState}
+            initialFieldState={initialFieldState[1]}
             title={"What do you need in this moment?"}
             value={diaryData?.need}
             onChangeText={(value) => {
@@ -102,7 +102,7 @@ const Journal = ({
           />
           {/* Diary */}
           <JournalField
-            initialFieldState={initialFieldState}
+            initialFieldState={initialFieldState[2]}
             title={"Free write"}
             onChangeText={(value) => {
               passDiaryData("extra", value);

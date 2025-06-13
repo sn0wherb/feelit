@@ -259,7 +259,6 @@ export default function logNewEmotion() {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("called");
       getAllEmotions();
     }, [level, refresh])
   );
@@ -306,6 +305,11 @@ export default function logNewEmotion() {
                 onUpdateSelectedPeople={handleUpdateSelectedPeople}
                 selectedPlaces={selectedPlaces}
                 onUpdateSelectedPlaces={handleUpdateSelectedPlaces}
+                initialFieldState={[
+                  diaryData?.root ? true : false,
+                  diaryData?.need ? true : false,
+                  diaryData?.extra ? true : false,
+                ]}
               />
             )}
             <Controls

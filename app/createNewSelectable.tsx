@@ -43,7 +43,7 @@ const createNewSelectable = () => {
     try {
       await db.runAsync(
         `INSERT INTO ${
-          type === "person" ? "people" : "places"
+          type == "person" ? "people" : "places"
         } (name, color) VALUES (?,?)`,
         [title, newColor]
       );

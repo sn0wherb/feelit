@@ -69,7 +69,7 @@ const EmotionDisplay = ({
       ? { level: level, name: currentEmotion.name, color: currentEmotion.color }
       : { level: level };
     router.push({
-      pathname: "/pages/newCustomEmotion",
+      pathname: "/newCustomEmotion",
       params: params,
     });
   };

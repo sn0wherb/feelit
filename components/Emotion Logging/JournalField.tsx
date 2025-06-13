@@ -1,16 +1,21 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
+import * as Haptics from "expo-haptics";
 import {
+  Alert,
   Dimensions,
   FlatList,
+  Pressable,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 interface Props {
   title: string;
@@ -47,13 +52,14 @@ const JournalField = ({
   const [isOpen, setIsOpen] = useState(initialFieldState);
   const [isSelectableModalOpen, setIsSelectableModalOpen] = useState(false);
   const [data, setData] = useState<SelectionType[]>([]);
+  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
 
   // ---------------------
   // FUNCTIONS
   // ---------------------
   const getData = async () => {
     const data = await db.getAllAsync<SelectionType>(
-      `SELECT * FROM ${type === "person" ? "people" : "places"}`
+      `SELECT * FROM ${type == "person" ? "people" : "places"}`
     );
     setData([
       ...data,
@@ -63,9 +69,45 @@ const JournalField = ({
 
   const createNewSelectable = () => {
     router.push({
-      pathname: "/pages/createNewSelectable",
-      params: { type: type === "person" ? "people" : "places" },
+      pathname: "/createNewSelectable",
+      params: { type: type },
     });
+  };
+
+  const handleDeleteSelectable = (item: SelectionType) => {
+    Alert.alert(
+      `Delete ${type}?`,
+      `${item.name} will be permanently deleted.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => confirmDeleteSelectable(item),
+          style: "destructive",
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteSelectable = async (item: SelectionType) => {
+    // Unselect item if it was selected
+    if (selectedData.some((selectable) => selectable.id === item.id)) {
+      onUpdateSelectedData?.(
+        selectedData.filter((selectable) => selectable.id !== item.id)
+      );
+    }
+    try {
+      await db.runAsync(
+        `DELETE FROM ${type == "person" ? "people" : "places"} WHERE id = ?`,
+        [Number(item.id)]
+      );
+      getData();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const renderSelectable = ({
@@ -75,35 +117,38 @@ const JournalField = ({
     item: SelectionType;
     index: number;
   }) => {
-    // Add new person
+    // Add new person button (only rendered, when editing isn't enabled)
     if (index === data.length - 1) {
-      return (
-        <View style={{ paddingVertical: 4 }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "rgba(0,0,0,0.1)",
-              padding: 10,
-              borderRadius: 20,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-            }}
-            onPress={() => {
-              createNewSelectable();
-            }}
-          >
-            <AntDesign name="plus" size={18} color={"black"} />
-            <Text style={{ fontSize: 16 }}>Add {type}</Text>
-          </TouchableOpacity>
-        </View>
-      );
+      if (!isEditingEnabled) {
+        return (
+          <View style={{ paddingVertical: 4 }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "rgba(0,0,0,0.1)",
+                padding: 10,
+                borderRadius: 20,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+              }}
+              onPress={() => {
+                createNewSelectable();
+              }}
+            >
+              <AntDesign name="plus" size={18} color={"black"} />
+              <Text style={{ fontSize: 16 }}>Add {type}</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+      return <View />;
     }
 
     // Existing person
     return (
       <View style={{ paddingVertical: 4 }}>
-        {selectedData.some((selectable) => selectable.id === item.id) && (
-          <View
+        {isEditingEnabled ? (
+          <TouchableOpacity
             style={{
               position: "absolute",
               zIndex: 1,
@@ -118,8 +163,37 @@ const JournalField = ({
               justifyContent: "center",
               alignItems: "center",
             }}
+            onPress={() => handleDeleteSelectable(item)}
           >
-            <FontAwesome6 name="check" size={16} color="black" />
+            <MaterialCommunityIcons
+              name="trash-can-outline"
+              size={16}
+              color="black"
+            />
+          </TouchableOpacity>
+        ) : (
+          <View>
+            {/* If element is selected, render checkmark on it */}
+            {selectedData.some((selectable) => selectable.id === item.id) && (
+              <View
+                style={{
+                  position: "absolute",
+                  zIndex: 1,
+                  elevation: 1,
+                  top: 0,
+                  right: 0,
+                  backgroundColor: "rgba(227, 215, 183, 0.8)",
+                  padding: 4,
+                  borderRadius: 100,
+                  height: 24,
+                  width: 24,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesome6 name="check" size={16} color="black" />
+              </View>
+            )}
           </View>
         )}
         <TouchableOpacity
@@ -184,7 +258,7 @@ const JournalField = ({
   // ---------------------
   if (isSelectableModalOpen) {
     return (
-      <View
+      <Pressable
         style={{
           width: width,
           height: height,
@@ -196,9 +270,17 @@ const JournalField = ({
           justifyContent: "center",
           alignItems: "center",
         }}
+        onLongPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          setIsEditingEnabled(true);
+        }}
       >
         <TouchableOpacity
-          onPress={() => setIsSelectableModalOpen(false)}
+          onPress={() =>
+            isEditingEnabled
+              ? setIsEditingEnabled(false)
+              : setIsSelectableModalOpen(false)
+          }
           style={{
             position: "absolute",
             zIndex: 2,
@@ -214,7 +296,11 @@ const JournalField = ({
             width: 40,
           }}
         >
-          <AntDesign name="close" size={30} color="black" />
+          {isEditingEnabled ? (
+            <MaterialIcons name="edit-off" size={24} color="black" />
+          ) : (
+            <AntDesign name="close" size={30} color="black" />
+          )}
         </TouchableOpacity>
         <View
           style={{
@@ -241,7 +327,7 @@ const JournalField = ({
             renderItem={renderSelectable}
           />
         </View>
-      </View>
+      </Pressable>
     );
   }
 

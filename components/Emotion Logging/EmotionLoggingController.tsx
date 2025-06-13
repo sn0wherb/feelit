@@ -21,6 +21,7 @@ interface Props {
   onUpdateSelectedPeople: (people: SelectionType[]) => void;
   selectedPlaces: SelectionType[];
   onUpdateSelectedPlaces: (people: SelectionType[]) => void;
+  initialFieldState?: [boolean, boolean, boolean];
 }
 
 const EmotionLoggingController = ({
@@ -41,6 +42,7 @@ const EmotionLoggingController = ({
   onUpdateSelectedPeople,
   selectedPlaces = [],
   onUpdateSelectedPlaces,
+  initialFieldState = [false, false, false],
 }: Props) => {
   // ---------------------
   // COMPONENT
@@ -90,6 +92,7 @@ const EmotionLoggingController = ({
             onUpdateSelectedPeople={onUpdateSelectedPeople}
             selectedPlaces={selectedPlaces}
             onUpdateSelectedPlaces={onUpdateSelectedPlaces}
+            initialFieldState={initialFieldState}
           />
         </View>
       );

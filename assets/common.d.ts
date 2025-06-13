@@ -41,4 +41,4 @@ type DiaryType = {
   extra: string | undefined;
 };
 
-type YearType = [Date[]];
+type MonthCollectionType = [Date[]];

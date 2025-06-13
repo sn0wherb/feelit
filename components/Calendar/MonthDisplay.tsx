@@ -35,7 +35,7 @@ const MonthDisplay = ({
   // ---------------------
   // STATES
   // ---------------------
-  const [threeMonths, setThreeMonths] = useState<YearType>([[]]);
+  const [threeMonths, setThreeMonths] = useState<MonthCollectionType>([[]]);
 
   // ---------------------
   // REFS
@@ -51,7 +51,7 @@ const MonthDisplay = ({
     yearNumber: number,
     currentMonthNumber: number
   ) => {
-    let months: YearType = [[]];
+    let months: MonthCollectionType = [[]];
     months.pop(); // There's probably a beter way to initialize an empty typed array
 
     // Insert previous, current and next month

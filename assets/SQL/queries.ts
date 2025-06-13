@@ -3,7 +3,7 @@ const queries: { [key: string]: string } = {
   CREATE TABLE IF NOT EXISTS user_created_emotions (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, parent TEXT, color TEXT, level INTEGER, isCustom INTEGER DEFAULT 1);
   `,
   createLogTable: `
-  CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion TEXT, color TEXT, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP, isEdited INTEGER DEFAULT 0);
+  CREATE TABLE IF NOT EXISTS emotion_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, emotion TEXT, color TEXT, root TEXT, need TEXT, extra TEXT, created_at DATATIME DEFAULT CURRENT_TIMESTAMP);
   `,
   createLog: `
   INSERT INTO emotion_logs (emotion, root, need, extra) VALUES (?,?,?,?);

@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { getLocalTime, keyExtractor, uncapitalise } from "@/assets/functions";
-import BodyDataCompilation from "./BodyDataCompilation";
+import BodyDataCompilation from "../BodyDrawing/BodyDataCompilation";
 import { memo, useState } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 

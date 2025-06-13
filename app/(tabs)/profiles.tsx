@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
 import { keyExtractor } from "@/assets/functions";
 import DotNavigation from "@/components/Profiles/DotNavigation";
-import ProfileSlide from "@/components/BodyDrawing/ProfileSlide";
+import ProfileSlide from "@/components/Profiles/ProfileSlide";
 
 const { width, height } = Dimensions.get("window");
 
