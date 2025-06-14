@@ -24,7 +24,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
   // STATES
   // ---------------------
   const [logsByHour, setLogsByHour] = useState<LogByHourType>([]);
-  const [startIndex, setStartIndex] = useState<number | null>(null);
+  const [startIndex, setStartIndex] = useState<number | undefined>(undefined);
 
   // ---------------------
   // VARIABLES
@@ -67,8 +67,11 @@ const DayDisplay = ({ data, onReturn }: Props) => {
         : (logsByHour[time] = [log]);
     });
     earliest > 0 ? setStartIndex(earliest - 1) : setStartIndex(earliest);
+
     setLogsByHour(logsByHour);
   };
+
+  console.log(startIndex);
 
   const renderLogs = (index: number) => {
     return (
@@ -135,7 +138,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
         onPress={() =>
           openLogModal(
             item,
-            prettifyDate(item.created_at),
+            prettifyDate(getLocalTime(item.created_at, "both") as string),
             getLocalTime(item.created_at) as string
           )
         }
@@ -181,7 +184,7 @@ const DayDisplay = ({ data, onReturn }: Props) => {
       }}
     >
       {/* Hours in day */}
-      {startIndex ? (
+      {startIndex != undefined ? (
         <FlatList
           contentContainerStyle={{ flexGrow: 1 }}
           initialScrollIndex={startIndex}

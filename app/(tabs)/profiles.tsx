@@ -63,7 +63,8 @@ const profiles = () => {
   }: {
     viewableItems: ViewToken[];
   }) => {
-    viewableItems[0].index && setSelectedEmotion(viewableItems[0].index);
+    viewableItems[0].index != null &&
+      setSelectedEmotion(viewableItems[0].index);
   };
 
   // ---------------------

@@ -21,15 +21,19 @@ export const getLocalTime = (
   // const gmtTime =
   //   typeof dateTime === typeof "" ? new Date(dateTime) : (dateTime as Date);
   const gmtTime = new Date(dateTime);
+
+  if (timeframe === "both") {
+    const dateArray = gmtTime.toLocaleDateString().split("/");
+    return `${dateArray[2]}-${dateArray[1]}-${
+      dateArray[0]
+    }T${gmtTime.toLocaleTimeString()}Z`;
+  }
+
   const localTimeZoneOffset = new Date().getTimezoneOffset();
   gmtTime.setMinutes(gmtTime.getMinutes() - localTimeZoneOffset);
 
   if (timeframe === "time") {
     return gmtTime.toLocaleTimeString().slice(0, 5);
-  } else if (timeframe === "both") {
-    return `${gmtTime
-      .toLocaleDateString()
-      .slice(5, 9)} ${gmtTime.toLocaleTimeString()}`;
   } else {
     return outputType === "date"
       ? gmtTime
@@ -50,9 +54,11 @@ export const openLogModal = (log: LogType, date: string, time: string) => {
 export const prettifyDate = (date: string) => {
   let prettyDate = "";
   let dateFormat = new Date(date);
+  // Year
   const yearString = String(dateFormat.getFullYear());
   const currentYearString = String(today.getFullYear());
   const isItCurrentYear = yearString == currentYearString ? true : false;
+  // Month
   const monthString = String(
     dateFormat.toLocaleDateString("default", { month: "long" })
   );

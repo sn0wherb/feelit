@@ -57,7 +57,8 @@ const feed = () => {
 
     // Iterate through each log
     data.map((value) => {
-      const date = prettifyDate(value.created_at);
+      const localDate = getLocalTime(value.created_at, "both") as string;
+      const date = prettifyDate(localDate);
 
       // INSERT LOG
       // Empty index - initialize entry on current index

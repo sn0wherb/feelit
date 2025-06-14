@@ -26,7 +26,7 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   const db = useSQLiteContext();
 
   const today = new Date().toLocaleDateString();
-  const fullDateString = getLocalTime(fullDate, "date");
+  const fullDateString = getLocalTime(fullDate, "date") as string;
   const isToday = today === fullDateString;
 
   const colors: ColorValue[] = [];
@@ -40,15 +40,30 @@ const RenderDay = ({ digit, bounds, fullDate, passOpenDay }: Props) => {
   // FUNCTIONS
   // ---------------------
   const getLogsOfToday = async (date: Date) => {
+    const yesterdayDate = date;
+    yesterdayDate.setDate(date.getDate() - 1);
+    const yesterdayString = yesterdayDate.toISOString().slice(0, 10);
     const dateString = date.toISOString().slice(0, 10);
+    const tomorrowDate = date;
+    tomorrowDate.setDate(date.getDate() + 1);
+    const tomorrowString = yesterdayDate.toISOString().slice(0, 10);
+
+    // Get yesterday's, today's and tomorrow's logs
     try {
       const data = await db.getAllAsync<LogType>(
         `SELECT *
               FROM emotion_logs
-              WHERE created_at LIKE '${dateString}%'
+              WHERE created_at LIKE '${yesterdayString}%' OR created_at LIKE '${dateString}%' OR created_at LIKE '${tomorrowString}%'
               ORDER BY created_at ASC`
       );
-      setLogsOfToday(data);
+      // Go through all logs and convert date to local time
+      let filteredData: LogType[] = [];
+      data.forEach((log) => {
+        // If local time date falls in today, add it to data
+        getLocalTime(log.created_at, "date").toString().slice(0, 10) ==
+          fullDateString.slice(0, 10) && filteredData.push(log);
+      });
+      setLogsOfToday(filteredData);
     } catch (e) {
       console.error(e);
     }
