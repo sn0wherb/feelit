@@ -9,7 +9,6 @@ interface Props {
 const { width, height } = Dimensions.get("window");
 
 const DotNavigation = ({ items, selected }: Props) => {
-  console.log(selected);
   // ---------------------
   // FUNCTIONS
   // ---------------------

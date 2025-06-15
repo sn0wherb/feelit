@@ -158,8 +158,6 @@ const ProfileSlide = ({ emotion }: Props) => {
           `SELECT person_id FROM emotion_log_people WHERE log_id = ${log.id}`
         );
 
-        // console.log(associatedPeople);
-
         // For each associated person
         for (const { person_id } of associatedPeople) {
           // Find if this person already exists in our counts array
@@ -209,8 +207,6 @@ const ProfileSlide = ({ emotion }: Props) => {
         const associatedPlaces = await db.getAllAsync<{ place_id: number }>(
           `SELECT place_id FROM emotion_log_places WHERE log_id = ${log.id}`
         );
-
-        // console.log(associatedPeople);
 
         // For each associated place
         for (const { place_id } of associatedPlaces) {

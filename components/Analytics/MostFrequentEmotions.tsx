@@ -46,39 +46,31 @@ const MostFrequentEmotions = () => {
   // ---------------------
   const getMostFrequentEmotions = async (timeFrame: TimeFrameType) => {
     let timeFrameSQL: string = "";
-    const today = getLocalTime(new Date(), "date", "date") as Date;
+    // getTimezoneOffset returns offset **in minutes** from UTC, with **sign flipped**
+    const offsetMinutes = -new Date().getTimezoneOffset(); // e.g., +180 for UTC+3
+    const sign = offsetMinutes >= 0 ? "+" : "-";
+    const absMinutes = Math.abs(offsetMinutes);
+    const hours = Math.floor(absMinutes / 60);
+    const minutes = absMinutes % 60;
+    const timeZoneOffsetString =
+      minutes === 0
+        ? `${sign}${hours} hours`
+        : `${sign}${hours} hours ${minutes} minutes`;
+
     switch (timeFrame) {
       case "Day":
-        timeFrameSQL = `created_at LIKE '${today.toISOString().slice(0, 10)}%'`;
-        console.log(timeFrameSQL);
+        timeFrameSQL = `datetime(created_at, '+3 hours') >= date('now', 'localtime')
+  AND datetime(created_at, '+3 hours') < date('now', 'localtime', '+1 day');`;
         break;
       case "Week":
-        // Get number of current day
-        const currentDayNumber = today.getDay();
-        // Subtract current day's number from current day's date (js Date weekdays are 0-6, where 0 is Sunday, so we take 1 less day off to get Monday instead)
-        const mondayOfThisWeek = new Date();
-        mondayOfThisWeek.setDate(today.getDate() - (currentDayNumber - 1));
-        // Create SQL query beginning
-        const weekDay = new Date();
-        timeFrameSQL = "created_at LIKE ";
-        // Compose SQL query with each day in this week up to current day
-        for (let i = 0; i < currentDayNumber; i++) {
-          if (i != currentDayNumber - 1) {
-            weekDay.setDate(mondayOfThisWeek.getDate() + i);
-            timeFrameSQL += `'${weekDay
-              .toISOString()
-              .slice(0, 10)}%' OR created_at LIKE `;
-          } else {
-            weekDay.setDate(mondayOfThisWeek.getDate() + i);
-            timeFrameSQL += `'${weekDay.toISOString().slice(0, 10)}%'`;
-          }
-        }
+        timeFrameSQL += `date(datetime(created_at, '${timeZoneOffsetString}')) BETWEEN date('now', 'localtime', '-6 days')
+                          AND date('now', 'localtime')`;
         break;
       case "Month":
-        timeFrameSQL = `created_at LIKE '${today.toISOString().slice(0, 7)}%'`;
+        timeFrameSQL = `strftime('%Y-%m', datetime(created_at, '${timeZoneOffsetString}')) = strftime('%Y-%m', 'now', 'localtime')`;
         break;
       case "Year":
-        timeFrameSQL = `created_at LIKE '${today.toISOString().slice(0, 4)}%'`;
+        timeFrameSQL = `strftime('%Y', datetime(created_at, '${timeZoneOffsetString}')) = strftime('%Y', 'now', 'localtime')`;
         break;
       default:
         // All-time

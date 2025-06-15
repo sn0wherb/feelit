@@ -202,25 +202,28 @@ const BodyDataCompilation = ({
     const locate = (
       point: number,
       axis: "x" | "y",
-      start: number = 0,
-      end: number = gridSections - 1
+      startIndex: number = 0,
+      endIndex: number = gridSections - 1
     ) => {
-      if (start >= end) return start;
+      if (startIndex >= endIndex) return startIndex;
 
-      const mid = Math.floor((start + end) / 2);
-      const midPoint = mid * (axis === "x" ? gridIncrementX : gridIncrementY);
+      //
+      const midIndex = Math.floor((startIndex + endIndex) / 2);
+      const midPoint =
+        midIndex * (axis === "x" ? gridIncrementX : gridIncrementY);
 
+      // If point is between 2 rows or columns, return the index of
       if (
         point >= midPoint &&
         point < midPoint + (axis === "x" ? gridIncrementX : gridIncrementY)
       ) {
-        return mid;
+        return midIndex;
       }
 
       if (point < midPoint) {
-        return locate(point, axis, start, mid);
+        return locate(point, axis, startIndex, midIndex);
       } else {
-        return locate(point, axis, mid + 1, end);
+        return locate(point, axis, midIndex + 1, endIndex);
       }
     };
 
@@ -230,34 +233,36 @@ const BodyDataCompilation = ({
     for (let i = 0; i < data.length; i++) {
       // Go through all points in current path
       for (let j = 0; j < data[i][0].length; j++) {
-        const stroke = data[i][0][j];
-        const pointsStrings = [...stroke.matchAll(regExAll)];
-        const points = [Number(pointsStrings[0]), Number(pointsStrings[1])];
-
-        // console.log(points);
+        const point = data[i][0][j];
+        const pointsStrings = [...point.matchAll(regExAll)];
+        const coordinates = [
+          Number(pointsStrings[0]),
+          Number(pointsStrings[1]),
+        ];
 
         if (data[i][1] !== "black") {
           // Locate point in grid
-          const x = locate(points[0], "x"),
-            y = locate(points[1], "y");
+          const x = locate(coordinates[0], "x"),
+            y = locate(coordinates[1], "y");
 
           const getColor = (value: [number, string]) => {
             return value[1] === data[i][1];
           };
 
-          const currentLocation = gridData[x][y];
+          const currentCell = gridData[x][y];
 
-          const thisColorIndex = currentLocation.findIndex(getColor);
+          // Go through all colors in this cell. If a point with this color already exists in this cell, return the index of this point.
+          const thisColorIndex = currentCell.findIndex(getColor);
 
           let addedPointValue;
           // If point of this color exists, increment count
           if (thisColorIndex > -1) {
-            currentLocation[thisColorIndex][0]++;
-            addedPointValue = currentLocation[thisColorIndex][0];
+            currentCell[thisColorIndex][0]++;
+            addedPointValue = currentCell[thisColorIndex][0];
           } else {
             // If point of this color does not exist, create it
-            currentLocation.push([1, data[i][1]]);
-            addedPointValue = currentLocation[currentLocation.length - 1][0];
+            currentCell.push([1, data[i][1]]);
+            addedPointValue = currentCell[currentCell.length - 1][0];
           }
 
           // If, after inserting into this location, it has the highest value of all locations, set maxValue to this value

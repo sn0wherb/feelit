@@ -71,8 +71,6 @@ const DayDisplay = ({ data, onReturn }: Props) => {
     setLogsByHour(logsByHour);
   };
 
-  console.log(startIndex);
-
   const renderLogs = (index: number) => {
     return (
       <View>

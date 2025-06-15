@@ -171,8 +171,7 @@ export default function logNewEmotion() {
         "SELECT id FROM emotion_logs WHERE id = (SELECT MAX(id) FROM emotion_logs);"
       );
 
-      const query = generateSvgEntry(Number(thisLogId?.id));
-      query && (await db.runAsync(query));
+      generateSvgEntry(Number(thisLogId?.id));
 
       // Save selected people
       if (selectedPeople.length > 0) {
@@ -215,9 +214,14 @@ export default function logNewEmotion() {
           query += `(${id}, '${paths}', '${value[1]}', ${value[2]}), `;
         }
       });
-      return query;
+      try {
+        db.runAsync(query);
+      } catch (e) {
+        console.error(e);
+      }
+      return;
     } else {
-      return false;
+      return;
     }
   };
 

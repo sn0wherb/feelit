@@ -95,7 +95,7 @@ const Controls = ({
             }}
             style={{ transform: [{ rotateY: "180deg" }] }}
           >
-            <AntDesign name="close" size={26} color="black" />
+            <MaterialIcons name="edit-off" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
